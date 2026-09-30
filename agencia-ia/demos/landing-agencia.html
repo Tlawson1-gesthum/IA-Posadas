@@ -85,6 +85,32 @@ section{padding-block:40px}
 .price small{font-size:13px;color:var(--muted);font-weight:500}
 .per{font:500 12.5px var(--mono);color:var(--cyan)}
 .card.main{border-color:var(--line2);box-shadow:0 0 0 1px rgba(34,211,238,.18) inset}
+.ctarow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:26px}
+.ctarow .cta{margin-top:0}
+.cta.ghost{background:none;color:var(--text);border:1px solid var(--line2);text-decoration:none}
+.cta.ghost:hover{border-color:var(--cyan)}
+.scarce{font-size:13px;color:var(--muted);margin-top:12px;display:flex;gap:8px;align-items:center}
+.scarce::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 10px var(--warn)}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.also{color:var(--muted);font-size:14px;margin-top:16px}
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.calc-in,.calc-out{background:rgba(10,22,48,.78);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;gap:18px;align-content:start;min-width:0}
+.calc-in label{display:grid;gap:8px;font-size:14px;color:var(--muted)}
+.calc-in .lr{display:flex;justify-content:space-between;gap:10px}
+.calc-in output{color:var(--text);font:600 14px var(--mono)}
+.calc-in input[type=range]{width:100%;accent-color:var(--cyan)}
+.calc-in input[type=number]{background:#020612;border:1px solid var(--line2);border-radius:10px;padding:9px 12px;color:var(--text);font:600 15px var(--mono);width:100%}
+.calc-out{border-color:var(--line2);box-shadow:0 0 0 1px rgba(34,211,238,.18) inset}
+.calc-out span{display:block;font-size:13px;color:var(--muted)}
+.calc-out b{font:700 24px var(--mono)}
+.calc-out .big b{font-size:clamp(30px,4vw,42px);color:var(--warn)}
+.calc-out .cta{margin-top:4px;justify-self:start}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs button{border:1px solid var(--line2);background:var(--panel);color:var(--muted);border-radius:99px;padding:7px 14px;cursor:pointer;font-weight:600;font-size:13.5px}
+.tabs button[aria-selected=true]{background:var(--grad);color:#031022;border-color:transparent}
+.rubro ul{margin:0;padding-left:18px;display:grid;gap:8px;color:var(--muted);font-size:14.5px}
+.rubro li b{color:var(--text)}
+@media (max-width:900px){.calc{grid-template-columns:1fr}}
 .steps{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
 .steps .card b{font:600 12px var(--mono);color:var(--cyan);letter-spacing:.08em}
 
@@ -119,15 +145,16 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--dim)
 
   <div class="hero">
     <div>
-      <span class="kick">Agentes de IA para negocios de Misiones</span>
-      <h1 style="margin-top:12px">Tu negocio atiende, agenda y hace seguimiento <span class="grad">aunque estés ocupado</span></h1>
-      <p class="lead">Armamos agentes de IA que responden por WhatsApp las 24 horas, dan turnos y le escriben a quien quedó sin respuesta. El asistente de al lado es uno de ellos: probalo como si fueras un cliente.</p>
+      <span class="kick">Empleados de IA · Posadas, Misiones</span>
+      <h1 style="margin-top:12px">Mientras leés esto, alguien le escribió a tu negocio. <span class="grad">¿Quién le contestó?</span></h1>
+      <p class="lead">El que responde primero se queda con el cliente. Armamos empleados de IA que atienden, venden, cobran y hacen seguimiento por WhatsApp e Instagram, las 24 horas, conectados a tu agenda y a tu caja. Nico, el de al lado, es uno de ellos: escribile como si fueras un cliente.</p>
       <div class="proof">
-        <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><b>Responde en segundos, de día y de noche</b><span>Nadie queda esperando hasta el lunes.</span></div></div>
-        <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><div><b>Agenda en tu calendario</b><span>Ofrece horarios libres y confirma sin que vos intervengas.</span></div></div>
-        <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><div><b>Todo queda en tu CRM</b><span>Cada contacto con su origen, su estado y el próximo paso.</span></div></div>
+        <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><b>Contesta en segundos, también a las 23 h</b><span>El cliente que escribe de noche no se va a la competencia.</span></div></div>
+        <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><div><b>Vende y cobra</b><span>Da turnos, sigue presupuestos y manda el link de seña de Mercado Pago.</span></div></div>
+        <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><div><b>Te dice qué está pasando</b><span>CRM con cada cliente y un reporte semanal en tu WhatsApp.</span></div></div>
       </div>
-      <button class="cta" id="ctaMeet" type="button">Agendar un diagnóstico gratis de 20 minutos</button>
+      <div class="ctarow"><button class="cta" id="ctaMeet" type="button">Quiero mi diagnóstico gratis</button><a class="cta ghost" href="#perdida">Calcular cuánto pierdo</a></div>
+      <p class="scarce">Implementamos hasta 5 negocios por mes para hacerlo bien.</p>
     </div>
     <div>
       <div class="chat" aria-label="Chat con el asistente de la agencia">
@@ -140,14 +167,39 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--dim)
   </div>
 </div>
 
-<section id="resolvemos"><div class="wrap">
-  <div class="sh"><span class="kick">Qué resolvemos</span><h2>Los problemas que más plata le cuestan a un negocio local</h2></div>
-  <div class="grid">
-    <div class="card"><h3>Mensajes sin responder</h3><p>Preguntan a las 22 h, nadie contesta hasta la mañana y ya sacaron turno en otro lado.</p></div>
-    <div class="card"><h3>Turnos que se caen</h3><p>El paciente no avisa y el sillón queda vacío. Un recordatorio con botones lo evita.</p></div>
-    <div class="card"><h3>Presupuestos que se enfrían</h3><p>Se manda el presupuesto y nadie vuelve a escribir. El agente hace el seguimiento a los 2 y a los 7 días.</p></div>
-    <div class="card"><h3>Clientes que no vuelven</h3><p>Pasan meses sin control ni visita. El agente los invita a volver en el momento justo.</p></div>
+<section id="perdida"><div class="wrap">
+  <div class="sh"><span class="kick">Poné tus números</span><h2>¿Cuánta plata se te va por no contestar a tiempo?</h2><p>Cada consulta que queda para “después” es un cliente que le escribe al de al lado. Calculalo con tus propios datos.</p></div>
+  <div class="calc">
+    <div class="calc-in">
+      <label><span class="lr">Consultas por día<output id="oQ"></output></span><input type="range" id="cQ" min="2" max="60" value="12"></label>
+      <label><span class="lr">De esas, cuántas no se responden a tiempo<output id="oM"></output></span><input type="range" id="cM" min="5" max="80" step="5" value="30"></label>
+      <label><span class="lr">De las no respondidas, cuántas se van a otro<output id="oL"></output></span><input type="range" id="cL" min="10" max="90" step="5" value="50"></label>
+      <label>Ticket promedio de un cliente (pesos)<input type="number" id="cT" min="0" step="1000" value="45000"></label>
+    </div>
+    <div class="calc-out">
+      <div><span>Clientes que perdés por mes</span><b id="rC"></b></div>
+      <div class="big"><span>Plata que se va por mes</span><b id="rP"></b></div>
+      <div><span>Con estos números, el mantenimiento de un agente se paga recuperando</span><b id="rR"></b></div>
+      <button class="cta" type="button" id="ctaCalc">Quiero recuperar esos clientes</button>
+    </div>
   </div>
+</div></section>
+
+<section id="resolvemos"><div class="wrap">
+  <div class="sh"><span class="kick">Qué hacemos</span><h2>No es un chatbot. Es un equipo que trabaja mientras vos atendés.</h2><p>Un chatbot contesta preguntas. Nuestros agentes entienden, deciden y actúan: miran tu agenda, reservan, cobran, hacen seguimiento y te avisan cuando algo necesita tu atención.</p></div>
+  <div class="grid g3">
+    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></div><h3>Atención 24/7</h3><p>WhatsApp, Instagram y tu web, con tu tono y tus datos. Si algo lo excede, te pasa la charla con un resumen.</p></div>
+    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><h3>Agenda sin huecos</h3><p>Da turnos con tu agenda real, confirma el día antes, reprograma y ofrece los huecos que se liberan a quien estaba esperando.</p></div>
+    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></div><h3>Ventas y seguimiento</h3><p>Califica a quien llega por anuncios, sigue cada presupuesto a los 2 y a los 7 días y avisa cuando alguien está listo para comprar.</p></div>
+    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></div><h3>Cobros</h3><p>Manda el link de seña de Mercado Pago, confirma cuando se acredita y recuerda los pagos pendientes sin que vos tengas que reclamar.</p></div>
+    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></div><h3>Clientes que vuelven</h3><p>Reactiva a quien no viene hace meses, pide reseñas en Google a los conformes y saluda en los cumpleaños, siempre con permiso.</p></div>
+    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3>Tu negocio en el bolsillo</h3><p>Le preguntás por WhatsApp “¿qué turnos tengo mañana?” o “¿quién me debe una seña?” y te responde. Cada lunes, un reporte con lo que pasó.</p></div>
+  </div>
+  <p class="also">También armamos la base: landing con turnero, perfil de Google y CRM, todo conectado.</p>
+
+  <div class="sh" style="margin-top:36px"><span class="kick">Por rubro</span><h2>Lo que hace en un negocio como el tuyo</h2></div>
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="card rubro" id="rubro"></div>
 </div></section>
 
 <section id="precios"><div class="wrap">
@@ -254,7 +306,9 @@ const RULES = `Sos Nico, el asistente con IA de "Agencia IA", una agencia de Pos
 Tu objetivo: entender el negocio de la persona y agendar una reunión de diagnóstico gratis de 20 minutos por videollamada.
 
 Qué hace la agencia:
-- Agentes que atienden por WhatsApp 24/7, dan turnos, mandan recordatorios, hacen seguimiento de presupuestos y reactivan clientes.
+- Empleados de IA, no chatbots: atienden por WhatsApp, Instagram y la web 24/7; dan turnos con la agenda real y confirman el día antes; siguen presupuestos; califican a quien llega por anuncios; mandan el link de seña de Mercado Pago y recuerdan pagos; reactivan clientes, piden reseñas en Google; el dueño les pregunta por WhatsApp "¿qué turnos tengo mañana?" y recibe un reporte semanal. También armamos landing con turnero, perfil de Google y CRM.
+- Por rubro: odontología (seguimiento de ortodoncia e implantes, controles cada 6 meses), estética (paquetes de sesiones, señas, Instagram), kinesiología (plan de sesiones, ejercicios entre turnos, obras sociales), veterinaria (calendario de vacunas, urgencias).
+- Implementamos hasta 5 negocios por mes para hacerlo bien.
 - Precios en dólares: Landing US$300. Landing + turnero US$400. Agente con automatizaciones US$1.000 a 3.000 según alcance, más US$200 por mes de mantenimiento (servidor, costo de IA, ajustes, reporte y soporte). Para gastronomía: MORFA, US$20 por mes (carta, pedidos y reservas).
 - Nichos principales: odontología, estética, kinesiología y veterinarias. Gastronomía va con MORFA.
 - Proceso: diagnóstico de 20 minutos, demo con sus datos en 24 horas, implementación en 7 a 14 días, acompañamiento mensual.
@@ -281,8 +335,7 @@ async function askServer(text) {
   try {
     const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ turns }) });
     const j = await r.json().catch(() => ({}));
-    if (r.status === 503) { turns.pop(); b.remove(); liveOK = false; setMode(); return scripted(text); }  // servidor sin clave válida
-    if (!r.ok) throw new Error(j.error || "error");
+    if (!r.ok) { turns.pop(); b.remove(); goScripted(); return scripted(text); }  // sin clave válida, límite o falla: modo guiado
     (j.booked || []).forEach(l => { busy.add(l.reunion); log.insertBefore(Object.assign(document.createElement("div"), { className: "tool", textContent: "Agendado y guardado en el CRM" }), b); });
     b.classList.remove("think"); setText(b, j.text);
     (j.booked || []).forEach(l => renderBooked(l));
@@ -307,11 +360,10 @@ async function askClaude(text) {
     turns.push({ role: "assistant", content: r.text });
   } catch (e) {
     turns.pop();
-    if (["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed", "tools_unavailable"].includes(e.code)) {
-      b.remove(); liveOK = false; setMode(); return scripted(text);
-    }
-    b.classList.remove("think");
-    setText(b, e.text || (e.code === "rate_limited" ? "Estoy con muchas consultas. Probá de nuevo en un minuto." : "Se cortó la conexión. ¿Me lo repetís?"));
+    if (e.code === "cancelled") { b.remove(); return; }
+    if (e.text) { b.classList.remove("think"); setText(b, e.text); return; }
+    // Sin Claude disponible (permiso, límite de uso o falla): sigue el asistente guiado para no dejar a nadie sin respuesta.
+    b.remove(); goScripted(); return scripted(text);
   } finally { $("#status").textContent = "en línea"; }
 }
 
@@ -327,7 +379,10 @@ function scripted(text) {
   if (S.step === "slot") { const s = (S.opts || []).find(x => x.label === text) || (S.opts || [])[0]; S.step = null; return setTimeout(() => book(Object.assign({ slot_id: s.id }, S.data)).then(() => bubble("in", "Listo. Te escribimos por WhatsApp con el link. ¡Nos vemos!")).catch(err => bubble("in", err.message)), 450); }
   if (/(agend|reunion|diagnost|turno|demo)/.test(t)) { S.step = "nombre"; return say("¡Dale! Son 20 minutos por videollamada y no tiene costo. ¿Cómo te llamás?"); }
   if (/(precio|cuanto|sale|cuesta|valor)/.test(t)) return say("Landing US$300, landing con turnero US$400 y el agente con automatizaciones de US$1.000 a 3.000 más US$200 por mes. Para gastronomía tenemos MORFA a US$20 por mes. ¿Querés que veamos cuál te sirve en una reunión corta?", ["Agendar diagnóstico"]);
-  if (/(que hacen|como funciona|servicio|agente)/.test(t)) return say("Armamos asistentes con IA que responden por WhatsApp las 24 horas, dan turnos, mandan recordatorios y hacen seguimiento. Como yo, pero con los datos de tu negocio.", ["Precios", "Agendar diagnóstico"]);
+  if (/(recuper|pierdo|perdiendo)/.test(t)) { S.step = "nombre"; return say("Vamos a verlo con tus números en una reunión de 20 minutos, sin costo. ¿Cómo te llamás?"); }
+  if (/(que hacen|como funciona|servicio|agente|chatbot)/.test(t)) return say("Armamos empleados de IA: atienden por WhatsApp e Instagram las 24 horas, dan turnos con tu agenda real, siguen presupuestos, mandan el link de seña de Mercado Pago, reactivan clientes y te mandan un reporte semanal. Como yo, pero con los datos de tu negocio.", ["¿Sirve para mi rubro?", "Precios", "Agendar diagnóstico"]);
+  if (/(rubro|sirve|odont|dentist|estetic|kine|veterin)/.test(t)) return say("Trabajamos con odontología, estética, kinesiología y veterinarias; en gastronomía, con MORFA. En cada rubro el agente hace cosas distintas: seguimiento de tratamientos, paquetes de sesiones, vacunas, señas. ¿Cuál es el tuyo?", ["Agendar diagnóstico", "Precios"]);
+  if (/(cobr|sena|pago|mercado)/.test(t)) return say("Sí: el agente manda el link de seña de Mercado Pago, confirma cuando se acredita y recuerda los pagos pendientes.", ["Agendar diagnóstico"]);
   if (/(gastro|resto|restaurant|comida|parrilla|bar )/.test(t)) return say("Para gastronomía tenemos MORFA: carta, pedidos y reservas por WhatsApp, a US$20 por mes.", ["Agendar diagnóstico"]);
   if (/(persona|humano)/.test(t)) return say("Claro. Dejame tu nombre y WhatsApp y alguien del equipo te escribe hoy.", ["Agendar diagnóstico"]);
   return say("Te respondo lo básico por acá; lo específico lo vemos en una reunión de 20 minutos. ¿Qué querés saber?", ["¿Qué hacen?", "Precios", "Agendar diagnóstico"]);
@@ -342,10 +397,43 @@ async function send(text) {
 }
 $("#form").addEventListener("submit", e => { e.preventDefault(); send($("#msg").value); });
 $("#ctaMeet").addEventListener("click", () => { $("#msg").focus(); send("Quiero agendar un diagnóstico"); });
+function goScripted() {
+  liveOK = false; setMode();
+  $("#hint").textContent = "Claude no está disponible en este momento, así que Nico sigue en modo guiado. Todo lo que agendes queda guardado igual.";
+}
 function setMode() { const m = $("#mode"); m.textContent = liveOK ? "IA en vivo" : "Guionado"; m.classList.toggle("live", liveOK); }
 
 bubble("in", "¡Hola! Soy Nico, el asistente con IA de Agencia IA. Te cuento cómo un agente puede atender tu negocio, te paso precios o te agendo un diagnóstico gratis de 20 minutos. ¿Qué necesitás?");
 quick(["¿Qué hacen?", "Precios", "Agendar diagnóstico"]);
+
+/* ---------- calculadora ---------- */
+const pesos = v => "$ " + Math.round(v).toLocaleString("es-AR");
+function calc() {
+  const q = +$("#cQ").value, m = +$("#cM").value / 100, l = +$("#cL").value / 100, t = Math.max(0, +$("#cT").value || 0);
+  $("#oQ").textContent = q; $("#oM").textContent = Math.round(m * 100) + "%"; $("#oL").textContent = Math.round(l * 100) + "%";
+  const lost = q * 30 * m * l, money = lost * t, mant = 200 * 1500;
+  $("#rC").textContent = Math.round(lost).toLocaleString("es-AR");
+  $("#rP").textContent = pesos(money);
+  $("#rR").textContent = t > 0 ? Math.max(1, Math.ceil(mant / t)) + " clientes por mes" : "—";
+}
+["cQ", "cM", "cL", "cT"].forEach(id => $("#" + id).addEventListener("input", calc)); calc();
+$("#ctaCalc").addEventListener("click", () => { document.querySelector(".chat").scrollIntoView({ behavior: "smooth", block: "center" }); send("Quiero recuperar los clientes que pierdo"); });
+
+/* ---------- por rubro ---------- */
+const RUBROS = {
+  "Odontología": ["<b>Turnos y recordatorios</b> con confirmación: menos sillones vacíos.", "<b>Seguimiento de presupuestos</b> de ortodoncia e implantes hasta que el paciente decide.", "<b>Tratamientos por etapas</b>: sigue cada sesión y avisa si alguien se cae del plan.", "<b>Controles cada 6 meses</b>: invita a volver sin que nadie tenga que acordarse."],
+  "Estética": ["<b>Reservas con seña</b> por Mercado Pago: si no paga, el turno se libera solo.", "<b>Paquetes de sesiones</b> con saldo y vencimiento, y oferta para renovar.", "<b>Instagram a WhatsApp</b>: responde comentarios y mensajes y cierra el turno.", "<b>Cuidados posteriores</b> y pedido de reseña cuando la clienta quedó conforme."],
+  "Kinesiología": ["<b>Plan de sesiones</b> con recordatorio antes de cada una.", "<b>Ejercicios entre turnos</b> y pregunta cómo sigue el dolor.", "<b>Obras sociales</b>: pide los datos y la orden antes del primer turno.", "<b>Alta y seguimiento</b>: vuelve a escribir al mes para evitar recaídas."],
+  "Veterinaria": ["<b>Calendario de vacunas</b> por mascota con aviso de la próxima dosis.", "<b>Turnos de baño y corte</b> con recordatorio.", "<b>Urgencias</b>: detecta lo grave y avisa al veterinario al instante.", "<b>Alimento y antiparasitarios</b>: recuerda cuándo reponer."],
+  "Gastronomía · MORFA": ["<b>Carta y pedidos</b> por WhatsApp, con el total que confirma el local.", "<b>Reservas de mesa</b> con seña opcional.", "<b>Clientes frecuentes</b>: promo del día a quien ya compró, con permiso.", "<b>Desde US$20 por mes</b>, sin implementación."]
+};
+let rubro = "Odontología";
+function drawRubro() {
+  $("#tabs").innerHTML = Object.keys(RUBROS).map(k => '<button type="button" role="tab" aria-selected="' + (k === rubro) + '">' + esc(k) + "</button>").join("");
+  $("#rubro").innerHTML = "<ul>" + RUBROS[rubro].map(x => "<li>" + x + "</li>").join("") + "</ul>";
+}
+$("#tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { rubro = b.textContent; drawRubro(); } });
+drawRubro();
 
 /* ---------- capacidades ---------- */
 async function startServer() {
