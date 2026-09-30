@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Agencia IA Posadas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,6 +108,8 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--dim)
 @media (prefers-reduced-motion:no-preference){.b,.ok,.lcard{animation:in .25s ease}}
 @keyframes in{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <header class="top">
@@ -198,6 +205,7 @@ const slotLabel = id => { const s = slots().find(x => x.id === id); if (s) retur
 
 /* ---------- datos compartidos (agenda y CRM) ---------- */
 let db = null, me = null, isOwner = false;
+let server = false, adminToken = null;  // modo Vercel: /api/*
 const STAGES = ["Nuevo", "Reunión agendada", "Demo enviada", "Cliente"];
 async function book(info) {
   const slot = String(info.slot_id || "");
@@ -209,6 +217,13 @@ async function book(info) {
     etapa: "Reunión agendada", origen: "Landing · agente Nico", reunion: slot, reunionTexto: slotLabel(slot), actualizado: new Date().toISOString()
   };
   if (!lead.nombre || !lead.whatsapp) throw new Error("Faltan el nombre y el WhatsApp. Pedíselos antes de agendar.");
+  if (server) {
+    const r = await fetch("/api/agenda", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({}, lead, { slot_id: slot })) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || "No se pudo agendar. Probá otro horario.");
+    busy.add(slot); renderBooked(j.lead || lead); if (adminToken) loadLeads();
+    return { ok: true, confirmacion: lead.reunionTexto };
+  }
   busy.add(slot);
   if (db) {
     try {
@@ -259,7 +274,26 @@ const tools = [
     execute: input => { toolNote("Agendando y guardando en el CRM"); return book(input); } }
 ];
 function toolNote(t) { const n = document.createElement("div"); n.className = "tool"; n.textContent = t + "…"; log.appendChild(n); scroll(); }
+async function askServer(text) {
+  turns.push({ role: "user", content: text });
+  while (turns.length > 16) turns.shift();
+  const b = bubble("in think", "Escribiendo…"); $("#status").textContent = "escribiendo…";
+  try {
+    const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ turns }) });
+    const j = await r.json().catch(() => ({}));
+    if (r.status === 503) { turns.pop(); b.remove(); liveOK = false; setMode(); return scripted(text); }  // servidor sin clave válida
+    if (!r.ok) throw new Error(j.error || "error");
+    (j.booked || []).forEach(l => { busy.add(l.reunion); log.insertBefore(Object.assign(document.createElement("div"), { className: "tool", textContent: "Agendado y guardado en el CRM" }), b); });
+    b.classList.remove("think"); setText(b, j.text);
+    (j.booked || []).forEach(l => renderBooked(l));
+    turns.push({ role: "assistant", content: j.text });
+    if (j.booked && j.booked.length && adminToken) loadLeads();
+  } catch (e) {
+    turns.pop(); b.classList.remove("think"); setText(b, "Se cortó la conexión. ¿Me lo repetís?");
+  } finally { $("#status").textContent = "en línea"; }
+}
 async function askClaude(text) {
+  if (server) return askServer(text);
   turns.push({ role: "user", content: text });
   while (turns.length > 16) turns.shift();
   const b = bubble("in think", "Escribiendo…"); $("#status").textContent = "escribiendo…";
@@ -314,8 +348,26 @@ bubble("in", "¡Hola! Soy Nico, el asistente con IA de Agencia IA. Te cuento có
 quick(["¿Qué hacen?", "Precios", "Agendar diagnóstico"]);
 
 /* ---------- capacidades ---------- */
+async function startServer() {
+  if (!/^https?:/.test(location.protocol)) return;
+  try {
+    const r = await fetch("/api/agenda"); if (!r.ok) return;
+    const j = await r.json(); server = true; busy = new Set(j.ocupados || []);
+    if (j.chat) { liveOK = true; setMode(); $("#hint").textContent = "Nico responde con Claude en vivo. Tus datos se usan solo para coordinar la reunión."; }
+  } catch (e) { return; }
+  const q = new URLSearchParams(location.search).get("admin");
+  try { if (q) localStorage.setItem("agencia_admin", q); adminToken = q || localStorage.getItem("agencia_admin"); } catch (e) { adminToken = q; }
+  if (adminToken) { $("#crmSec").hidden = false; drawCRM(); loadLeads(); setInterval(loadLeads, 15000); }
+}
+async function loadLeads() {
+  try {
+    const r = await fetch("/api/leads", { headers: { "x-admin-token": adminToken } });
+    if (r.status === 401) { $("#board").innerHTML = '<p class="empty">La clave de administrador no es correcta.</p>'; return; }
+    leads = (await r.json()).leads || []; drawCRM();
+  } catch (e) {}
+}
 (async () => {
-  if (!window.claude || !claude.use) return;
+  if (!window.claude || !claude.use) return startServer();
   const [s, d, u] = await Promise.all([claude.use("sample"), claude.use("db"), claude.use("user")]);
   if (s) {
     const lim = await s.limits().catch(() => null);
@@ -344,8 +396,16 @@ function drawCRM() {
   }).join("");
 }
 $("#board").addEventListener("click", async e => {
-  const b = e.target.closest("[data-mv]"); if (!b || !db) return;
+  const b = e.target.closest("[data-mv]"); if (!b) return;
+  if (server) {
+    b.disabled = true;
+    await fetch("/api/leads", { method: "PATCH", headers: { "Content-Type": "application/json", "x-admin-token": adminToken }, body: JSON.stringify({ id: b.dataset.mv, etapa: STAGES[+b.dataset.to] }) }).catch(() => {});
+    return loadLeads();
+  }
+  if (!db) return;
   b.disabled = true;
   try { await db.doc("leads/" + b.dataset.mv).update({ etapa: STAGES[+b.dataset.to], actualizado: new Date().toISOString() }); } catch (err) { b.disabled = false; }
 });
 </script>
+</body>
+</html>

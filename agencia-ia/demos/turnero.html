@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Turnero Tu Clínica</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -100,6 +105,8 @@ pre{margin:0;background:#020612;border:1px solid rgba(255,255,255,.1);border-rad
 footer{padding-block:20px 36px;color:var(--muted);font-size:13px}
 @media (max-width:880px){.hero,.two{grid-template-columns:1fr}.facts{grid-template-columns:1fr}}
 </style>
+</head>
+<body>
 
 <div class="demo-bar"><div class="wrap">
   <span><b>Demo de Agencia IA</b> · Misma plantilla, otro cliente: cambiá el rubro</span>
@@ -182,6 +189,7 @@ const CLIENTES = {
 let key = "odonto", C = CLIENTES.odonto;
 let st = { step: 0, svc: null, day: null, time: null, done: null };
 let taken = new Set(), db = null, me = null, canSeeAgenda = false, reservas = [];
+let server = false, adminToken = null;  // modo Vercel: /api/turnos
 const local = [];  // reservas de esta vista, cuando no hay almacenamiento compartido
 const DAYN = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 const DAYL = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
@@ -251,6 +259,12 @@ $("#booker").addEventListener("click", async e => {
     const r = { rubro: key, slot: id, fecha: ymd(st.day), hora: st.time, diaTexto: dayText(st.day), servicio: C.servicios[st.svc].nombre, nombre: nombre.slice(0, 80), whatsapp: tel.slice(0, 30), creado: new Date().toISOString() };
     taken.add(id);
     let saved = false;
+    if (server) {
+      const res = await fetch("/api/turnos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(r) }).catch(() => null);
+      if (res && res.status === 409) { st.step = 1; st.time = null; draw(); return; }
+      saved = Boolean(res && res.ok);
+      if (saved && adminToken) loadReservas();
+    }
     if (db) {
       try {
         await db.doc("turnos/" + id).set({ ocupado: true });
@@ -276,8 +290,23 @@ function drawAgenda() {
 
 applyClient();
 
+async function loadTaken() {
+  try { const j = await (await fetch("/api/turnos")).json(); taken = new Set(j.ocupados || []); if (!st.done) draw(); drawAgenda(); } catch (e) {}
+}
+async function loadReservas() {
+  try { const r = await fetch("/api/turnos?admin=1", { headers: { "x-admin-token": adminToken } }); if (r.ok) { reservas = (await r.json()).reservas || []; drawAgenda(); } } catch (e) {}
+}
+async function startServer() {
+  if (!/^https?:/.test(location.protocol)) return;
+  try { const r = await fetch("/api/turnos"); if (!r.ok) return; server = true; } catch (e) { return; }
+  const q = new URLSearchParams(location.search).get("admin");
+  try { if (q) localStorage.setItem("agencia_admin", q); adminToken = q || localStorage.getItem("agencia_admin"); } catch (e) { adminToken = q; }
+  loadTaken(); setInterval(loadTaken, 15000);
+  if (adminToken) { canSeeAgenda = true; loadReservas(); setInterval(loadReservas, 15000); }
+  else $("#bizNote").textContent = "Los nombres de los pacientes solo los ve el dueño (entrando con ?admin=su-clave); acá ves qué horarios se ocuparon.";
+}
 (async () => {
-  if (!window.claude || !claude.use) return;
+  if (!window.claude || !claude.use) return startServer();
   const [d, u] = await Promise.all([claude.use("db"), claude.use("user")]);
   if (u) { me = await u.id(); canSeeAgenda = (await u.isOwner()) || (await u.canEdit()); }
   if (!d) return;
@@ -287,3 +316,5 @@ applyClient();
   else $("#bizNote").textContent = "Los nombres de los pacientes solo los ve el dueño de la página; acá ves qué horarios se ocuparon.";
 })();
 </script>
+</body>
+</html>

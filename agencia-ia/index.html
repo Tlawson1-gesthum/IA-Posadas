@@ -577,7 +577,7 @@ figure{margin:0}
       </div>
       <ul class="list-check small" style="margin-top:12px"><li>Cuando el agente agenda una reunión, crea la ficha y la pasa de columna.</li><li>Si una ficha pasa 3 días sin movimiento, nos avisa por WhatsApp.</li><li>Cada lunes llega un resumen: cuántos entraron, cuántos avanzaron y de dónde vinieron.</li></ul>
       <p class="small" style="margin-top:10px">Para arrancar usamos HubSpot gratis; cuando haya volumen, Kommo, que se conecta a WhatsApp. Cada cliente tiene su propio CRM de pacientes con la misma lógica.</p>
-      <div class="row" style="margin-top:12px"><a class="btn sm" href="https://claude.ai/artifact/6Xg5nTN6rF4dgukTWpnm91" target="_blank" rel="noopener"><span data-i="link"></span>Ver el CRM funcionando</a></div>
+      <div class="row" style="margin-top:12px"><a class="btn sm" href="https://claude.ai/artifact/6Xg5nTN6rF4dgukTWpnm91" data-local="demos/landing-agencia.html" target="_blank" rel="noopener"><span data-i="link"></span>Ver el CRM funcionando</a></div>
     </div>
   </div>
 
@@ -675,7 +675,7 @@ Presupuestos sin respuesta: 3
       <figcaption><b>Gastronomía con MORFA</b>Carta, pedido y reserva por WhatsApp.</figcaption>
     </figure>
   </div>
-  <div class="row" style="margin-top:18px"><a class="btn" href="https://claude.ai/artifact/6Xg5nTN6rF4dgukTWpnm91" target="_blank" rel="noopener"><span data-i="bot"></span>Probar la landing con agente</a><a class="btn" href="https://claude.ai/artifact/2jXWwWVvzNfyCXdyjVV7xU" target="_blank" rel="noopener"><span data-i="cal"></span>Probar el turnero</a></div>
+  <div class="row" style="margin-top:18px"><a class="btn" href="https://claude.ai/artifact/6Xg5nTN6rF4dgukTWpnm91" data-local="demos/landing-agencia.html" target="_blank" rel="noopener"><span data-i="bot"></span>Probar la landing con agente</a><a class="btn" href="https://claude.ai/artifact/2jXWwWVvzNfyCXdyjVV7xU" data-local="demos/turnero.html" target="_blank" rel="noopener"><span data-i="cal"></span>Probar el turnero</a></div>
   <p class="note">Maquetas ilustrativas con negocios inventados.</p>
 </section>
 
@@ -698,7 +698,7 @@ Presupuestos sin respuesta: 3
       </div>
       <p class="small" style="margin-top:14px">En la versión real pegamos la web o el Instagram del negocio y Claude arma la ficha sola.</p>
       <h4 style="margin-top:16px">Muestras en vivo</h4>
-      <div style="display:grid;gap:8px"><a class="btn sm" href="https://claude.ai/artifact/6Xg5nTN6rF4dgukTWpnm91" target="_blank" rel="noopener"><span data-i="bot"></span>Landing de la agencia con agente</a><a class="btn sm" href="https://claude.ai/artifact/2jXWwWVvzNfyCXdyjVV7xU" target="_blank" rel="noopener"><span data-i="cal"></span>Turnero de clínica</a></div>
+      <div style="display:grid;gap:8px"><a class="btn sm" href="https://claude.ai/artifact/6Xg5nTN6rF4dgukTWpnm91" data-local="demos/landing-agencia.html" target="_blank" rel="noopener"><span data-i="bot"></span>Landing de la agencia con agente</a><a class="btn sm" href="https://claude.ai/artifact/2jXWwWVvzNfyCXdyjVV7xU" data-local="demos/turnero.html" target="_blank" rel="noopener"><span data-i="cal"></span>Turnero de clínica</a></div>
     </div>
     <div class="phone">
       <div class="notch"></div>
@@ -1362,6 +1362,8 @@ $("#dGo").addEventListener("click", () => {
 fillRubro(); startDemo();
 
 /* ---------- arranque ---------- */
+// Fuera de claude.ai (Vercel o archivo local) los botones abren las demos del mismo sitio.
+if (!window.claude) $$("[data-local]").forEach(x => { x.href = x.dataset.local; });
 paintIcons(document); paintPrompts(document);
 go(Math.max(0, (parseInt((location.hash || "").slice(1), 10) || 1) - 1));
 </script>

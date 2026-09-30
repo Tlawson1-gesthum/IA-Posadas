@@ -1,0 +1,9 @@
+{
+  "name": "agencia-ia-posadas",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.130.0"
+  }
+}
