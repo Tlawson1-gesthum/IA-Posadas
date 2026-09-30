@@ -1,0 +1,351 @@
+<title>Agencia IA Posadas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Landing de una sola acción: el agente de la agencia es la prueba viva del producto. Oscuro, azul nocturno. */
+:root{color-scheme:dark;
+  --bg:#030814;--panel:#0a1630;--panel2:#0e1d3d;--line:#162a52;--line2:#23407a;
+  --text:#e6eeff;--muted:#93a6cc;--dim:#5f7499;--cyan:#22d3ee;--blue:#3b82f6;--ok:#34d399;--warn:#fbbf24;
+  --grad:linear-gradient(135deg,#22d3ee,#3b82f6 55%,#6366f1);
+  --disp:"Sora",Inter,system-ui,sans-serif;--sans:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --wa-bg:#0b141a;--wa-in:#202c33;--wa-out:#005c4b;--wa-text:#e9edef;--wa-meta:#8696a0;--wa-link:#53bdeb;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 var(--sans);-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 500px at 90% -10%,rgba(59,130,246,.22),transparent 60%),linear-gradient(rgba(59,130,246,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.05) 1px,transparent 1px);
+  background-size:auto,44px 44px,44px 44px}
+a{color:var(--cyan)}
+h1,h2,h3{font-family:var(--disp);line-height:1.15;margin:0;text-wrap:balance;letter-spacing:-.02em}
+h1{font-size:clamp(32px,5vw,54px)}
+h2{font-size:clamp(24px,3.2vw,34px)}
+h3{font-size:17px}
+p{margin:0}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.wrap{max-width:1160px;margin:0 auto;padding-inline:clamp(16px,4vw,40px)}
+header.top{display:flex;justify-content:space-between;align-items:center;padding-block:18px;gap:12px;flex-wrap:wrap}
+.brand{display:flex;gap:10px;align-items:center;font-family:var(--disp);font-weight:700}
+.logo{width:32px;height:32px;border-radius:9px;background:var(--grad);display:grid;place-items:center;color:#031022}
+.logo svg{width:18px;height:18px}
+.nav{display:flex;gap:18px;font-size:14px;flex-wrap:wrap}
+.nav a{color:var(--muted);text-decoration:none}
+.nav a:hover{color:var(--text)}
+.kick{font:500 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);display:flex;gap:8px;align-items:center}
+.kick::before{content:"";width:18px;height:1px;background:var(--cyan)}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:start;padding-block:28px 56px}
+.hero .lead{color:var(--muted);font-size:17px;margin-top:16px;max-width:560px}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.proof{display:grid;gap:12px;margin-top:26px}
+.proof>div{display:flex;gap:12px;align-items:flex-start}
+.proof b{display:block}
+.proof span{font-size:13.5px;color:var(--muted)}
+.ico{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.25);color:var(--cyan)}
+.ico svg{width:18px;height:18px}
+.cta{display:inline-flex;gap:8px;align-items:center;margin-top:26px;background:var(--grad);color:#031022;font-weight:700;border:0;border-radius:12px;padding:12px 18px;cursor:pointer;font-size:15px}
+
+/* chat */
+.chat{border-radius:22px;border:1px solid var(--line2);background:var(--wa-bg);overflow:hidden;display:flex;flex-direction:column;height:620px;max-height:80vh;box-shadow:0 30px 80px -30px rgba(34,211,238,.35)}
+.chat-h{display:flex;gap:10px;align-items:center;padding:12px 14px;background:#1f2c34;color:var(--wa-text)}
+.chat-h .av{width:36px;height:36px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font:700 13px var(--mono);color:#031022;flex:none}
+.chat-h b{display:block;font-size:14.5px}
+.chat-h small{font-size:12px;color:var(--wa-meta)}
+.mode{margin-left:auto;font:500 10.5px var(--mono);letter-spacing:.06em;color:var(--wa-meta);border:1px solid #2b3942;border-radius:99px;padding:2px 8px;text-transform:uppercase;white-space:nowrap}
+.mode.live{color:var(--ok);border-color:rgba(52,211,153,.4)}
+.log{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:7px;font-size:14px}
+.b{max-width:86%;padding:7px 10px 17px;border-radius:9px;position:relative;color:var(--wa-text);white-space:pre-wrap;line-height:1.45;word-wrap:break-word}
+.b.in{background:var(--wa-in);align-self:flex-start;border-top-left-radius:2px}
+.b.out{background:var(--wa-out);align-self:flex-end;border-top-right-radius:2px}
+.b .t{position:absolute;right:8px;bottom:3px;font-size:10px;color:#8fa3ad}
+.b.think{color:var(--wa-meta);font-style:italic;padding-bottom:7px}
+.tool{align-self:center;font:11px var(--mono);color:var(--wa-meta);background:#182229;border-radius:6px;padding:3px 9px}
+.ok{align-self:flex-start;background:var(--wa-in);border-left:3px solid #00a884;border-radius:9px;padding:9px 12px;color:var(--wa-text);font-size:13.5px;max-width:88%}
+.ok b{color:#25d366;display:block;margin-bottom:3px}
+.qr{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-start;max-width:94%}
+.qr button{background:var(--wa-in);border:1px solid #2b3942;color:var(--wa-link);border-radius:16px;padding:6px 12px;cursor:pointer;font-size:13px}
+.qr button:hover{background:#2a3942}
+.chat form{display:flex;gap:8px;padding:10px;border-top:1px solid #1f2c34}
+.chat input{flex:1;min-width:0;background:#1f2c34;border:0;border-radius:22px;padding:10px 15px;color:var(--wa-text);font:inherit}
+.chat form button{width:42px;height:42px;border-radius:50%;border:0;background:#00a884;color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.chat form button svg{width:18px;height:18px}
+.chat form button[disabled]{opacity:.5;cursor:default}
+.hint{font-size:12px;color:var(--dim);margin-top:10px}
+
+section{padding-block:40px}
+.sh{margin-bottom:22px;display:grid;gap:8px;max-width:720px}
+.sh p{color:var(--muted)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
+.card{background:rgba(10,22,48,.78);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:8px;align-content:start;min-width:0}
+.card p{color:var(--muted);font-size:14px}
+.price{font:700 28px/1 var(--mono);letter-spacing:-.02em;margin-top:4px}
+.price small{font-size:13px;color:var(--muted);font-weight:500}
+.per{font:500 12.5px var(--mono);color:var(--cyan)}
+.card.main{border-color:var(--line2);box-shadow:0 0 0 1px rgba(34,211,238,.18) inset}
+.steps{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.steps .card b{font:600 12px var(--mono);color:var(--cyan);letter-spacing:.08em}
+
+/* CRM */
+.crm{border:1px solid var(--line2);border-radius:18px;background:rgba(5,13,31,.9);padding:18px}
+.crm-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.pill{font:500 11px var(--mono);color:var(--muted);border:1px solid var(--line2);border-radius:99px;padding:2px 9px}
+.board{display:grid;grid-template-columns:repeat(4,minmax(200px,1fr));gap:10px;overflow-x:auto;padding-bottom:4px}
+.col{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;min-height:120px}
+.col h4{margin:0 0 8px;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between}
+.lcard{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:9px 10px;margin-bottom:8px;font-size:13px;display:grid;gap:3px}
+.lcard b{font-size:13.5px}
+.lcard .m{color:var(--muted);font-size:12px}
+.lcard .src{font:11px var(--mono);color:var(--cyan)}
+.lcard .act{display:flex;gap:6px;margin-top:4px}
+.lcard .act button{font:600 11px var(--sans);background:none;border:1px solid var(--line2);color:var(--text);border-radius:7px;padding:3px 8px;cursor:pointer}
+.lcard .act button:hover{border-color:var(--cyan)}
+.empty{color:var(--dim);font-size:13px}
+footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--dim);font-size:13px}
+@media (max-width:900px){.hero{grid-template-columns:1fr}.chat{height:560px}}
+@media (prefers-reduced-motion:no-preference){.b,.ok,.lcard{animation:in .25s ease}}
+@keyframes in{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg></div>Agencia IA · Posadas</div>
+    <nav class="nav"><a href="#resolvemos">Qué resolvemos</a><a href="#precios">Precios</a><a href="#como">Cómo trabajamos</a></nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <span class="kick">Agentes de IA para negocios de Misiones</span>
+      <h1 style="margin-top:12px">Tu negocio atiende, agenda y hace seguimiento <span class="grad">aunque estés ocupado</span></h1>
+      <p class="lead">Armamos agentes de IA que responden por WhatsApp las 24 horas, dan turnos y le escriben a quien quedó sin respuesta. El asistente de al lado es uno de ellos: probalo como si fueras un cliente.</p>
+      <div class="proof">
+        <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><b>Responde en segundos, de día y de noche</b><span>Nadie queda esperando hasta el lunes.</span></div></div>
+        <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><div><b>Agenda en tu calendario</b><span>Ofrece horarios libres y confirma sin que vos intervengas.</span></div></div>
+        <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><div><b>Todo queda en tu CRM</b><span>Cada contacto con su origen, su estado y el próximo paso.</span></div></div>
+      </div>
+      <button class="cta" id="ctaMeet" type="button">Agendar un diagnóstico gratis de 20 minutos</button>
+    </div>
+    <div>
+      <div class="chat" aria-label="Chat con el asistente de la agencia">
+        <div class="chat-h"><div class="av">IA</div><div><b>Nico · Agencia IA</b><small id="status">en línea</small></div><span class="mode" id="mode">Guionado</span></div>
+        <div class="log" id="log" aria-live="polite"></div>
+        <form id="form"><input id="msg" type="text" placeholder="Escribí tu consulta" autocomplete="off" aria-label="Mensaje"><button id="send" type="submit" aria-label="Enviar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button></form>
+      </div>
+      <p class="hint" id="hint">Nico es un asistente con IA. Tus datos se usan solo para coordinar la reunión.</p>
+    </div>
+  </div>
+</div>
+
+<section id="resolvemos"><div class="wrap">
+  <div class="sh"><span class="kick">Qué resolvemos</span><h2>Los problemas que más plata le cuestan a un negocio local</h2></div>
+  <div class="grid">
+    <div class="card"><h3>Mensajes sin responder</h3><p>Preguntan a las 22 h, nadie contesta hasta la mañana y ya sacaron turno en otro lado.</p></div>
+    <div class="card"><h3>Turnos que se caen</h3><p>El paciente no avisa y el sillón queda vacío. Un recordatorio con botones lo evita.</p></div>
+    <div class="card"><h3>Presupuestos que se enfrían</h3><p>Se manda el presupuesto y nadie vuelve a escribir. El agente hace el seguimiento a los 2 y a los 7 días.</p></div>
+    <div class="card"><h3>Clientes que no vuelven</h3><p>Pasan meses sin control ni visita. El agente los invita a volver en el momento justo.</p></div>
+  </div>
+</div></section>
+
+<section id="precios"><div class="wrap">
+  <div class="sh"><span class="kick">Precios</span><h2>Un pago para armarlo y un mantenimiento mensual</h2><p>En dólares. El mantenimiento incluye servidor, costo de IA, ajustes, reporte mensual y soporte.</p></div>
+  <div class="grid">
+    <div class="card"><h3>Landing</h3><div class="price">US$ 300</div><div class="per">sin mantenimiento</div><p>Tu local digital con botón directo a WhatsApp.</p></div>
+    <div class="card"><h3>Landing + turnero</h3><div class="price">US$ 400</div><div class="per">sin mantenimiento</div><p>La landing con turnos online incorporados.</p></div>
+    <div class="card main"><h3>Agente con automatizaciones</h3><div class="price">US$ 1.000–3.000</div><div class="per">+ US$ 200 por mes</div><p>Atiende por WhatsApp, agenda, recuerda y hace seguimientos.</p></div>
+    <div class="card"><h3>Gastronomía · MORFA</h3><div class="price">US$ 20 <small>/mes</small></div><div class="per">carta, pedidos y reservas</div><p>Nuestra solución para locales gastronómicos.</p></div>
+  </div>
+</div></section>
+
+<section id="como"><div class="wrap">
+  <div class="sh"><span class="kick">Cómo trabajamos</span><h2>De la primera charla al agente funcionando</h2></div>
+  <div class="steps">
+    <div class="card"><b>PASO 1</b><h3>Diagnóstico de 20 minutos</h3><p>Por videollamada. Nos contás cómo atendés hoy y dónde se pierden clientes.</p></div>
+    <div class="card"><b>PASO 2</b><h3>Demo con tus datos</h3><p>En 24 horas te mandamos tu agente armado para que lo pruebes.</p></div>
+    <div class="card"><b>PASO 3</b><h3>Implementación</h3><p>Lo conectamos a tu WhatsApp y lo probamos con tu equipo, en 7 a 14 días.</p></div>
+    <div class="card"><b>PASO 4</b><h3>Acompañamiento</h3><p>Reporte mensual, ajustes y soporte. Si algo cambia, el agente se actualiza.</p></div>
+  </div>
+</div></section>
+
+<section id="crmSec" hidden><div class="wrap">
+  <div class="crm">
+    <div class="crm-top"><div><span class="kick">Solo lo ves vos</span><h2 style="margin-top:6px">CRM de la agencia</h2></div><span class="pill" id="crmCount">0 contactos</span></div>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:14px">Cada persona que agenda con Nico aparece acá al instante, con su origen y su etapa. Probalo: agendá desde el celular y mirá cómo entra en esta pantalla.</p>
+    <div class="board" id="board"></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">Agencia IA · Posadas, Misiones. Los asistentes avisan siempre que son una IA y ofrecen hablar con una persona.</div></footer>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const now = () => { const d = new Date(); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+const log = $("#log");
+const scroll = () => { log.scrollTop = log.scrollHeight; };
+
+/* ---------- horarios de reunión ---------- */
+const DAYN = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const TIMES = ["10:00", "11:30", "15:00", "17:30"];
+let busy = new Set();
+function slots() {
+  const out = [], d = new Date(); d.setHours(0, 0, 0, 0);
+  for (let k = 1; out.length < 12 && k < 20; k++) {
+    const x = new Date(d.getTime() + k * 864e5); if (x.getDay() === 0 || x.getDay() === 6) continue;
+    const ymd = x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0");
+    TIMES.forEach(t => { const id = ymd + "_" + t.replace(":", ""); if (!busy.has(id)) out.push({ id, label: DAYN[x.getDay()].replace(/^./, c => c.toUpperCase()) + " " + x.getDate() + " · " + t + " h" }); });
+  }
+  return out.slice(0, 8);
+}
+const slotLabel = id => { const s = slots().find(x => x.id === id); if (s) return s.label; const [ymd, hm] = id.split("_"); const x = new Date(ymd + "T00:00:00"); return DAYN[x.getDay()] + " " + x.getDate() + " · " + hm.slice(0, 2) + ":" + hm.slice(2) + " h"; };
+
+/* ---------- datos compartidos (agenda y CRM) ---------- */
+let db = null, me = null, isOwner = false;
+const STAGES = ["Nuevo", "Reunión agendada", "Demo enviada", "Cliente"];
+async function book(info) {
+  const slot = String(info.slot_id || "");
+  if (!/^\d{4}-\d{2}-\d{2}_\d{4}$/.test(slot)) throw new Error("Horario inválido: usá un id de ver_horarios.");
+  if (busy.has(slot)) throw new Error("Ese horario ya se ocupó. Ofrecé otro.");
+  const lead = {
+    nombre: String(info.nombre || "").slice(0, 80), negocio: String(info.negocio || "").slice(0, 80), rubro: String(info.rubro || "").slice(0, 40),
+    whatsapp: String(info.whatsapp || "").slice(0, 30), problema: String(info.problema || "").slice(0, 300),
+    etapa: "Reunión agendada", origen: "Landing · agente Nico", reunion: slot, reunionTexto: slotLabel(slot), actualizado: new Date().toISOString()
+  };
+  if (!lead.nombre || !lead.whatsapp) throw new Error("Faltan el nombre y el WhatsApp. Pedíselos antes de agendar.");
+  busy.add(slot);
+  if (db) {
+    try {
+      await db.doc("agenda/" + slot).set({ ocupado: true });
+      const id = isOwner ? "demo-" + Date.now().toString(36) : me;
+      if (id) await db.doc("leads/" + id).set(Object.assign({ creado: lead.actualizado }, lead));
+    } catch (e) { /* sin permiso de escritura: la reunión queda solo en esta vista */ }
+  }
+  renderBooked(lead);
+  return { ok: true, confirmacion: lead.reunionTexto, nota: "Guardado en el CRM de la agencia." };
+}
+function renderBooked(l) {
+  const c = document.createElement("div"); c.className = "ok";
+  c.innerHTML = "<b>Reunión agendada</b>" + esc(l.reunionTexto) + "<br>" + esc(l.nombre) + (l.negocio ? " · " + esc(l.negocio) : "") + "<br><span style=\"color:var(--wa-meta)\">Te llega el link de la videollamada por WhatsApp.</span>";
+  log.appendChild(c); scroll();
+}
+
+/* ---------- mensajes ---------- */
+function bubble(cls, text) { const b = document.createElement("div"); b.className = "b " + cls; b.textContent = text; const t = document.createElement("span"); t.className = "t"; t.textContent = now(); b.appendChild(t); log.appendChild(b); scroll(); return b; }
+function setText(b, text) { b.firstChild.nodeValue = text; scroll(); }
+function quick(opts) { const q = document.createElement("div"); q.className = "qr"; opts.forEach(o => { const btn = document.createElement("button"); btn.type = "button"; btn.textContent = o; q.appendChild(btn); }); log.appendChild(q); scroll(); }
+log.addEventListener("click", e => { const b = e.target.closest(".qr button"); if (b) send(b.textContent); });
+const clearQuick = () => log.querySelectorAll(".qr").forEach(q => q.remove());
+
+/* ---------- agente con Claude ---------- */
+const RULES = `Sos Nico, el asistente con IA de "Agencia IA", una agencia de Posadas (Misiones, Argentina) que arma agentes de IA para negocios locales. Hablás en español rioplatense, cálido y directo. Respuestas cortas: 1 a 4 frases, sin listas largas ni markdown.
+
+Tu objetivo: entender el negocio de la persona y agendar una reunión de diagnóstico gratis de 20 minutos por videollamada.
+
+Qué hace la agencia:
+- Agentes que atienden por WhatsApp 24/7, dan turnos, mandan recordatorios, hacen seguimiento de presupuestos y reactivan clientes.
+- Precios en dólares: Landing US$300. Landing + turnero US$400. Agente con automatizaciones US$1.000 a 3.000 según alcance, más US$200 por mes de mantenimiento (servidor, costo de IA, ajustes, reporte y soporte). Para gastronomía: MORFA, US$20 por mes (carta, pedidos y reservas).
+- Nichos principales: odontología, estética, kinesiología y veterinarias. Gastronomía va con MORFA.
+- Proceso: diagnóstico de 20 minutos, demo con sus datos en 24 horas, implementación en 7 a 14 días, acompañamiento mensual.
+
+Reglas:
+- Si te preguntan, decí que sos una IA; si piden una persona, decí que el equipo le escribe por WhatsApp.
+- No inventes datos, casos ni resultados. Si no sabés algo, decí que lo ven en la reunión.
+- Para agendar necesitás: nombre, negocio y rubro, WhatsApp y el problema principal. Pedí lo que falte de a poco, sin formulario.
+- Usá la herramienta ver_horarios para ofrecer 3 opciones y agendar_reunion solo cuando la persona eligió un horario y tenés nombre y WhatsApp.
+- Después de agendar, confirmá el día y la hora en una frase.`;
+const turns = [];
+let sample = null, liveOK = false, busyChat = false, ctl = null;
+const tools = [
+  { name: "ver_horarios", description: "Devuelve los próximos horarios libres para la reunión de diagnóstico, como lista de {id, label}. Usalo antes de ofrecer horarios.", execute: () => { toolNote("Consultando la agenda"); return slots(); } },
+  { name: "agendar_reunion", description: "Agenda la reunión de diagnóstico en un horario libre y guarda el contacto en el CRM. Devuelve la confirmación o un error si el horario se ocupó.",
+    inputSchema: { type: "object", properties: { slot_id: { type: "string", description: "id devuelto por ver_horarios" }, nombre: { type: "string" }, negocio: { type: "string" }, rubro: { type: "string" }, whatsapp: { type: "string" }, problema: { type: "string" } }, required: ["slot_id", "nombre", "whatsapp"] },
+    execute: input => { toolNote("Agendando y guardando en el CRM"); return book(input); } }
+];
+function toolNote(t) { const n = document.createElement("div"); n.className = "tool"; n.textContent = t + "…"; log.appendChild(n); scroll(); }
+async function askClaude(text) {
+  turns.push({ role: "user", content: text });
+  while (turns.length > 16) turns.shift();
+  const b = bubble("in think", "Escribiendo…"); $("#status").textContent = "escribiendo…";
+  ctl = new AbortController();
+  try {
+    const r = await sample([{ role: "user", content: RULES + "\n\nHoy es " + new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" }) + "." }, ...turns], {
+      tools, modelTier: "quick", signal: ctl.signal,
+      onText: ({ text }) => { b.classList.remove("think"); setText(b, text); }
+    });
+    b.classList.remove("think"); setText(b, r.text.trim());
+    turns.push({ role: "assistant", content: r.text });
+  } catch (e) {
+    turns.pop();
+    if (["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed", "tools_unavailable"].includes(e.code)) {
+      b.remove(); liveOK = false; setMode(); return scripted(text);
+    }
+    b.classList.remove("think");
+    setText(b, e.text || (e.code === "rate_limited" ? "Estoy con muchas consultas. Probá de nuevo en un minuto." : "Se cortó la conexión. ¿Me lo repetís?"));
+  } finally { $("#status").textContent = "en línea"; }
+}
+
+/* ---------- modo guionado (sin Claude) ---------- */
+const S = { step: null, data: {} };
+function scripted(text) {
+  const t = text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "") + " ";
+  const say = (m, q) => setTimeout(() => { bubble("in", m); if (q) quick(q); }, 450);
+  if (S.step === "nombre") { S.data.nombre = text; S.step = "negocio"; return say("Gracias, " + text.split(" ")[0] + ". ¿Cómo se llama tu negocio y de qué rubro es?"); }
+  if (S.step === "negocio") { S.data.negocio = text; S.step = "problema"; return say("¿Qué es lo que más te complica hoy con la atención?", ["Mensajes sin responder", "Turnos que se caen", "Presupuestos sin seguimiento"]); }
+  if (S.step === "problema") { S.data.problema = text; S.step = "whatsapp"; return say("¿A qué WhatsApp te mandamos el link de la reunión?"); }
+  if (S.step === "whatsapp") { S.data.whatsapp = text; S.step = "slot"; const o = slots().slice(0, 3); S.opts = o; return say("Perfecto. Tengo estos horarios para la reunión de 20 minutos:", o.map(x => x.label)); }
+  if (S.step === "slot") { const s = (S.opts || []).find(x => x.label === text) || (S.opts || [])[0]; S.step = null; return setTimeout(() => book(Object.assign({ slot_id: s.id }, S.data)).then(() => bubble("in", "Listo. Te escribimos por WhatsApp con el link. ¡Nos vemos!")).catch(err => bubble("in", err.message)), 450); }
+  if (/(agend|reunion|diagnost|turno|demo)/.test(t)) { S.step = "nombre"; return say("¡Dale! Son 20 minutos por videollamada y no tiene costo. ¿Cómo te llamás?"); }
+  if (/(precio|cuanto|sale|cuesta|valor)/.test(t)) return say("Landing US$300, landing con turnero US$400 y el agente con automatizaciones de US$1.000 a 3.000 más US$200 por mes. Para gastronomía tenemos MORFA a US$20 por mes. ¿Querés que veamos cuál te sirve en una reunión corta?", ["Agendar diagnóstico"]);
+  if (/(que hacen|como funciona|servicio|agente)/.test(t)) return say("Armamos asistentes con IA que responden por WhatsApp las 24 horas, dan turnos, mandan recordatorios y hacen seguimiento. Como yo, pero con los datos de tu negocio.", ["Precios", "Agendar diagnóstico"]);
+  if (/(gastro|resto|restaurant|comida|parrilla|bar )/.test(t)) return say("Para gastronomía tenemos MORFA: carta, pedidos y reservas por WhatsApp, a US$20 por mes.", ["Agendar diagnóstico"]);
+  if (/(persona|humano)/.test(t)) return say("Claro. Dejame tu nombre y WhatsApp y alguien del equipo te escribe hoy.", ["Agendar diagnóstico"]);
+  return say("Te respondo lo básico por acá; lo específico lo vemos en una reunión de 20 minutos. ¿Qué querés saber?", ["¿Qué hacen?", "Precios", "Agendar diagnóstico"]);
+}
+
+/* ---------- envío ---------- */
+async function send(text) {
+  text = String(text || "").trim(); if (!text || busyChat) return;
+  clearQuick(); bubble("out", text); $("#msg").value = "";
+  if (liveOK && !S.step) { busyChat = true; $("#send").disabled = true; await askClaude(text); busyChat = false; $("#send").disabled = false; }
+  else scripted(text);
+}
+$("#form").addEventListener("submit", e => { e.preventDefault(); send($("#msg").value); });
+$("#ctaMeet").addEventListener("click", () => { $("#msg").focus(); send("Quiero agendar un diagnóstico"); });
+function setMode() { const m = $("#mode"); m.textContent = liveOK ? "IA en vivo" : "Guionado"; m.classList.toggle("live", liveOK); }
+
+bubble("in", "¡Hola! Soy Nico, el asistente con IA de Agencia IA. Te cuento cómo un agente puede atender tu negocio, te paso precios o te agendo un diagnóstico gratis de 20 minutos. ¿Qué necesitás?");
+quick(["¿Qué hacen?", "Precios", "Agendar diagnóstico"]);
+
+/* ---------- capacidades ---------- */
+(async () => {
+  if (!window.claude || !claude.use) return;
+  const [s, d, u] = await Promise.all([claude.use("sample"), claude.use("db"), claude.use("user")]);
+  if (s) {
+    const lim = await s.limits().catch(() => null);
+    if (lim && lim.tools) { sample = s; liveOK = true; setMode(); $("#hint").textContent = "Nico responde con Claude en vivo; la primera vez te pide permiso. Tus datos se usan solo para coordinar la reunión."; }
+  }
+  if (u) { me = await u.id(); isOwner = await u.isOwner(); }
+  if (d) {
+    db = d;
+    db.collection("agenda").onSnapshot(snap => { busy = new Set(snap.docs.filter(x => x.exists && x.data().ocupado).map(x => x.id)); }, () => {});
+    if (isOwner || (u && await u.canEdit())) startCRM();
+  }
+})();
+
+/* ---------- CRM (solo dueño y editores) ---------- */
+let leads = [];
+function startCRM() {
+  $("#crmSec").hidden = false;
+  db.collection("leads").onSnapshot(snap => { leads = snap.docs.filter(x => x.exists).map(x => Object.assign({ id: x.id }, x.data())); drawCRM(); }, () => { $("#board").innerHTML = '<p class="empty">No se pudo leer el CRM en esta vista.</p>'; });
+  drawCRM();
+}
+function drawCRM() {
+  $("#crmCount").textContent = leads.length + (leads.length === 1 ? " contacto" : " contactos");
+  $("#board").innerHTML = STAGES.map((st, i) => {
+    const items = leads.filter(l => (l.etapa || "Nuevo") === st).sort((a, b) => String(b.actualizado).localeCompare(String(a.actualizado)));
+    return '<div class="col"><h4>' + st + "<span>" + items.length + "</span></h4>" + (items.length ? items.map(l => '<div class="lcard"><b>' + esc(l.nombre) + '</b><span class="m">' + esc([l.negocio, l.rubro].filter(Boolean).join(" · ")) + '</span>' + (l.problema ? '<span class="m">“' + esc(l.problema) + "”</span>" : "") + '<span class="m">WhatsApp: ' + esc(l.whatsapp) + (l.reunionTexto ? " · " + esc(l.reunionTexto) : "") + '</span><span class="src">' + esc(l.origen || "") + '</span><div class="act">' + (i > 0 ? '<button type="button" data-mv="' + esc(l.id) + '" data-to="' + (i - 1) + '">←</button>' : "") + (i < STAGES.length - 1 ? '<button type="button" data-mv="' + esc(l.id) + '" data-to="' + (i + 1) + '">Pasar a ' + STAGES[i + 1] + "</button>" : "") + "</div></div>").join("") : '<p class="empty">' + (i === 1 ? "Agendá una reunión con Nico y aparece acá." : "Vacío") + "</p>") + "</div>";
+  }).join("");
+}
+$("#board").addEventListener("click", async e => {
+  const b = e.target.closest("[data-mv]"); if (!b || !db) return;
+  b.disabled = true;
+  try { await db.doc("leads/" + b.dataset.mv).update({ etapa: STAGES[+b.dataset.to], actualizado: new Date().toISOString() }); } catch (err) { b.disabled = false; }
+});
+</script>

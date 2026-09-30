@@ -39,6 +39,15 @@
       "rango": null,
       "mantenimiento_usd_mes": 200,
       "horas_armado": 25
+    },
+    {
+      "id": "M",
+      "nombre": "MORFA",
+      "descripcion": "Suscripción para locales gastronómicos: carta, pedidos y reservas por WhatsApp. Se lanza una vez validada con los primeros locales.",
+      "implementacion_usd": 0,
+      "rango": null,
+      "mantenimiento_usd_mes": 20,
+      "horas_armado": 2
     }
   ],
   "oferta_por_defecto": "A",
