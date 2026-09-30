@@ -1,0 +1,82 @@
+{
+  "nota": "Precios de herramientas consultados el 30/09/2026 en fuentes públicas (campo fuente_url). Lo que dice 'estimación propia' no fue verificado. Moneda base: USD. Una misma cuenta o herramienta atiende a todos los clientes: los costos fijos no crecen con cada cliente; lo que crece es el uso (mensajes y tokens).",
+  "fecha_consulta": "2026-09-30",
+  "tipo_cambio_ars_por_usd": { "valor": 1500, "nota": "Estimación propia: cargar la cotización del día." },
+  "aviso_inflacion": "La inflación es un riesgo: los precios fijados en pesos pierden valor frente a costos en dólares (API, herramientas). Conviene cobrar en dólares o actualizar mensualmente.",
+  "costos_fijos_mensuales_usd": [
+    { "seccion": "Tráfico", "lineas": [
+      { "nombre": "Pauta publicitaria (Meta, Google, TikTok)", "mensual": 150, "cubre": "Decisión propia; se ajusta según resultados", "fuente_url": null, "fuente_texto": "estimación propia", "verificado": "no" },
+      { "nombre": "Google Places API (prospección)", "mensual": 20, "cubre": "Los 50 prospectos por día", "fuente_url": "https://developers.google.com/maps/documentation/places/web-service/usage-and-billing", "fuente_texto": "Google: hay cupo gratis mensual por tipo de consulta; el costo depende de los campos pedidos", "verificado": "parcial" }
+    ]},
+    { "seccion": "Presencia digital", "lineas": [
+      { "nombre": "Videos con clones (MITO, a probar)", "mensual": 30, "cubre": "Todo el contenido de la agencia", "fuente_url": null, "fuente_texto": "estimación propia: falta ver el plan de MITO", "verificado": "no" },
+      { "nombre": "Dominio y correo", "mensual": 5, "cubre": "Agencia y landings", "fuente_url": null, "fuente_texto": "estimación propia", "verificado": "no" }
+    ]},
+    { "seccion": "Embudo / landings", "lineas": [
+      { "nombre": "Lovable Pro (landings)", "mensual": 25, "cubre": "Todas las landings que armemos", "fuente_url": "https://www.lovable.club/lovable-pricing", "fuente_texto": "Pro: US$ 25/mes con 100 créditos y dominio propio (fuente de terceros)", "verificado": "sí" },
+      { "nombre": "CRM (HubSpot gratis para empezar)", "mensual": 0, "cubre": "Todos los leads", "fuente_url": "https://www.apexure.com/blog/hubspot-vs-pipedrive", "fuente_texto": "Plan gratuito; el pago arranca en unos US$ 15-20 por usuario", "verificado": "sí" }
+    ]},
+    { "seccion": "Empleados IA / infraestructura", "lineas": [
+      { "nombre": "Fathom Premium (reuniones grabadas)", "mensual": 20, "cubre": "Todas las reuniones", "fuente_url": "https://www.fathom.ai/pricing", "fuente_texto": "Premium US$ 20/mes (US$ 16 anual); el plan gratis limita los resúmenes con IA a 5 por mes", "verificado": "sí" },
+      { "nombre": "Servidor para los agentes (un solo backend para todos los clientes)", "mensual": 10, "cubre": "Todos los clientes", "fuente_url": "https://devtoolpicks.com/blog/vercel-vs-hetzner-2026-solo-developers", "fuente_texto": "Referencia: VPS desde unos € 4-7/mes; Railway desde US$ 5", "verificado": "parcial" },
+      { "nombre": "Monitoreo y copias de seguridad", "mensual": 10, "cubre": "Todos los clientes", "fuente_url": null, "fuente_texto": "estimación propia", "verificado": "no" }
+    ]},
+    { "seccion": "Producto", "lineas": [
+      { "nombre": "Claude Max 5x (para construir con Claude Code)", "mensual": 100, "cubre": "Todo el desarrollo y los ajustes de prompts", "fuente_url": "https://claude.com/pricing", "fuente_texto": "Max desde US$ 100/mes; Pro US$ 20 incluye Claude Code con menos uso", "verificado": "sí" }
+    ]},
+    { "seccion": "Legal-contable", "lineas": [
+      { "nombre": "Contador", "mensual": 60, "cubre": "Agencia", "fuente_url": null, "fuente_texto": "estimación propia: pedir presupuesto", "verificado": "no" },
+      { "nombre": "Abogado (contratos y consultas, prorrateado)", "mensual": 50, "cubre": "Agencia", "fuente_url": null, "fuente_texto": "estimación propia: pedir presupuesto", "verificado": "no" },
+      { "nombre": "Monotributo o sociedad", "mensual": 30, "cubre": "Agencia", "fuente_url": null, "fuente_texto": "estimación propia: consultar con el contador", "verificado": "no" }
+    ]}
+  ],
+  "inversion_inicial_usd": [
+    { "nombre": "Contratos y encuadre societario/fiscal", "monto": 400 },
+    { "nombre": "Diseño inicial de marca y landing", "monto": 150 },
+    { "nombre": "Puesta a punto de herramientas y dominio", "monto": 50 }
+  ],
+  "costos_variables_por_cliente": {
+    "mensajes_agente_por_mes": 800,
+    "tokens_entrada_por_respuesta": 3000,
+    "tokens_salida_por_respuesta": 150,
+    "modelo": "Claude Haiku 4.5",
+    "precio_entrada_usd_por_millon": 1,
+    "precio_salida_usd_por_millon": 5,
+    "fuente_ia": "https://claude.com/pricing",
+    "whatsapp_ars_por_mensaje": 37.68,
+    "fuente_whatsapp": "https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing/non-template-messages",
+    "nota_whatsapp": "Desde el 1/10/2026 Meta cobra por mensaje las respuestas de servicio, a la tarifa de utilidad de cada país (Argentina: unos ARS 37,68 por mensaje según fuentes de terceros). Algunas fuentes hablan de 1.000 mensajes gratis por número; la página oficial no lo menciona, así que no lo descontamos. Un proveedor intermediario suma su propio margen.",
+    "hosting_por_cliente_usd": 1,
+    "horas_soporte_por_mes": 2,
+    "valor_hora_usd": 10
+  },
+  "comision_closer": { "porcentaje": 9, "rango": "8-10% solo sobre ventas cerradas", "meses_de_mantenimiento_comisionables": 1 },
+  "embudo": {
+    "dias_habiles_por_mes": 22,
+    "rampa_actividad_mes": [0.5, 0.8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    "capacidad_onboarding_clientes_por_mes": 8,
+    "bajas_mensuales": 0.05,
+    "escenarios": {
+      "conservador": { "contactos_por_dia": 20, "tasa_respuesta": 0.08, "tasa_reunion": 0.25, "tasa_demo": 0.7, "tasa_cierre": 0.15 },
+      "base": { "contactos_por_dia": 35, "tasa_respuesta": 0.12, "tasa_reunion": 0.35, "tasa_demo": 0.8, "tasa_cierre": 0.25 },
+      "optimista": { "contactos_por_dia": 50, "tasa_respuesta": 0.18, "tasa_reunion": 0.45, "tasa_demo": 0.9, "tasa_cierre": 0.35 }
+    }
+  },
+  "formulas": {
+    "contactos_mes": "contactos por día × días hábiles × rampa del mes",
+    "cierres_mes": "el menor entre (contactos × respuestas × reuniones × demos × cierres) y la capacidad de onboarding",
+    "clientes_que_pagan_mensualidad": "los del mes anterior que siguen (descontando bajas) + los cerrados el mes anterior",
+    "ingresos_mes": "cierres × precio de implementación + clientes que pagan × mantenimiento",
+    "costo_variable_por_cliente": "IA (mensajes × tokens × precio) + WhatsApp (mensajes × tarifa) + hosting + horas de soporte × valor hora",
+    "costos_mes": "costos fijos + costo variable × clientes que pagan + armado por cierre + comisión por cierre",
+    "costo_de_armado": "horas de armado × valor hora",
+    "comision_por_cierre": "% de comisión × (implementación + meses comisionables × mantenimiento)",
+    "flujo_de_caja": "ingresos − costos (el mes 0 es la inversión inicial)",
+    "CAC": "(costos de Tráfico + Presencia digital + Embudo + comisiones de 90 días) ÷ clientes cerrados en 90 días",
+    "margen_por_cliente_mes": "mantenimiento − costo variable por cliente",
+    "LTV": "margen por cliente ÷ bajas mensuales + (implementación − costo de armado)",
+    "punto_de_equilibrio": "costos fijos mensuales ÷ margen por cliente mensual",
+    "recupero": "primer mes en que el flujo acumulado (con la inversión inicial) llega a cero o más",
+    "ROI": "(ingresos − costos − inversión inicial) ÷ (costos + inversión inicial)"
+  }
+}

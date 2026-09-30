@@ -1,0 +1,430 @@
+{
+  "inicio": "2026-10-05",
+  "nota": "Fechas editables. Metas [HIPÓTESIS A VALIDAR]. Generado desde prompts/05-marketing-90-dias.md",
+  "filas": [
+    {
+      "semana": 1,
+      "canal": "Landing/CRM/embudo",
+      "accion": "Armar landing por nicho (odontología y estética) con formulario y WhatsApp, más CRM con etapas del embudo y seguimiento de origen (UTM). Herramienta a elegir [verificar].",
+      "metrica": "Landing publicada y CRM registrando 100% de leads con origen. Objetivo: conversión visita a lead 3% [HIPÓTESIS A VALIDAR]",
+      "responsable": "Ingeniero",
+      "fecha": "2026-10-05"
+    },
+    {
+      "semana": 1,
+      "canal": "Prospección activa",
+      "accion": "Configurar extracción con Google Places API oficial (odontología y estética de Posadas), sin datos personales innecesarios. Redactar primer mensaje con opt-out claro y lista de exclusión.",
+      "metrica": "Base de 200 negocios cargada y mensaje aprobado. Objetivo: 50 contactos/día máx. con 0 reclamos [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-10-06"
+    },
+    {
+      "semana": 1,
+      "canal": "Ventas",
+      "accion": "Definir guion de demo de 20 min con caso de agente de turnos por WhatsApp, oferta piloto y esquema de comisión del closer (8-10%). Configurar Fathom para grabar reuniones [verificar].",
+      "metrica": "Guion y oferta listos; Fathom probado en 1 reunión de prueba. Objetivo: 100% de reuniones registradas [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-10-07"
+    },
+    {
+      "semana": 1,
+      "canal": "Instagram",
+      "accion": "Optimizar perfil (bio, destacadas, link) y publicar 3 posts de posicionamiento: qué hacemos con IA para clínicas y estética de Posadas. Registrar en planilla de testeo: hipótesis, variante, métrica.",
+      "metrica": "3 posts publicados y planilla de testeo creada; línea base de alcance y guardados registrada (sin meta de crecimiento aún)",
+      "responsable": "Fundador",
+      "fecha": "2026-10-08"
+    },
+    {
+      "semana": 1,
+      "canal": "Video clones",
+      "accion": "Probar MITO con un clon propio del fundador (con su consentimiento): 1 video de prueba de 30 s; anotar calidad de voz, labial y límites. Todo video lleva aviso 'generado con IA'.",
+      "metrica": "Ficha de prueba MITO completa [verificar capacidades]; decisión seguir/cambiar herramienta al cierre de semana",
+      "responsable": "Ingeniero",
+      "fecha": "2026-10-09"
+    },
+    {
+      "semana": 2,
+      "canal": "Prospección activa",
+      "accion": "Arrancar primer contacto diario en Posadas (odontología primero) con opt-out claro; registrar respuestas, bajas y reuniones en el CRM.",
+      "metrica": "Objetivo: tasa de respuesta 8% y 10 reuniones agendadas en la semana [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-10-12"
+    },
+    {
+      "semana": 2,
+      "canal": "Google Ads/Google Business Profile",
+      "accion": "Crear y verificar ficha de Google Business Profile de la agencia, cargar servicios y fotos, y pedir 3 reseñas a contactos cercanos. Preparar campaña de búsqueda local pausada.",
+      "metrica": "Ficha verificada con 3 reseñas. Objetivo: 5 llamadas o clics a WhatsApp desde la ficha en 30 días [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-10-13"
+    },
+    {
+      "semana": 2,
+      "canal": "Testeo y métricas",
+      "accion": "Revisión quincenal 1 de qué funciona y por qué: comparar mensajes, horarios y nicho por respuesta y reunión. Definir 2 experimentos para las semanas 3-4.",
+      "metrica": "Documento de revisión con decisiones. Objetivo: 2 experimentos definidos con hipótesis y métrica [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-10-14"
+    },
+    {
+      "semana": 2,
+      "canal": "Instagram",
+      "accion": "Serie 'Errores que pierden turnos': 3 reels sobre respuestas tardías en WhatsApp en consultorios odontológicos. Hipótesis: el dolor concreto genera más guardados que el mensaje de marca.",
+      "metrica": "Guardados+compartidos por reel: 1,5% del alcance como objetivo [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-10-15"
+    },
+    {
+      "semana": 2,
+      "canal": "TikTok",
+      "accion": "Reutilizar los 3 reels en TikTok con otro gancho de apertura (variante A/B del primer segundo). Documentar cuál retiene más.",
+      "metrica": "Retención a 3 s: comparar A vs B; objetivo 40% [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-10-16"
+    },
+    {
+      "semana": 3,
+      "canal": "Meta Ads",
+      "accion": "Lanzar campaña de generación de leads en Posadas con 2 creativos por nicho, presupuesto bajo definido por el fundador, destino landing y WhatsApp. Pixel/eventos instalados [verificar].",
+      "metrica": "Objetivo: costo por lead por debajo de USD 5 y 15 leads en 7 días [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-10-19"
+    },
+    {
+      "semana": 3,
+      "canal": "Ventas",
+      "accion": "Hacer las primeras demos con Fathom y cerrar 1-2 pilotos en Posadas. El closer sigue cada lead en el CRM con próximo paso fechado.",
+      "metrica": "Objetivo: 8 demos realizadas y 2 pilotos firmados [HIPÓTESIS A VALIDAR]",
+      "responsable": "Closer",
+      "fecha": "2026-10-20"
+    },
+    {
+      "semana": 3,
+      "canal": "Landing/CRM/embudo",
+      "accion": "Test A/B del titular de la landing (ahorro de tiempo vs turnos perdidos) y ajuste del formulario a 3 campos.",
+      "metrica": "Objetivo: mejora de conversión de 20% sobre la variante base con 100+ visitas por variante [HIPÓTESIS A VALIDAR]",
+      "responsable": "Ingeniero",
+      "fecha": "2026-10-21"
+    },
+    {
+      "semana": 3,
+      "canal": "Anuncios Claude Design",
+      "accion": "Diseñar 4 piezas estáticas (2 odontología, 2 estética) con Claude Design [verificar formatos de exportación], usando marca propia y sin fotos de personas reales sin consentimiento.",
+      "metrica": "4 piezas aprobadas y listas para orgánico; objetivo 1,5% de guardados en carrusel [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-10-22"
+    },
+    {
+      "semana": 3,
+      "canal": "Instagram",
+      "accion": "Publicar carrusel 'Cómo sería tu consultorio con un asistente de turnos con IA' (odontología) y un reel espejo para estética. Pedir en el cierre comentar una palabra clave para recibir info.",
+      "metrica": "Comentarios con palabra clave: 10 por pieza [HIPÓTESIS A VALIDAR]; derivar leads al agente de ventas",
+      "responsable": "Fundador",
+      "fecha": "2026-10-23"
+    },
+    {
+      "semana": 4,
+      "canal": "Testeo y métricas",
+      "accion": "Revisión quincenal 2 y cierre de etapa Posadas: consolidar embudo (contacto, respuesta, demo, piloto, cierre) por canal y nicho. Decidir si gastronomía entra a test.",
+      "metrica": "Hito Posadas: objetivo 3 clientes de pago y 1 caso documentado [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-10-26"
+    },
+    {
+      "semana": 4,
+      "canal": "Ventas",
+      "accion": "Convertir pilotos de Posadas en clientes de pago y pedir testimonio y permiso de caso de estudio. Anotar objeciones frecuentes de las grabaciones de Fathom.",
+      "metrica": "Objetivo: 50% de pilotos convertidos a pago y 2 testimonios [HIPÓTESIS A VALIDAR]",
+      "responsable": "Closer",
+      "fecha": "2026-10-27"
+    },
+    {
+      "semana": 4,
+      "canal": "Google Ads/Google Business Profile",
+      "accion": "Activar campaña de búsqueda local en Posadas con palabras clave de bots de WhatsApp y automatización, con negativas. Revisar términos de búsqueda cada 3 días.",
+      "metrica": "Objetivo: costo por lead comparable al de Meta y 10 leads en 14 días [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-10-28"
+    },
+    {
+      "semana": 4,
+      "canal": "Video clones",
+      "accion": "Producir 2 videos explicativos con clon (MITO si la prueba salió bien [verificar]) sobre automatización de turnos. Incluir leyenda visible 'Video generado con IA'.",
+      "metrica": "Retención media 35% [HIPÓTESIS A VALIDAR]; comparar contra video real del fundador de igual tema",
+      "responsable": "Ingeniero",
+      "fecha": "2026-10-29"
+    },
+    {
+      "semana": 4,
+      "canal": "Instagram",
+      "accion": "Revisión mensual del ciclo de testeo: ordenar los 10 tests corridos, decidir qué se escala, mata o repite y escribir el aprendizaje de cada uno en la planilla.",
+      "metrica": "100% de tests con decisión y aprendizaje escrito; 3 aprendizajes convertidos en reglas de contenido",
+      "responsable": "Fundador",
+      "fecha": "2026-10-30"
+    },
+    {
+      "semana": 5,
+      "canal": "Prospección activa",
+      "accion": "Extender Places API a ciudades de Misiones (Oberá, Eldorado, Puerto Iguazú) por nicho. Mensaje con opt-out claro y referencia al caso de Posadas.",
+      "metrica": "Base de 300 negocios nuevos. Objetivo: respuesta 8% con 50 contactos/día máx. [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-11-02"
+    },
+    {
+      "semana": 5,
+      "canal": "Meta Ads",
+      "accion": "Duplicar campaña con segmentación a Oberá y Eldorado, usando el testimonio de Posadas como creativo. Pausar el creativo de peor costo por lead.",
+      "metrica": "Objetivo: costo por lead igual o menor que en Posadas [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-11-03"
+    },
+    {
+      "semana": 5,
+      "canal": "Instagram",
+      "accion": "Mostrar caso demo (sin cliente real aún): flujo de chatbot que agenda turnos, grabado en pantalla con datos ficticios. Hipótesis: demo visual convierte mejor que explicación hablada.",
+      "metrica": "Mensajes directos recibidos por demo: 5 [HIPÓTESIS A VALIDAR]",
+      "responsable": "Ingeniero",
+      "fecha": "2026-11-04"
+    },
+    {
+      "semana": 5,
+      "canal": "TikTok",
+      "accion": "Video 'Detrás de escena' de cómo armamos un agente de IA para un consultorio, con voz del fundador. Probar formato de 15 s vs 45 s.",
+      "metrica": "Tasa de finalización: comparar formatos; objetivo 30% en el corto [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-11-05"
+    },
+    {
+      "semana": 6,
+      "canal": "Testeo y métricas",
+      "accion": "Revisión quincenal 3 de qué funciona y por qué: comparar Posadas vs interior por canal, costo por reunión y motivo de pérdida. Ajustar oferta.",
+      "metrica": "Informe con 3 decisiones. Objetivo: costo por reunión menor al de las semanas 1-4 [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-11-09"
+    },
+    {
+      "semana": 6,
+      "canal": "Ventas",
+      "accion": "Demos remotas por videollamada grabadas con Fathom para el interior de Misiones. Enviar propuesta el mismo día y seguimiento a 48 h.",
+      "metrica": "Objetivo: 10 demos y 2 cierres en Misiones interior [HIPÓTESIS A VALIDAR]",
+      "responsable": "Closer",
+      "fecha": "2026-11-10"
+    },
+    {
+      "semana": 6,
+      "canal": "Anuncios Claude Design",
+      "accion": "Crear 3 variantes de anuncio con distinto gancho (ahorro de tiempo, turnos perdidos, atención 24 h) y entregarlas al agente de Ads para pauta. Yo no configuro la campaña.",
+      "metrica": "3 variantes entregadas; CTR comparado entre ganchos, objetivo 1% [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-11-11"
+    },
+    {
+      "semana": 6,
+      "canal": "Instagram",
+      "accion": "Historias con encuesta a dueños de clínicas y centros de estética: 'Cuál es tu mayor dolor con los turnos?'. Usar respuestas como insumo de próximos contenidos.",
+      "metrica": "20 respuestas en historias [HIPÓTESIS A VALIDAR]; 3 temas priorizados",
+      "responsable": "Closer",
+      "fecha": "2026-11-12"
+    },
+    {
+      "semana": 7,
+      "canal": "Landing/CRM/embudo",
+      "accion": "Sumar a la landing casos y reseñas reales, calculadora simple de turnos perdidos y automatización de seguimiento por WhatsApp/email [verificar]. Sin datos inventados.",
+      "metrica": "Objetivo: conversión de lead a reunión 25% [HIPÓTESIS A VALIDAR]",
+      "responsable": "Ingeniero",
+      "fecha": "2026-11-16"
+    },
+    {
+      "semana": 7,
+      "canal": "Google Ads/Google Business Profile",
+      "accion": "Pedir reseñas a clientes activos y publicar novedades en la ficha. Ampliar campaña de búsqueda a ciudades de Misiones con mejor respuesta.",
+      "metrica": "Objetivo: 8 reseñas acumuladas y 15 leads de búsqueda en el período [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-11-17"
+    },
+    {
+      "semana": 7,
+      "canal": "Video clones",
+      "accion": "Serie corta de 3 videos con clon respondiendo preguntas frecuentes: precio, tiempo de implementación, si reemplaza a la secretaria. Aviso de IA en cada uno. Validar guion con el fundador.",
+      "metrica": "Compartidos por video: 1% del alcance [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-11-18"
+    },
+    {
+      "semana": 7,
+      "canal": "Instagram",
+      "accion": "Reel de objeciones: 'Los pacientes no quieren hablar con un bot'. Presentar cómo el agente deriva a una persona. Test de gancho con pregunta vs afirmación.",
+      "metrica": "Retención a 3 s: 45% en la variante ganadora [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-11-19"
+    },
+    {
+      "semana": 8,
+      "canal": "Testeo y métricas",
+      "accion": "Revisión quincenal 4 de qué funciona y por qué: elegir canal principal y nicho ganador, cortar lo que no rinde. Preparar adaptación para Corrientes y Chaco.",
+      "metrica": "Objetivo: 1 canal principal definido y 1 experimento cortado [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-11-23"
+    },
+    {
+      "semana": 8,
+      "canal": "Ventas",
+      "accion": "Entrenar al closer con objeciones reales de las grabaciones de Fathom y armar playbook de cierre con precios y garantía del piloto.",
+      "metrica": "Playbook v1 publicado. Objetivo: cierre demo a pago 25% [HIPÓTESIS A VALIDAR]",
+      "responsable": "Closer",
+      "fecha": "2026-11-24"
+    },
+    {
+      "semana": 8,
+      "canal": "Instagram",
+      "accion": "Publicar primer caso de uso real o piloto (solo con autorización escrita del negocio): qué automatizamos y qué cambió, con datos reales propios del cliente, sin inventar cifras.",
+      "metrica": "Caso publicado con consentimiento; consultas por DM: 5 [HIPÓTESIS A VALIDAR]",
+      "responsable": "Closer",
+      "fecha": "2026-11-25"
+    },
+    {
+      "semana": 8,
+      "canal": "TikTok",
+      "accion": "Probar contenido para gastronomía (condicional): 2 videos de prueba sobre pedidos por WhatsApp. Si no hay señal, se descarta el nicho en la revisión.",
+      "metrica": "Regla de decisión: 500 vistas y 3 consultas por video como umbral [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-11-26"
+    },
+    {
+      "semana": 9,
+      "canal": "Ventas",
+      "accion": "Hito de cierre Misiones: consolidar cartera, medir churn del piloto y pedir referidos a cada cliente. Documentar caso de estudio del interior.",
+      "metrica": "Hito Misiones: objetivo 8 clientes acumulados y 5 referidos recibidos [HIPÓTESIS A VALIDAR]",
+      "responsable": "Closer",
+      "fecha": "2026-11-30"
+    },
+    {
+      "semana": 9,
+      "canal": "Testeo y métricas",
+      "accion": "Armar tablero de unit economics (costo de adquisición, margen, comisión, retención) con datos reales del CRM. Definir presupuesto para Corrientes y Chaco.",
+      "metrica": "Tablero actualizado semanal. Objetivo: recuperar costo de adquisición en menos de 3 meses [HIPÓTESIS A VALIDAR]",
+      "responsable": "Ingeniero",
+      "fecha": "2026-12-01"
+    },
+    {
+      "semana": 9,
+      "canal": "Anuncios Claude Design",
+      "accion": "Rediseñar anuncios ganadores de la semana 6 con nuevo gancho y prueba social del piloto (con permiso). Documentar por qué se cree que mejora.",
+      "metrica": "CTR de la nueva pieza vs ganadora previa: +20% [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-12-02"
+    },
+    {
+      "semana": 9,
+      "canal": "Instagram",
+      "accion": "Reel de 'Antes y después' del proceso de agenda de un consultorio, con esquema visual, no con imágenes de pacientes. Cierre con invitación a diagnóstico gratuito.",
+      "metrica": "Clics al link de bio: 15 [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-12-03"
+    },
+    {
+      "semana": 10,
+      "canal": "Prospección activa",
+      "accion": "Iniciar Places API en Corrientes capital y Resistencia por nicho ganador, con opt-out claro y lista de exclusión compartida. Máximo 50 contactos/día.",
+      "metrica": "Base de 300 negocios. Objetivo: respuesta 7% y 8 reuniones agendadas [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-12-07"
+    },
+    {
+      "semana": 10,
+      "canal": "Meta Ads",
+      "accion": "Lanzar campaña en Corrientes y Chaco con creativos ajustados por localidad y caso de Misiones. Comparar contra la campaña base de Posadas.",
+      "metrica": "Objetivo: costo por lead no mayor a 1,3 veces el de Posadas [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-12-08"
+    },
+    {
+      "semana": 10,
+      "canal": "Video clones",
+      "accion": "Comparar clon vs fundador real: mismo guion, dos videos. Medir si el aviso de IA afecta la confianza según comentarios y guardados.",
+      "metrica": "Diferencia de retención entre ambos: definir umbral de decisión [HIPÓTESIS A VALIDAR]",
+      "responsable": "Ingeniero",
+      "fecha": "2026-12-09"
+    },
+    {
+      "semana": 10,
+      "canal": "Instagram",
+      "accion": "Live o reel en vivo con Q&A sobre automatización para estética: recordatorios de turnos y seguimiento post tratamiento. Guardar preguntas para contenido futuro.",
+      "metrica": "20 espectadores simultáneos o 30 preguntas guardadas [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-12-10"
+    },
+    {
+      "semana": 11,
+      "canal": "Ventas",
+      "accion": "Demos remotas a prospectos de Corrientes y Chaco, con seguimiento a 48 h y propuesta el mismo día. Revisar grabaciones de Fathom semanalmente.",
+      "metrica": "Objetivo: 10 demos y 2 pilotos [HIPÓTESIS A VALIDAR]",
+      "responsable": "Closer",
+      "fecha": "2026-12-14"
+    },
+    {
+      "semana": 11,
+      "canal": "TikTok",
+      "accion": "Serie de 5 tips breves de IA para negocios locales de Posadas. Repetir el formato del video con mejor retención de las semanas 2 y 5.",
+      "metrica": "Vistas medias por video: 1,5x respecto de la línea base [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-12-15"
+    },
+    {
+      "semana": 11,
+      "canal": "Instagram",
+      "accion": "Carrusel 'Checklist: tu consultorio está listo para automatizar?' con CTA de palabra clave por DM. Pasar contactos calificados al closer.",
+      "metrica": "Guardados: 2% del alcance; 10 DMs [HIPÓTESIS A VALIDAR]",
+      "responsable": "Closer",
+      "fecha": "2026-12-16"
+    },
+    {
+      "semana": 12,
+      "canal": "Testeo y métricas",
+      "accion": "Revisión quincenal 5 de qué funciona y por qué: comparar tres provincias y definir presupuesto y canales para el trimestre siguiente.",
+      "metrica": "Objetivo: decisión escrita de presupuesto por canal y provincia [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-12-21"
+    },
+    {
+      "semana": 12,
+      "canal": "Anuncios Claude Design",
+      "accion": "Preparar kit de piezas para cierre de trimestre: 3 anuncios y 5 historias con oferta de diagnóstico. Coordinar fechas y presupuesto con el agente de Ads.",
+      "metrica": "Kit entregado a tiempo; costo por conversación medido por el agente de Ads [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-12-22"
+    },
+    {
+      "semana": 12,
+      "canal": "Video clones",
+      "accion": "Producir 2 videos finales con el clon que mejor rindió, con aviso de IA visible. Descartar formatos con retención por debajo de la línea base.",
+      "metrica": "Retención por encima de la línea base propia [HIPÓTESIS A VALIDAR]",
+      "responsable": "Ingeniero",
+      "fecha": "2026-12-23"
+    },
+    {
+      "semana": 13,
+      "canal": "Testeo y métricas",
+      "accion": "Hito de cierre Corrientes y Chaco y del plan de 90 días: informe final con clientes, retención y costo de adquisición por zona. Plan del siguiente trimestre.",
+      "metrica": "Hito: objetivo 12 clientes totales y 3 en Corrientes/Chaco [HIPÓTESIS A VALIDAR]",
+      "responsable": "Fundador",
+      "fecha": "2026-12-28"
+    },
+    {
+      "semana": 13,
+      "canal": "Instagram",
+      "accion": "Balance de 90 días: post de aprendizajes públicos y reel de resultados reales del piloto con autorización. Definir plan del próximo trimestre según tests ganadores.",
+      "metrica": "Documento de decisiones: cada test con hipótesis, variante, métrica, decisión y aprendizaje; 100% completado",
+      "responsable": "Fundador",
+      "fecha": "2026-12-29"
+    },
+    {
+      "semana": 13,
+      "canal": "TikTok",
+      "accion": "Auditar los 90 días de TikTok: decidir si se sostiene como canal según leads atribuidos y retención. Si no rinde, reasignar esfuerzo a Instagram.",
+      "metrica": "Decisión sostener/pausar con criterio escrito; leads atribuidos: umbral 5 [HIPÓTESIS A VALIDAR]",
+      "responsable": "Agente IA",
+      "fecha": "2026-12-30"
+    }
+  ]
+}

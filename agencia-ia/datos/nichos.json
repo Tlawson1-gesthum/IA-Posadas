@@ -1,0 +1,44 @@
+{
+  "nota": "Puntajes 1-5 según criterio del equipo, no son datos de mercado: se validan con 5-10 entrevistas por nicho. En 'competencia', 5 = poca competencia de soluciones similares.",
+  "criterios": [
+    { "id": "dolor", "nombre": "Dolor de agenda o pedidos", "peso": 3 },
+    { "id": "ticket", "nombre": "Ticket promedio del cliente", "peso": 2 },
+    { "id": "whatsapp", "nombre": "Uso de WhatsApp", "peso": 2 },
+    { "id": "competencia", "nombre": "Competencia (5 = poca)", "peso": 1 },
+    { "id": "demo", "nombre": "Facilidad de demo", "peso": 1 },
+    { "id": "pago", "nombre": "Capacidad de pago del mantenimiento", "peso": 3 }
+  ],
+  "nichos": [
+    { "id": "odonto", "nombre": "Odontología", "puntajes": { "dolor": 5, "ticket": 5, "whatsapp": 4, "competencia": 3, "demo": 4, "pago": 4 }, "comentario": "Agenda, ausentismo y presupuestos con seguimiento." },
+    { "id": "estetica", "nombre": "Estética", "puntajes": { "dolor": 4, "ticket": 4, "whatsapp": 5, "competencia": 3, "demo": 4, "pago": 3 }, "comentario": "Muy activa en Instagram y WhatsApp; mismo agente de turnos que odontología." },
+    { "id": "gastro", "nombre": "Gastronomía", "puntajes": { "dolor": 4, "ticket": 2, "whatsapp": 5, "competencia": 2, "demo": 5, "pago": 2 }, "comentario": "Viable con MORFA (ver veredicto)." },
+    { "id": "kine", "nombre": "Kinesiología", "puntajes": { "dolor": 4, "ticket": 3, "whatsapp": 4, "competencia": 4, "demo": 3, "pago": 3 }, "comentario": "Turnos y seguimiento de sesiones; las obras sociales complican el flujo." },
+    { "id": "vet", "nombre": "Veterinarias", "puntajes": { "dolor": 4, "ticket": 3, "whatsapp": 5, "competencia": 4, "demo": 4, "pago": 3 }, "comentario": "Turnos y recordatorios de vacunas y controles." },
+    { "id": "inmo", "nombre": "Inmobiliarias", "puntajes": { "dolor": 4, "ticket": 5, "whatsapp": 5, "competencia": 2, "demo": 3, "pago": 4 }, "comentario": "Dolor en la velocidad de respuesta a consultas; no es agenda pura." }
+  ],
+  "gastronomia_veredicto": {
+    "veredicto": "VIABLE con MORFA: para gastronomía ya contamos con MORFA, una solución específica del rubro. El agente genérico no es el camino.",
+    "solucion": "MORFA",
+    "pros": [
+      "Uso de WhatsApp muy alto y consultas repetidas (menú, horarios, entrega).",
+      "Demo casi inmediata: con el menú del local ya se prueba.",
+      "Ya tenemos una solución pensada para el rubro."
+    ],
+    "contras": [
+      "Ticket bajo por cliente: el mantenimiento se ve como gasto.",
+      "Competencia de apps de delivery y bots genéricos.",
+      "Precio del mantenimiento a validar con dueños gastronómicos."
+    ],
+    "agente_que_encaja": "MORFA para pedidos, reservas y consultas de menú. Qué cubre exactamente MORFA: a completar por el fundador.",
+    "condicion_para_sumarlo": "Mostrar MORFA en 5 demos y confirmar que al menos 2 locales aceptan el mantenimiento propuesto."
+  },
+  "recomendacion": {
+    "nichos": ["Odontología", "Estética"],
+    "razon": "Odontología lidera el scoring. Inmobiliarias puntúa algo más que Estética, pero la diferencia es chica y requiere otro producto (calificar consultas, no agendar). Estética reutiliza el agente de turnos de odontología. Gastronomía va por su propio camino con MORFA."
+  },
+  "geografia": [
+    { "etapa": "Días 1-30", "zona": "Posadas", "hito": "5 demos hechas y primeros cierres" },
+    { "etapa": "Días 31-60", "zona": "Misiones", "hito": "Venta 100% remota validada fuera de Posadas" },
+    { "etapa": "Días 61-90", "zona": "Corrientes y Chaco", "hito": "Primera reunión en cada provincia" }
+  ]
+}

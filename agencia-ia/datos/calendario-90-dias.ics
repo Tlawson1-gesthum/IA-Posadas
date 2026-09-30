@@ -1,0 +1,991 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Agencia IA//Plan 90 dias//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Plan 90 días - Agencia IA
+BEGIN:VEVENT
+UID:plan90-001@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261005T120000Z
+DTEND:20261005T123000Z
+SUMMARY:S1 · Landing/CRM/embudo · Armar landing por nicho (odontología y
+  estética) con formulario y What
+DESCRIPTION:Acción: Armar landing por nicho (odontología y estética) con
+  formulario y WhatsApp\, más CRM con etapas del embudo y seguimiento de o
+ rigen (UTM). Herramienta a elegir [verificar].\nMétrica: Landing publicad
+ a y CRM registrando 100% de leads con origen. Objetivo: conversión visita
+  a lead 3% [HIPÓTESIS A VALIDAR]\nResponsable: Ingeniero
+CATEGORIES:Landing/CRM/embudo
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Landing/CRM/embudo
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-002@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261006T120000Z
+DTEND:20261006T123000Z
+SUMMARY:S1 · Prospección activa · Configurar extracción con Google Plac
+ es API oficial (odontología y est
+DESCRIPTION:Acción: Configurar extracción con Google Places API oficial (
+ odontología y estética de Posadas)\, sin datos personales innecesarios. 
+ Redactar primer mensaje con opt-out claro y lista de exclusión.\nMétrica
+ : Base de 200 negocios cargada y mensaje aprobado. Objetivo: 50 contactos/
+ día máx. con 0 reclamos [HIPÓTESIS A VALIDAR]\nResponsable: Agente IA
+CATEGORIES:Prospección activa
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Prospección activa
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-003@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261007T120000Z
+DTEND:20261007T123000Z
+SUMMARY:S1 · Ventas · Definir guion de demo de 20 min con caso de agente 
+ de turnos por Whats
+DESCRIPTION:Acción: Definir guion de demo de 20 min con caso de agente de 
+ turnos por WhatsApp\, oferta piloto y esquema de comisión del closer (8-1
+ 0%). Configurar Fathom para grabar reuniones [verificar].\nMétrica: Guion
+  y oferta listos\; Fathom probado en 1 reunión de prueba. Objetivo: 100% 
+ de reuniones registradas [HIPÓTESIS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Ventas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Ventas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-004@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261008T120000Z
+DTEND:20261008T123000Z
+SUMMARY:S1 · Instagram · Optimizar perfil (bio\, destacadas\, link) y pub
+ licar 3 posts de posicio
+DESCRIPTION:Acción: Optimizar perfil (bio\, destacadas\, link) y publicar 
+ 3 posts de posicionamiento: qué hacemos con IA para clínicas y estética
+  de Posadas. Registrar en planilla de testeo: hipótesis\, variante\, mét
+ rica.\nMétrica: 3 posts publicados y planilla de testeo creada\; línea b
+ ase de alcance y guardados registrada (sin meta de crecimiento aún)\nResp
+ onsable: Fundador
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-005@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261009T120000Z
+DTEND:20261009T123000Z
+SUMMARY:S1 · Video clones · Probar MITO con un clon propio del fundador (
+ con su consentimiento): 1
+DESCRIPTION:Acción: Probar MITO con un clon propio del fundador (con su co
+ nsentimiento): 1 video de prueba de 30 s\; anotar calidad de voz\, labial 
+ y límites. Todo video lleva aviso 'generado con IA'.\nMétrica: Ficha de 
+ prueba MITO completa [verificar capacidades]\; decisión seguir/cambiar he
+ rramienta al cierre de semana\nResponsable: Ingeniero
+CATEGORIES:Video clones
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Video clones
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-006@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261012T120000Z
+DTEND:20261012T123000Z
+SUMMARY:S2 · Prospección activa · Arrancar primer contacto diario en Pos
+ adas (odontología primero) con o
+DESCRIPTION:Acción: Arrancar primer contacto diario en Posadas (odontolog
+ ía primero) con opt-out claro\; registrar respuestas\, bajas y reuniones 
+ en el CRM.\nMétrica: Objetivo: tasa de respuesta 8% y 10 reuniones agenda
+ das en la semana [HIPÓTESIS A VALIDAR]\nResponsable: Agente IA
+CATEGORIES:Prospección activa
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Prospección activa
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-007@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261013T120000Z
+DTEND:20261013T123000Z
+SUMMARY:S2 · Google Ads/Google Business Profile · Crear y verificar ficha
+  de Google Business Profile de la agencia\, carg
+DESCRIPTION:Acción: Crear y verificar ficha de Google Business Profile de 
+ la agencia\, cargar servicios y fotos\, y pedir 3 reseñas a contactos cer
+ canos. Preparar campaña de búsqueda local pausada.\nMétrica: Ficha veri
+ ficada con 3 reseñas. Objetivo: 5 llamadas o clics a WhatsApp desde la fi
+ cha en 30 días [HIPÓTESIS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Google Ads/Google Business Profile
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Google Ads/Google Business Profile
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-008@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261014T120000Z
+DTEND:20261014T123000Z
+SUMMARY:S2 · Testeo y métricas · Revisión quincenal 1 de qué funciona 
+ y por qué: comparar mensajes\, hor
+DESCRIPTION:Acción: Revisión quincenal 1 de qué funciona y por qué: com
+ parar mensajes\, horarios y nicho por respuesta y reunión. Definir 2 expe
+ rimentos para las semanas 3-4.\nMétrica: Documento de revisión con decis
+ iones. Objetivo: 2 experimentos definidos con hipótesis y métrica [HIPÓ
+ TESIS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Testeo y métricas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Testeo y métricas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-009@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261015T120000Z
+DTEND:20261015T123000Z
+SUMMARY:S2 · Instagram · Serie 'Errores que pierden turnos': 3 reels sobr
+ e respuestas tardías e
+DESCRIPTION:Acción: Serie 'Errores que pierden turnos': 3 reels sobre resp
+ uestas tardías en WhatsApp en consultorios odontológicos. Hipótesis: el
+  dolor concreto genera más guardados que el mensaje de marca.\nMétrica: 
+ Guardados+compartidos por reel: 1\,5% del alcance como objetivo [HIPÓTESI
+ S A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-010@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261016T120000Z
+DTEND:20261016T123000Z
+SUMMARY:S2 · TikTok · Reutilizar los 3 reels en TikTok con otro gancho de
+  apertura (variante
+DESCRIPTION:Acción: Reutilizar los 3 reels en TikTok con otro gancho de ap
+ ertura (variante A/B del primer segundo). Documentar cuál retiene más.\n
+ Métrica: Retención a 3 s: comparar A vs B\; objetivo 40% [HIPÓTESIS A V
+ ALIDAR]\nResponsable: Agente IA
+CATEGORIES:TikTok
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: TikTok
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-011@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261019T120000Z
+DTEND:20261019T123000Z
+SUMMARY:S3 · Meta Ads · Lanzar campaña de generación de leads en Posada
+ s con 2 creativos por n
+DESCRIPTION:Acción: Lanzar campaña de generación de leads en Posadas con
+  2 creativos por nicho\, presupuesto bajo definido por el fundador\, desti
+ no landing y WhatsApp. Pixel/eventos instalados [verificar].\nMétrica: Ob
+ jetivo: costo por lead por debajo de USD 5 y 15 leads en 7 días [HIPÓTES
+ IS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Meta Ads
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Meta Ads
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-012@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261020T120000Z
+DTEND:20261020T123000Z
+SUMMARY:S3 · Ventas · Hacer las primeras demos con Fathom y cerrar 1-2 pi
+ lotos en Posadas. E
+DESCRIPTION:Acción: Hacer las primeras demos con Fathom y cerrar 1-2 pilot
+ os en Posadas. El closer sigue cada lead en el CRM con próximo paso fecha
+ do.\nMétrica: Objetivo: 8 demos realizadas y 2 pilotos firmados [HIPÓTES
+ IS A VALIDAR]\nResponsable: Closer
+CATEGORIES:Ventas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Ventas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-013@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261021T120000Z
+DTEND:20261021T123000Z
+SUMMARY:S3 · Landing/CRM/embudo · Test A/B del titular de la landing (aho
+ rro de tiempo vs turnos perdido
+DESCRIPTION:Acción: Test A/B del titular de la landing (ahorro de tiempo v
+ s turnos perdidos) y ajuste del formulario a 3 campos.\nMétrica: Objetivo
+ : mejora de conversión de 20% sobre la variante base con 100+ visitas por
+  variante [HIPÓTESIS A VALIDAR]\nResponsable: Ingeniero
+CATEGORIES:Landing/CRM/embudo
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Landing/CRM/embudo
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-014@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261022T120000Z
+DTEND:20261022T123000Z
+SUMMARY:S3 · Anuncios Claude Design · Diseñar 4 piezas estáticas (2 odo
+ ntología\, 2 estética) con Claude Desi
+DESCRIPTION:Acción: Diseñar 4 piezas estáticas (2 odontología\, 2 esté
+ tica) con Claude Design [verificar formatos de exportación]\, usando marc
+ a propia y sin fotos de personas reales sin consentimiento.\nMétrica: 4 p
+ iezas aprobadas y listas para orgánico\; objetivo 1\,5% de guardados en c
+ arrusel [HIPÓTESIS A VALIDAR]\nResponsable: Agente IA
+CATEGORIES:Anuncios Claude Design
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Anuncios Claude Design
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-015@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261023T120000Z
+DTEND:20261023T123000Z
+SUMMARY:S3 · Instagram · Publicar carrusel 'Cómo sería tu consultorio c
+ on un asistente de turno
+DESCRIPTION:Acción: Publicar carrusel 'Cómo sería tu consultorio con un 
+ asistente de turnos con IA' (odontología) y un reel espejo para estética
+ . Pedir en el cierre comentar una palabra clave para recibir info.\nMétri
+ ca: Comentarios con palabra clave: 10 por pieza [HIPÓTESIS A VALIDAR]\; d
+ erivar leads al agente de ventas\nResponsable: Fundador
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-016@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261026T120000Z
+DTEND:20261026T123000Z
+SUMMARY:S4 · Testeo y métricas · Revisión quincenal 2 y cierre de etapa
+  Posadas: consolidar embudo (con
+DESCRIPTION:Acción: Revisión quincenal 2 y cierre de etapa Posadas: conso
+ lidar embudo (contacto\, respuesta\, demo\, piloto\, cierre) por canal y n
+ icho. Decidir si gastronomía entra a test.\nMétrica: Hito Posadas: objet
+ ivo 3 clientes de pago y 1 caso documentado [HIPÓTESIS A VALIDAR]\nRespon
+ sable: Fundador
+CATEGORIES:Testeo y métricas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Testeo y métricas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-017@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261027T120000Z
+DTEND:20261027T123000Z
+SUMMARY:S4 · Ventas · Convertir pilotos de Posadas en clientes de pago y 
+ pedir testimonio y 
+DESCRIPTION:Acción: Convertir pilotos de Posadas en clientes de pago y ped
+ ir testimonio y permiso de caso de estudio. Anotar objeciones frecuentes d
+ e las grabaciones de Fathom.\nMétrica: Objetivo: 50% de pilotos convertid
+ os a pago y 2 testimonios [HIPÓTESIS A VALIDAR]\nResponsable: Closer
+CATEGORIES:Ventas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Ventas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-018@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261028T120000Z
+DTEND:20261028T123000Z
+SUMMARY:S4 · Google Ads/Google Business Profile · Activar campaña de bú
+ squeda local en Posadas con palabras clave de bot
+DESCRIPTION:Acción: Activar campaña de búsqueda local en Posadas con pal
+ abras clave de bots de WhatsApp y automatización\, con negativas. Revisar
+  términos de búsqueda cada 3 días.\nMétrica: Objetivo: costo por lead 
+ comparable al de Meta y 10 leads en 14 días [HIPÓTESIS A VALIDAR]\nRespo
+ nsable: Fundador
+CATEGORIES:Google Ads/Google Business Profile
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Google Ads/Google Business Profile
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-019@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261029T120000Z
+DTEND:20261029T123000Z
+SUMMARY:S4 · Video clones · Producir 2 videos explicativos con clon (MITO
+  si la prueba salió bien 
+DESCRIPTION:Acción: Producir 2 videos explicativos con clon (MITO si la pr
+ ueba salió bien [verificar]) sobre automatización de turnos. Incluir ley
+ enda visible 'Video generado con IA'.\nMétrica: Retención media 35% [HIP
+ ÓTESIS A VALIDAR]\; comparar contra video real del fundador de igual tema
+ \nResponsable: Ingeniero
+CATEGORIES:Video clones
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Video clones
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-020@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261030T120000Z
+DTEND:20261030T123000Z
+SUMMARY:S4 · Instagram · Revisión mensual del ciclo de testeo: ordenar l
+ os 10 tests corridos\, d
+DESCRIPTION:Acción: Revisión mensual del ciclo de testeo: ordenar los 10 
+ tests corridos\, decidir qué se escala\, mata o repite y escribir el apre
+ ndizaje de cada uno en la planilla.\nMétrica: 100% de tests con decisión
+  y aprendizaje escrito\; 3 aprendizajes convertidos en reglas de contenido
+ \nResponsable: Fundador
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-021@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261102T120000Z
+DTEND:20261102T123000Z
+SUMMARY:S5 · Prospección activa · Extender Places API a ciudades de Misi
+ ones (Oberá\, Eldorado\, Puerto Ig
+DESCRIPTION:Acción: Extender Places API a ciudades de Misiones (Oberá\, E
+ ldorado\, Puerto Iguazú) por nicho. Mensaje con opt-out claro y referenci
+ a al caso de Posadas.\nMétrica: Base de 300 negocios nuevos. Objetivo: re
+ spuesta 8% con 50 contactos/día máx. [HIPÓTESIS A VALIDAR]\nResponsable
+ : Agente IA
+CATEGORIES:Prospección activa
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Prospección activa
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-022@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261103T120000Z
+DTEND:20261103T123000Z
+SUMMARY:S5 · Meta Ads · Duplicar campaña con segmentación a Oberá y El
+ dorado\, usando el testim
+DESCRIPTION:Acción: Duplicar campaña con segmentación a Oberá y Eldorad
+ o\, usando el testimonio de Posadas como creativo. Pausar el creativo de p
+ eor costo por lead.\nMétrica: Objetivo: costo por lead igual o menor que 
+ en Posadas [HIPÓTESIS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Meta Ads
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Meta Ads
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-023@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261104T120000Z
+DTEND:20261104T123000Z
+SUMMARY:S5 · Instagram · Mostrar caso demo (sin cliente real aún): flujo
+  de chatbot que agenda 
+DESCRIPTION:Acción: Mostrar caso demo (sin cliente real aún): flujo de ch
+ atbot que agenda turnos\, grabado en pantalla con datos ficticios. Hipóte
+ sis: demo visual convierte mejor que explicación hablada.\nMétrica: Mens
+ ajes directos recibidos por demo: 5 [HIPÓTESIS A VALIDAR]\nResponsable: I
+ ngeniero
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-024@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261105T120000Z
+DTEND:20261105T123000Z
+SUMMARY:S5 · TikTok · Video 'Detrás de escena' de cómo armamos un agent
+ e de IA para un consu
+DESCRIPTION:Acción: Video 'Detrás de escena' de cómo armamos un agente d
+ e IA para un consultorio\, con voz del fundador. Probar formato de 15 s vs
+  45 s.\nMétrica: Tasa de finalización: comparar formatos\; objetivo 30% 
+ en el corto [HIPÓTESIS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:TikTok
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: TikTok
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-025@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261109T120000Z
+DTEND:20261109T123000Z
+SUMMARY:S6 · Testeo y métricas · Revisión quincenal 3 de qué funciona 
+ y por qué: comparar Posadas vs in
+DESCRIPTION:Acción: Revisión quincenal 3 de qué funciona y por qué: com
+ parar Posadas vs interior por canal\, costo por reunión y motivo de pérd
+ ida. Ajustar oferta.\nMétrica: Informe con 3 decisiones. Objetivo: costo 
+ por reunión menor al de las semanas 1-4 [HIPÓTESIS A VALIDAR]\nResponsab
+ le: Fundador
+CATEGORIES:Testeo y métricas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Testeo y métricas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-026@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261110T120000Z
+DTEND:20261110T123000Z
+SUMMARY:S6 · Ventas · Demos remotas por videollamada grabadas con Fathom 
+ para el interior de
+DESCRIPTION:Acción: Demos remotas por videollamada grabadas con Fathom par
+ a el interior de Misiones. Enviar propuesta el mismo día y seguimiento a 
+ 48 h.\nMétrica: Objetivo: 10 demos y 2 cierres en Misiones interior [HIP
+ ÓTESIS A VALIDAR]\nResponsable: Closer
+CATEGORIES:Ventas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Ventas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-027@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261111T120000Z
+DTEND:20261111T123000Z
+SUMMARY:S6 · Anuncios Claude Design · Crear 3 variantes de anuncio con di
+ stinto gancho (ahorro de tiempo\, tu
+DESCRIPTION:Acción: Crear 3 variantes de anuncio con distinto gancho (ahor
+ ro de tiempo\, turnos perdidos\, atención 24 h) y entregarlas al agente d
+ e Ads para pauta. Yo no configuro la campaña.\nMétrica: 3 variantes entr
+ egadas\; CTR comparado entre ganchos\, objetivo 1% [HIPÓTESIS A VALIDAR]\
+ nResponsable: Agente IA
+CATEGORIES:Anuncios Claude Design
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Anuncios Claude Design
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-028@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261112T120000Z
+DTEND:20261112T123000Z
+SUMMARY:S6 · Instagram · Historias con encuesta a dueños de clínicas y 
+ centros de estética: 'Cu
+DESCRIPTION:Acción: Historias con encuesta a dueños de clínicas y centro
+ s de estética: 'Cuál es tu mayor dolor con los turnos?'. Usar respuestas
+  como insumo de próximos contenidos.\nMétrica: 20 respuestas en historia
+ s [HIPÓTESIS A VALIDAR]\; 3 temas priorizados\nResponsable: Closer
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-029@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261116T120000Z
+DTEND:20261116T123000Z
+SUMMARY:S7 · Landing/CRM/embudo · Sumar a la landing casos y reseñas rea
+ les\, calculadora simple de turno
+DESCRIPTION:Acción: Sumar a la landing casos y reseñas reales\, calculado
+ ra simple de turnos perdidos y automatización de seguimiento por WhatsApp
+ /email [verificar]. Sin datos inventados.\nMétrica: Objetivo: conversión
+  de lead a reunión 25% [HIPÓTESIS A VALIDAR]\nResponsable: Ingeniero
+CATEGORIES:Landing/CRM/embudo
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Landing/CRM/embudo
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-030@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261117T120000Z
+DTEND:20261117T123000Z
+SUMMARY:S7 · Google Ads/Google Business Profile · Pedir reseñas a client
+ es activos y publicar novedades en la ficha. Amp
+DESCRIPTION:Acción: Pedir reseñas a clientes activos y publicar novedades
+  en la ficha. Ampliar campaña de búsqueda a ciudades de Misiones con mej
+ or respuesta.\nMétrica: Objetivo: 8 reseñas acumuladas y 15 leads de bú
+ squeda en el período [HIPÓTESIS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Google Ads/Google Business Profile
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Google Ads/Google Business Profile
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-031@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261118T120000Z
+DTEND:20261118T123000Z
+SUMMARY:S7 · Video clones · Serie corta de 3 videos con clon respondiendo
+  preguntas frecuentes: pr
+DESCRIPTION:Acción: Serie corta de 3 videos con clon respondiendo pregunta
+ s frecuentes: precio\, tiempo de implementación\, si reemplaza a la secre
+ taria. Aviso de IA en cada uno. Validar guion con el fundador.\nMétrica: 
+ Compartidos por video: 1% del alcance [HIPÓTESIS A VALIDAR]\nResponsable:
+  Agente IA
+CATEGORIES:Video clones
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Video clones
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-032@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261119T120000Z
+DTEND:20261119T123000Z
+SUMMARY:S7 · Instagram · Reel de objeciones: 'Los pacientes no quieren ha
+ blar con un bot'. Pres
+DESCRIPTION:Acción: Reel de objeciones: 'Los pacientes no quieren hablar c
+ on un bot'. Presentar cómo el agente deriva a una persona. Test de gancho
+  con pregunta vs afirmación.\nMétrica: Retención a 3 s: 45% en la varia
+ nte ganadora [HIPÓTESIS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-033@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261123T120000Z
+DTEND:20261123T123000Z
+SUMMARY:S8 · Testeo y métricas · Revisión quincenal 4 de qué funciona 
+ y por qué: elegir canal principal
+DESCRIPTION:Acción: Revisión quincenal 4 de qué funciona y por qué: ele
+ gir canal principal y nicho ganador\, cortar lo que no rinde. Preparar ada
+ ptación para Corrientes y Chaco.\nMétrica: Objetivo: 1 canal principal d
+ efinido y 1 experimento cortado [HIPÓTESIS A VALIDAR]\nResponsable: Funda
+ dor
+CATEGORIES:Testeo y métricas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Testeo y métricas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-034@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261124T120000Z
+DTEND:20261124T123000Z
+SUMMARY:S8 · Ventas · Entrenar al closer con objeciones reales de las gra
+ baciones de Fathom 
+DESCRIPTION:Acción: Entrenar al closer con objeciones reales de las grabac
+ iones de Fathom y armar playbook de cierre con precios y garantía del pil
+ oto.\nMétrica: Playbook v1 publicado. Objetivo: cierre demo a pago 25% [H
+ IPÓTESIS A VALIDAR]\nResponsable: Closer
+CATEGORIES:Ventas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Ventas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-035@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261125T120000Z
+DTEND:20261125T123000Z
+SUMMARY:S8 · Instagram · Publicar primer caso de uso real o piloto (solo 
+ con autorización escri
+DESCRIPTION:Acción: Publicar primer caso de uso real o piloto (solo con au
+ torización escrita del negocio): qué automatizamos y qué cambió\, con 
+ datos reales propios del cliente\, sin inventar cifras.\nMétrica: Caso pu
+ blicado con consentimiento\; consultas por DM: 5 [HIPÓTESIS A VALIDAR]\nR
+ esponsable: Closer
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-036@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261126T120000Z
+DTEND:20261126T123000Z
+SUMMARY:S8 · TikTok · Probar contenido para gastronomía (condicional): 2
+  videos de prueba so
+DESCRIPTION:Acción: Probar contenido para gastronomía (condicional): 2 vi
+ deos de prueba sobre pedidos por WhatsApp. Si no hay señal\, se descarta 
+ el nicho en la revisión.\nMétrica: Regla de decisión: 500 vistas y 3 co
+ nsultas por video como umbral [HIPÓTESIS A VALIDAR]\nResponsable: Agente 
+ IA
+CATEGORIES:TikTok
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: TikTok
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-037@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261130T120000Z
+DTEND:20261130T123000Z
+SUMMARY:S9 · Ventas · Hito de cierre Misiones: consolidar cartera\, medir
+  churn del piloto y 
+DESCRIPTION:Acción: Hito de cierre Misiones: consolidar cartera\, medir ch
+ urn del piloto y pedir referidos a cada cliente. Documentar caso de estudi
+ o del interior.\nMétrica: Hito Misiones: objetivo 8 clientes acumulados y
+  5 referidos recibidos [HIPÓTESIS A VALIDAR]\nResponsable: Closer
+CATEGORIES:Ventas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Ventas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-038@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261201T120000Z
+DTEND:20261201T123000Z
+SUMMARY:S9 · Testeo y métricas · Armar tablero de unit economics (costo 
+ de adquisición\, margen\, comisió
+DESCRIPTION:Acción: Armar tablero de unit economics (costo de adquisición
+ \, margen\, comisión\, retención) con datos reales del CRM. Definir pres
+ upuesto para Corrientes y Chaco.\nMétrica: Tablero actualizado semanal. O
+ bjetivo: recuperar costo de adquisición en menos de 3 meses [HIPÓTESIS A
+  VALIDAR]\nResponsable: Ingeniero
+CATEGORIES:Testeo y métricas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Testeo y métricas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-039@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261202T120000Z
+DTEND:20261202T123000Z
+SUMMARY:S9 · Anuncios Claude Design · Rediseñar anuncios ganadores de la
+  semana 6 con nuevo gancho y prueba 
+DESCRIPTION:Acción: Rediseñar anuncios ganadores de la semana 6 con nuevo
+  gancho y prueba social del piloto (con permiso). Documentar por qué se c
+ ree que mejora.\nMétrica: CTR de la nueva pieza vs ganadora previa: +20% 
+ [HIPÓTESIS A VALIDAR]\nResponsable: Agente IA
+CATEGORIES:Anuncios Claude Design
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Anuncios Claude Design
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-040@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261203T120000Z
+DTEND:20261203T123000Z
+SUMMARY:S9 · Instagram · Reel de 'Antes y después' del proceso de agenda
+  de un consultorio\, con
+DESCRIPTION:Acción: Reel de 'Antes y después' del proceso de agenda de un
+  consultorio\, con esquema visual\, no con imágenes de pacientes. Cierre 
+ con invitación a diagnóstico gratuito.\nMétrica: Clics al link de bio: 
+ 15 [HIPÓTESIS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-041@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261207T120000Z
+DTEND:20261207T123000Z
+SUMMARY:S10 · Prospección activa · Iniciar Places API en Corrientes capi
+ tal y Resistencia por nicho ganad
+DESCRIPTION:Acción: Iniciar Places API en Corrientes capital y Resistencia
+  por nicho ganador\, con opt-out claro y lista de exclusión compartida. M
+ áximo 50 contactos/día.\nMétrica: Base de 300 negocios. Objetivo: respu
+ esta 7% y 8 reuniones agendadas [HIPÓTESIS A VALIDAR]\nResponsable: Agent
+ e IA
+CATEGORIES:Prospección activa
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Prospección activa
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-042@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261208T120000Z
+DTEND:20261208T123000Z
+SUMMARY:S10 · Meta Ads · Lanzar campaña en Corrientes y Chaco con creati
+ vos ajustados por local
+DESCRIPTION:Acción: Lanzar campaña en Corrientes y Chaco con creativos aj
+ ustados por localidad y caso de Misiones. Comparar contra la campaña base
+  de Posadas.\nMétrica: Objetivo: costo por lead no mayor a 1\,3 veces el 
+ de Posadas [HIPÓTESIS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Meta Ads
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Meta Ads
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-043@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261209T120000Z
+DTEND:20261209T123000Z
+SUMMARY:S10 · Video clones · Comparar clon vs fundador real: mismo guion\
+ , dos videos. Medir si el a
+DESCRIPTION:Acción: Comparar clon vs fundador real: mismo guion\, dos vide
+ os. Medir si el aviso de IA afecta la confianza según comentarios y guard
+ ados.\nMétrica: Diferencia de retención entre ambos: definir umbral de d
+ ecisión [HIPÓTESIS A VALIDAR]\nResponsable: Ingeniero
+CATEGORIES:Video clones
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Video clones
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-044@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261210T120000Z
+DTEND:20261210T123000Z
+SUMMARY:S10 · Instagram · Live o reel en vivo con Q&A sobre automatizaci
+ ón para estética: record
+DESCRIPTION:Acción: Live o reel en vivo con Q&A sobre automatización para
+  estética: recordatorios de turnos y seguimiento post tratamiento. Guarda
+ r preguntas para contenido futuro.\nMétrica: 20 espectadores simultáneos
+  o 30 preguntas guardadas [HIPÓTESIS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-045@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261214T120000Z
+DTEND:20261214T123000Z
+SUMMARY:S11 · Ventas · Demos remotas a prospectos de Corrientes y Chaco\,
+  con seguimiento a 48
+DESCRIPTION:Acción: Demos remotas a prospectos de Corrientes y Chaco\, con
+  seguimiento a 48 h y propuesta el mismo día. Revisar grabaciones de Fath
+ om semanalmente.\nMétrica: Objetivo: 10 demos y 2 pilotos [HIPÓTESIS A V
+ ALIDAR]\nResponsable: Closer
+CATEGORIES:Ventas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Ventas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-046@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261215T120000Z
+DTEND:20261215T123000Z
+SUMMARY:S11 · TikTok · Serie de 5 tips breves de IA para negocios locales
+  de Posadas. Repetir
+DESCRIPTION:Acción: Serie de 5 tips breves de IA para negocios locales de 
+ Posadas. Repetir el formato del video con mejor retención de las semanas 
+ 2 y 5.\nMétrica: Vistas medias por video: 1\,5x respecto de la línea bas
+ e [HIPÓTESIS A VALIDAR]\nResponsable: Agente IA
+CATEGORIES:TikTok
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: TikTok
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-047@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261216T120000Z
+DTEND:20261216T123000Z
+SUMMARY:S11 · Instagram · Carrusel 'Checklist: tu consultorio está listo
+  para automatizar?' con 
+DESCRIPTION:Acción: Carrusel 'Checklist: tu consultorio está listo para a
+ utomatizar?' con CTA de palabra clave por DM. Pasar contactos calificados 
+ al closer.\nMétrica: Guardados: 2% del alcance\; 10 DMs [HIPÓTESIS A VAL
+ IDAR]\nResponsable: Closer
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-048@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261221T120000Z
+DTEND:20261221T123000Z
+SUMMARY:S12 · Testeo y métricas · Revisión quincenal 5 de qué funciona
+  y por qué: comparar tres provinci
+DESCRIPTION:Acción: Revisión quincenal 5 de qué funciona y por qué: com
+ parar tres provincias y definir presupuesto y canales para el trimestre si
+ guiente.\nMétrica: Objetivo: decisión escrita de presupuesto por canal y
+  provincia [HIPÓTESIS A VALIDAR]\nResponsable: Fundador
+CATEGORIES:Testeo y métricas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Testeo y métricas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-049@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261222T120000Z
+DTEND:20261222T123000Z
+SUMMARY:S12 · Anuncios Claude Design · Preparar kit de piezas para cierre
+  de trimestre: 3 anuncios y 5 histor
+DESCRIPTION:Acción: Preparar kit de piezas para cierre de trimestre: 3 anu
+ ncios y 5 historias con oferta de diagnóstico. Coordinar fechas y presupu
+ esto con el agente de Ads.\nMétrica: Kit entregado a tiempo\; costo por c
+ onversación medido por el agente de Ads [HIPÓTESIS A VALIDAR]\nResponsab
+ le: Agente IA
+CATEGORIES:Anuncios Claude Design
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Anuncios Claude Design
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-050@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261223T120000Z
+DTEND:20261223T123000Z
+SUMMARY:S12 · Video clones · Producir 2 videos finales con el clon que me
+ jor rindió\, con aviso de I
+DESCRIPTION:Acción: Producir 2 videos finales con el clon que mejor rindi
+ ó\, con aviso de IA visible. Descartar formatos con retención por debajo
+  de la línea base.\nMétrica: Retención por encima de la línea base pro
+ pia [HIPÓTESIS A VALIDAR]\nResponsable: Ingeniero
+CATEGORIES:Video clones
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Video clones
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-051@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261228T120000Z
+DTEND:20261228T123000Z
+SUMMARY:S13 · Testeo y métricas · Hito de cierre Corrientes y Chaco y de
+ l plan de 90 días: informe final
+DESCRIPTION:Acción: Hito de cierre Corrientes y Chaco y del plan de 90 dí
+ as: informe final con clientes\, retención y costo de adquisición por zo
+ na. Plan del siguiente trimestre.\nMétrica: Hito: objetivo 12 clientes to
+ tales y 3 en Corrientes/Chaco [HIPÓTESIS A VALIDAR]\nResponsable: Fundado
+ r
+CATEGORIES:Testeo y métricas
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Testeo y métricas
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-052@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261229T120000Z
+DTEND:20261229T123000Z
+SUMMARY:S13 · Instagram · Balance de 90 días: post de aprendizajes públ
+ icos y reel de resultados
+DESCRIPTION:Acción: Balance de 90 días: post de aprendizajes públicos y 
+ reel de resultados reales del piloto con autorización. Definir plan del p
+ róximo trimestre según tests ganadores.\nMétrica: Documento de decision
+ es: cada test con hipótesis\, variante\, métrica\, decisión y aprendiza
+ je\; 100% completado\nResponsable: Fundador
+CATEGORIES:Instagram
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: Instagram
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:plan90-053@agencia-ia.local
+DTSTAMP:20260930T155105Z
+DTSTART:20261230T120000Z
+DTEND:20261230T123000Z
+SUMMARY:S13 · TikTok · Auditar los 90 días de TikTok: decidir si se sost
+ iene como canal según
+DESCRIPTION:Acción: Auditar los 90 días de TikTok: decidir si se sostiene
+  como canal según leads atribuidos y retención. Si no rinde\, reasignar 
+ esfuerzo a Instagram.\nMétrica: Decisión sostener/pausar con criterio es
+ crito\; leads atribuidos: umbral 5 [HIPÓTESIS A VALIDAR]\nResponsable: Ag
+ ente IA
+CATEGORIES:TikTok
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: TikTok
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

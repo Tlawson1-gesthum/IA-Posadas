@@ -1,0 +1,71 @@
+{
+  "nota": "17 servicios: 7 dolores base (con versión salud/estética y gastronomía) + 10 candidatos para elegir. Los costos se expresan como fórmula a completar con datos del cliente; no son estadísticas de mercado. [HIPÓTESIS A VALIDAR]",
+  "servicios": [
+    {
+      "id": "b1", "tipo": "base", "nombre": "Landing",
+      "frase": "Tu web es tu local digital.",
+      "costo_real": "Cada persona que te busca y no encuentra horarios, precios o cómo contactarte es un cliente que se va a otro. Costo = búsquedas que no convierten × ticket promedio [COMPLETAR con datos del cliente]. [HIPÓTESIS A VALIDAR]",
+      "automatiza": "Una landing de una sola acción (agendar o pedir) con el agente integrado que responde y captura el contacto.",
+      "salud": { "dolor": "Tu web es tu local digital: si está cerrada, vieja o no existe, el paciente nuevo elige a otro.", "ejemplo": "Clínica dental: landing 'Primera consulta' con botón a WhatsApp y el agente ofreciendo horarios disponibles." },
+      "gastronomia": { "dolor": "Tu carta en una foto borrosa de Instagram no vende: el cliente quiere ver menú, horarios y cómo pedir en 10 segundos.", "ejemplo": "Hamburguesería: landing con carta, horarios, zona de delivery y botón 'Pedir por WhatsApp'." }
+    },
+    {
+      "id": "b2", "tipo": "base", "nombre": "Captación",
+      "frase": "Evitá la agenda vacía.",
+      "costo_real": "Hueco sin ocupar = ingreso que no vuelve. Costo = turnos o mesas vacías por semana × ticket promedio [COMPLETAR]. [HIPÓTESIS A VALIDAR]",
+      "automatiza": "Respuesta inmediata a cada consulta de anuncios/Instagram/Google y derivación a agendar o reservar.",
+      "salud": { "dolor": "El sillón vacío se paga igual: alquiler, asistente y materiales corren aunque no haya paciente.", "ejemplo": "Un anuncio de 'evaluación inicial' lleva a WhatsApp; el agente califica y ofrece el próximo hueco." },
+      "gastronomia": { "dolor": "La mesa vacía se paga igual: salón, personal y luz corren aunque no entre nadie.", "ejemplo": "Martes flojo: historia de Instagram con promo; el agente toma reservas para esa noche." }
+    },
+    {
+      "id": "b3", "tipo": "base", "nombre": "Atención de consultas",
+      "frase": "Los clientes que no se atienden se van.",
+      "costo_real": "Consulta sin respuesta a tiempo = venta que se lleva la competencia. Costo = consultas sin responder × tasa de cierre × ticket [COMPLETAR]. [HIPÓTESIS A VALIDAR]",
+      "automatiza": "Respuestas 24/7 a preguntas frecuentes (precios orientativos, horarios, ubicación, cómo se agenda) y derivación a una persona cuando corresponde.",
+      "salud": { "dolor": "Preguntan por WhatsApp a las 22 h, nadie contesta hasta la mañana y ya sacaron turno en otro lado.", "ejemplo": "El agente responde 'cómo es la primera consulta' y ofrece turnos; lo que no sabe, lo deriva." },
+      "gastronomia": { "dolor": "Pedidos de WhatsApp sin responder en hora pico y la misma pregunta de menú y horarios veinte veces por día.", "ejemplo": "El agente responde menú, horarios y zona de entrega, y arma el pedido para confirmación del local." }
+    },
+    {
+      "id": "b4", "tipo": "base", "nombre": "Seguimientos y recordatorios",
+      "frase": "El orden como prioridad.",
+      "costo_real": "Presupuestos y consultas que quedan 'para después' se enfrían. Costo = oportunidades sin seguimiento × tasa de cierre × ticket [COMPLETAR]. [HIPÓTESIS A VALIDAR]",
+      "automatiza": "Seguimiento programado a quien consultó y no avanzó, y recordatorios antes de cada cita o reserva.",
+      "salud": { "dolor": "Pidió presupuesto de ortodoncia, nadie lo volvió a contactar y se enfrió.", "ejemplo": "A los 2 y 5 días el agente pregunta si quedó alguna duda y ofrece agendar." },
+      "gastronomia": { "dolor": "Consultó por un evento o cumpleaños y nadie le confirmó fecha ni depósito.", "ejemplo": "El agente retoma la consulta del evento y pide confirmación de fecha y cantidad de personas." }
+    },
+    {
+      "id": "b5", "tipo": "base", "nombre": "Ausentismo a la cita",
+      "frase": "Que el turno reservado sea un turno ocupado.",
+      "costo_real": "Cada ausencia sin aviso es un hueco imposible de rellenar. Costo = ausencias por mes × ticket [COMPLETAR]. [HIPÓTESIS A VALIDAR]",
+      "automatiza": "Confirmación y recordatorio con opción de reprogramar o cancelar, y aviso a lista de espera.",
+      "salud": { "dolor": "El paciente no vino y el sillón quedó vacío la hora entera.", "ejemplo": "Recordatorio 24 h antes: 'Confirmás, reprogramás o cancelás' con botones de respuesta." },
+      "gastronomia": { "dolor": "Reservaron para 8, no aparecieron y la mesa quedó bloqueada toda la noche.", "ejemplo": "El agente pide confirmación el mismo día y libera la mesa si no responden." }
+    },
+    {
+      "id": "b6", "tipo": "base", "nombre": "Fidelización",
+      "frase": "Que vuelvan a tu local y no a otro.",
+      "costo_real": "Conseguir un cliente nuevo cuesta más esfuerzo que hacer volver a uno existente [HIPÓTESIS A VALIDAR]. Costo = clientes que no volvieron × ticket × frecuencia [COMPLETAR].",
+      "automatiza": "Mensajes segmentados (cumpleaños, tiempo desde la última visita, beneficios) con consentimiento.",
+      "salud": { "dolor": "El paciente se hizo una limpieza hace 8 meses y nadie le recordó el control.", "ejemplo": "A los 6 meses el agente propone turno de control." },
+      "gastronomia": { "dolor": "Vino una vez, le gustó y nunca más se acordó de vos.", "ejemplo": "Mensaje de cumpleaños con un beneficio para la semana del cumpleaños." }
+    },
+    {
+      "id": "b7", "tipo": "base", "nombre": "Posventa",
+      "frase": "Servicios que destacan.",
+      "costo_real": "Un cliente sin seguimiento posterior no recomienda ni deja reseña. Costo = reseñas y recomendaciones no obtenidas [COMPLETAR]. [HIPÓTESIS A VALIDAR]",
+      "automatiza": "Mensaje posterior al servicio con cuidados, encuesta corta y pedido de reseña.",
+      "salud": { "dolor": "Terminó el tratamiento y nadie preguntó cómo le fue.", "ejemplo": "A las 48 h el agente pregunta cómo se siente y, si está conforme, pide una reseña." },
+      "gastronomia": { "dolor": "Comió, se fue y nadie supo si le gustó.", "ejemplo": "Al día siguiente el agente pide una calificación y, si es baja, avisa al dueño." }
+    },
+    { "id": "c1", "tipo": "candidato", "nombre": "Instagram: comentarios y DMs con derivación a WhatsApp", "descripcion": "Responde comentarios y mensajes directos de Instagram y lleva la conversación a WhatsApp." },
+    { "id": "c2", "tipo": "candidato", "nombre": "Pedido automático de reseñas en Google", "descripcion": "Después del servicio, pide una reseña en Google con el link directo." },
+    { "id": "c3", "tipo": "candidato", "nombre": "Lista de espera que rellena cancelaciones o mesas libres", "descripcion": "Cuando se libera un turno o una mesa, ofrece el hueco a quienes estaban esperando." },
+    { "id": "c4", "tipo": "candidato", "nombre": "Reactivación de clientes inactivos", "descripcion": "Contacta a clientes que no vuelven hace un tiempo definido por el negocio, con consentimiento." },
+    { "id": "c5", "tipo": "candidato", "nombre": "Cobro de señas y recordatorio de pago con link de Mercado Pago", "descripcion": "Genera el link de seña, recuerda el pago pendiente y confirma la reserva al acreditarse [verificar integración]." },
+    { "id": "c6", "tipo": "candidato", "nombre": "Agente de voz para llamadas perdidas", "descripcion": "Atiende o devuelve llamadas perdidas y registra el motivo [verificar viabilidad y costo]." },
+    { "id": "c7", "tipo": "candidato", "nombre": "Presupuestos con seguimiento automático", "descripcion": "Envía el presupuesto y hace seguimiento programado hasta obtener una respuesta." },
+    { "id": "c8", "tipo": "candidato", "nombre": "Reporte semanal de métricas por WhatsApp al dueño", "descripcion": "Resumen semanal: consultas, turnos, ausencias y oportunidades sin cerrar." },
+    { "id": "c9", "tipo": "candidato", "nombre": "Campañas de cumpleaños y fidelización segmentadas", "descripcion": "Mensajes por segmento (cumpleaños, última visita, tipo de servicio), con consentimiento." },
+    { "id": "c10", "tipo": "candidato", "nombre": "Encuesta NPS posventa con alerta al dueño si hay un detractor", "descripcion": "Encuesta breve; si la puntuación es baja, avisa al dueño para que actúe rápido." }
+  ]
+}
