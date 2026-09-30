@@ -1,4 +1,4 @@
-// Chat de Nico, el agente de la landing. La clave de la API vive solo acá, en ANTHROPIC_API_KEY.
+// Chat de Pasti, el agente de la landing. La clave de la API vive solo acá, en ANTHROPIC_API_KEY.
 import Anthropic from "@anthropic-ai/sdk";
 import { RULES } from "./_lib/prompt.js";
 import { meetingSlots } from "./_lib/slots.js";

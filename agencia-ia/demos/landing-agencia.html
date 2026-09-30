@@ -147,7 +147,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--dim)
     <div>
       <span class="kick">Empleados de IA · Posadas, Misiones</span>
       <h1 style="margin-top:12px">Mientras leés esto, alguien le escribió a tu negocio. <span class="grad">¿Quién le contestó?</span></h1>
-      <p class="lead">El que responde primero se queda con el cliente. Armamos empleados de IA que atienden, venden, cobran y hacen seguimiento por WhatsApp e Instagram, las 24 horas, conectados a tu agenda y a tu caja. Nico, el de al lado, es uno de ellos: escribile como si fueras un cliente.</p>
+      <p class="lead">El que responde primero se queda con el cliente. Armamos empleados de IA que atienden, venden, cobran y hacen seguimiento por WhatsApp e Instagram, las 24 horas, conectados a tu agenda y a tu caja. Pasti, el de al lado, es uno de ellos: escribile como si fueras un cliente.</p>
       <div class="proof">
         <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><b>Contesta en segundos, también a las 23 h</b><span>El cliente que escribe de noche no se va a la competencia.</span></div></div>
         <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><div><b>Vende y cobra</b><span>Da turnos, sigue presupuestos y manda el link de seña de Mercado Pago.</span></div></div>
@@ -158,11 +158,11 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--dim)
     </div>
     <div>
       <div class="chat" aria-label="Chat con el asistente de la agencia">
-        <div class="chat-h"><div class="av">IA</div><div><b>Nico · Agencia IA</b><small id="status">en línea</small></div><span class="mode" id="mode">Guionado</span></div>
+        <div class="chat-h"><div class="av">IA</div><div><b>Pasti · Agencia IA</b><small id="status">en línea</small></div><span class="mode" id="mode">Guionado</span></div>
         <div class="log" id="log" aria-live="polite"></div>
         <form id="form"><input id="msg" type="text" placeholder="Escribí tu consulta" autocomplete="off" aria-label="Mensaje"><button id="send" type="submit" aria-label="Enviar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button></form>
       </div>
-      <p class="hint" id="hint">Nico es un asistente con IA. Tus datos se usan solo para coordinar la reunión.</p>
+      <p class="hint" id="hint">Pasti es un asistente con IA. Tus datos se usan solo para coordinar la reunión.</p>
     </div>
   </div>
 </div>
@@ -225,7 +225,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--dim)
 <section id="crmSec" hidden><div class="wrap">
   <div class="crm">
     <div class="crm-top"><div><span class="kick">Solo lo ves vos</span><h2 style="margin-top:6px">CRM de la agencia</h2></div><span class="pill" id="crmCount">0 contactos</span></div>
-    <p style="color:var(--muted);font-size:14px;margin-bottom:14px">Cada persona que agenda con Nico aparece acá al instante, con su origen y su etapa. Probalo: agendá desde el celular y mirá cómo entra en esta pantalla.</p>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:14px">Cada persona que agenda con Pasti aparece acá al instante, con su origen y su etapa. Probalo: agendá desde el celular y mirá cómo entra en esta pantalla.</p>
     <div class="board" id="board"></div>
   </div>
 </div></section>
@@ -266,7 +266,7 @@ async function book(info) {
   const lead = {
     nombre: String(info.nombre || "").slice(0, 80), negocio: String(info.negocio || "").slice(0, 80), rubro: String(info.rubro || "").slice(0, 40),
     whatsapp: String(info.whatsapp || "").slice(0, 30), problema: String(info.problema || "").slice(0, 300),
-    etapa: "Reunión agendada", origen: "Landing · agente Nico", reunion: slot, reunionTexto: slotLabel(slot), actualizado: new Date().toISOString()
+    etapa: "Reunión agendada", origen: "Landing · agente Pasti", reunion: slot, reunionTexto: slotLabel(slot), actualizado: new Date().toISOString()
   };
   if (!lead.nombre || !lead.whatsapp) throw new Error("Faltan el nombre y el WhatsApp. Pedíselos antes de agendar.");
   if (server) {
@@ -301,7 +301,7 @@ log.addEventListener("click", e => { const b = e.target.closest(".qr button"); i
 const clearQuick = () => log.querySelectorAll(".qr").forEach(q => q.remove());
 
 /* ---------- agente con Claude ---------- */
-const RULES = `Sos Nico, el asistente con IA de "Agencia IA", una agencia de Posadas (Misiones, Argentina) que arma agentes de IA para negocios locales. Hablás en español rioplatense, cálido y directo. Respuestas cortas: 1 a 4 frases, sin listas largas ni markdown.
+const RULES = `Sos Pasti, el asistente con IA de "Agencia IA", una agencia de Posadas (Misiones, Argentina) que arma agentes de IA para negocios locales. Hablás en español rioplatense, cálido y directo. Respuestas cortas: 1 a 4 frases, sin listas largas ni markdown.
 
 Tu objetivo: entender el negocio de la persona y agendar una reunión de diagnóstico gratis de 20 minutos por videollamada.
 
@@ -399,11 +399,11 @@ $("#form").addEventListener("submit", e => { e.preventDefault(); send($("#msg").
 $("#ctaMeet").addEventListener("click", () => { $("#msg").focus(); send("Quiero agendar un diagnóstico"); });
 function goScripted() {
   liveOK = false; setMode();
-  $("#hint").textContent = "Claude no está disponible en este momento, así que Nico sigue en modo guiado. Todo lo que agendes queda guardado igual.";
+  $("#hint").textContent = "Claude no está disponible en este momento, así que Pasti sigue en modo guiado. Todo lo que agendes queda guardado igual.";
 }
 function setMode() { const m = $("#mode"); m.textContent = liveOK ? "IA en vivo" : "Guionado"; m.classList.toggle("live", liveOK); }
 
-bubble("in", "¡Hola! Soy Nico, el asistente con IA de Agencia IA. Te cuento cómo un agente puede atender tu negocio, te paso precios o te agendo un diagnóstico gratis de 20 minutos. ¿Qué necesitás?");
+bubble("in", "¡Hola! Soy Pasti, el asistente con IA de Agencia IA. Te cuento cómo un agente puede atender tu negocio, te paso precios o te agendo un diagnóstico gratis de 20 minutos. ¿Qué necesitás?");
 quick(["¿Qué hacen?", "Precios", "Agendar diagnóstico"]);
 
 /* ---------- calculadora ---------- */
@@ -441,7 +441,7 @@ async function startServer() {
   try {
     const r = await fetch("/api/agenda"); if (!r.ok) return;
     const j = await r.json(); server = true; busy = new Set(j.ocupados || []);
-    if (j.chat) { liveOK = true; setMode(); $("#hint").textContent = "Nico responde con Claude en vivo. Tus datos se usan solo para coordinar la reunión."; }
+    if (j.chat) { liveOK = true; setMode(); $("#hint").textContent = "Pasti responde con Claude en vivo. Tus datos se usan solo para coordinar la reunión."; }
   } catch (e) { return; }
   const q = new URLSearchParams(location.search).get("admin");
   try { if (q) localStorage.setItem("agencia_admin", q); adminToken = q || localStorage.getItem("agencia_admin"); } catch (e) { adminToken = q; }
@@ -459,7 +459,7 @@ async function loadLeads() {
   const [s, d, u] = await Promise.all([claude.use("sample"), claude.use("db"), claude.use("user")]);
   if (s) {
     const lim = await s.limits().catch(() => null);
-    if (lim && lim.tools) { sample = s; liveOK = true; setMode(); $("#hint").textContent = "Nico responde con Claude en vivo; la primera vez te pide permiso. Tus datos se usan solo para coordinar la reunión."; }
+    if (lim && lim.tools) { sample = s; liveOK = true; setMode(); $("#hint").textContent = "Pasti responde con Claude en vivo; la primera vez te pide permiso. Tus datos se usan solo para coordinar la reunión."; }
   }
   if (u) { me = await u.id(); isOwner = await u.isOwner(); }
   if (d) {
@@ -480,7 +480,7 @@ function drawCRM() {
   $("#crmCount").textContent = leads.length + (leads.length === 1 ? " contacto" : " contactos");
   $("#board").innerHTML = STAGES.map((st, i) => {
     const items = leads.filter(l => (l.etapa || "Nuevo") === st).sort((a, b) => String(b.actualizado).localeCompare(String(a.actualizado)));
-    return '<div class="col"><h4>' + st + "<span>" + items.length + "</span></h4>" + (items.length ? items.map(l => '<div class="lcard"><b>' + esc(l.nombre) + '</b><span class="m">' + esc([l.negocio, l.rubro].filter(Boolean).join(" · ")) + '</span>' + (l.problema ? '<span class="m">“' + esc(l.problema) + "”</span>" : "") + '<span class="m">WhatsApp: ' + esc(l.whatsapp) + (l.reunionTexto ? " · " + esc(l.reunionTexto) : "") + '</span><span class="src">' + esc(l.origen || "") + '</span><div class="act">' + (i > 0 ? '<button type="button" data-mv="' + esc(l.id) + '" data-to="' + (i - 1) + '">←</button>' : "") + (i < STAGES.length - 1 ? '<button type="button" data-mv="' + esc(l.id) + '" data-to="' + (i + 1) + '">Pasar a ' + STAGES[i + 1] + "</button>" : "") + "</div></div>").join("") : '<p class="empty">' + (i === 1 ? "Agendá una reunión con Nico y aparece acá." : "Vacío") + "</p>") + "</div>";
+    return '<div class="col"><h4>' + st + "<span>" + items.length + "</span></h4>" + (items.length ? items.map(l => '<div class="lcard"><b>' + esc(l.nombre) + '</b><span class="m">' + esc([l.negocio, l.rubro].filter(Boolean).join(" · ")) + '</span>' + (l.problema ? '<span class="m">“' + esc(l.problema) + "”</span>" : "") + '<span class="m">WhatsApp: ' + esc(l.whatsapp) + (l.reunionTexto ? " · " + esc(l.reunionTexto) : "") + '</span><span class="src">' + esc(l.origen || "") + '</span><div class="act">' + (i > 0 ? '<button type="button" data-mv="' + esc(l.id) + '" data-to="' + (i - 1) + '">←</button>' : "") + (i < STAGES.length - 1 ? '<button type="button" data-mv="' + esc(l.id) + '" data-to="' + (i + 1) + '">Pasar a ' + STAGES[i + 1] + "</button>" : "") + "</div></div>").join("") : '<p class="empty">' + (i === 1 ? "Agendá una reunión con Pasti y aparece acá." : "Vacío") + "</p>") + "</div>";
   }).join("");
 }
 $("#board").addEventListener("click", async e => {

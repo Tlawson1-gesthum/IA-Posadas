@@ -5,9 +5,9 @@ La carpeta `agencia-ia` es un proyecto de Vercel: las páginas son estáticas y 
 | Dirección | Qué es |
 |---|---|
 | `/` | La presentación |
-| `/agencia` | Landing de la agencia con Nico, el agente |
+| `/agencia` | Landing de la agencia con Pasti, el agente |
 | `/turnero` | Plantilla de consultorio con turnero |
-| `/api/chat` | Nico hablando con Claude (la clave queda en el servidor) |
+| `/api/chat` | Pasti hablando con Claude (la clave queda en el servidor) |
 | `/api/agenda`, `/api/leads`, `/api/turnos` | Agenda, CRM y turnos |
 
 ## Pasos
@@ -30,7 +30,7 @@ Entrá una vez con tu clave en la dirección, por ejemplo `https://tu-proyecto.v
 
 ## Si algo no anda
 
-- Nico responde en modo "Guionado": falta `ANTHROPIC_API_KEY` o no es válida. Revisala en Settings → Environment Variables y hacé Redeploy.
+- Pasti responde en modo "Guionado": falta `ANTHROPIC_API_KEY` o no es válida. Revisala en Settings → Environment Variables y hacé Redeploy.
 - Los datos desaparecen: falta conectar Upstash (paso 6).
 - Los registros de errores están en el proyecto, pestaña **Logs**.
 

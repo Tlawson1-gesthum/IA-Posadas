@@ -14,7 +14,7 @@ export async function bookMeeting(input) {
   const lead = {
     nombre: clip(input.nombre, 80), negocio: clip(input.negocio, 80), rubro: clip(input.rubro, 40),
     whatsapp: clip(input.whatsapp, 30), problema: clip(input.problema, 300),
-    etapa: "Reunión agendada", origen: clip(input.origen, 40) || "Landing · agente Nico", reunion: slot, reunionTexto: slotLabel(slot), creado: now, actualizado: now,
+    etapa: "Reunión agendada", origen: clip(input.origen, 40) || "Landing · agente Pasti", reunion: slot, reunionTexto: slotLabel(slot), creado: now, actualizado: now,
   };
   await hset("leads", "l-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), lead);
   return lead;
