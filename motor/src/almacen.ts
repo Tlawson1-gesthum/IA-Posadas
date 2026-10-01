@@ -124,6 +124,9 @@ export interface Almacen {
   actividad(conversacionId: string, desde: Date): Promise<{ mensajes: number; usd: number }>;
   evento(fichaId: string | null, conversacionId: string | null, tipo: string, detalle: string): Promise<void>;
   eventos(desde: Date, tipos?: string[]): Promise<Evento[]>;
+  /** Chat público de la web: registra un mensaje de una conexión (IP anonimizada) y cuenta los recientes. */
+  registrarAccesoWeb(fichaId: string, ipHash: string): Promise<void>;
+  contarAccesosWeb(fichaId: string, ipHash: string | null, desde: Date): Promise<number>;
 }
 
 function desde(): string {
@@ -289,6 +292,16 @@ function almacenSupabase(url: string, clave: string): Almacen {
         .insert({ ficha_id: fichaId, conversacion_id: conversacionId, tipo, detalle: detalle.slice(0, 1000) });
       if (r.error) console.error("No se pudo guardar el evento", r.error.message);
     },
+    async registrarAccesoWeb(fichaId, ipHash) {
+      ok(await db.from("accesos_web").insert({ ficha_id: fichaId, ip_hash: ipHash }));
+    },
+    async contarAccesosWeb(fichaId, ipHash, desdeFecha) {
+      let q = db.from("accesos_web").select("id", { count: "exact", head: true }).eq("ficha_id", fichaId).gte("creado", desdeFecha.toISOString());
+      if (ipHash) q = q.eq("ip_hash", ipHash);
+      const r = await q;
+      if (r.error) throw new Error(`Supabase: ${r.error.message}`);
+      return r.count ?? 0;
+    },
     async eventos(desdeFecha, tipos) {
       let q = db.from("eventos").select("ficha_id, conversacion_id, tipo, detalle, creado").gte("creado", desdeFecha.toISOString());
       if (tipos?.length) q = q.in("tipo", tipos);
@@ -332,6 +345,7 @@ function almacenEnMemoria(): Almacen {
   const convs = new Map<string, DetalleConversacion & { reiniciada?: number }>();
   const msgs: (MensajeAGuardar & { creado: number })[] = [];
   const evs: Evento[] = [];
+  const accesos: { fichaId: string; ipHash: string; creado: number }[] = [];
   const inicioMes = () => {
     const d = new Date();
     return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1);
@@ -457,6 +471,12 @@ function almacenEnMemoria(): Almacen {
     },
     async evento(fichaId, conversacionId, tipo, detalle) {
       evs.unshift({ ficha_id: fichaId, conversacion_id: conversacionId, tipo, detalle, creado: ahora() });
+    },
+    async registrarAccesoWeb(fichaId, ipHash) {
+      accesos.push({ fichaId, ipHash, creado: Date.now() });
+    },
+    async contarAccesosWeb(fichaId, ipHash, desdeFecha) {
+      return accesos.filter((a) => a.fichaId === fichaId && (!ipHash || a.ipHash === ipHash) && a.creado >= desdeFecha.getTime()).length;
     },
     async eventos(desdeFecha, tipos) {
       return evs.filter((e) => e.creado >= desdeFecha.toISOString() && (!tipos?.length || tipos.includes(e.tipo)));

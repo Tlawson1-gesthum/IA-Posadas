@@ -1,7 +1,7 @@
 // Tomar pedidos por WhatsApp y cargarlos en el sistema de MORFA (POST /api/pedidos, el mismo que usa la web).
 // Los precios y el envío los calcula este código con la carta en vivo, nunca el modelo.
 import type { ContextoHerramienta, Herramienta } from "../tipos.js";
-import { baseUrl, traerCarta } from "./semorfa.js";
+import { autorizacion, baseUrl, esChatWeb, traerCarta } from "./semorfa.js";
 
 interface LineaEntrada {
   id: string;
@@ -156,6 +156,7 @@ export const crearPedido: Herramienta = {
         referencia: { type: "string", description: "Piso, depto, color de la casa, entre calles, etc." },
         notas: { type: "string", description: "Aclaraciones para la cocina, si las hay." },
         pago: { type: "string", enum: ["efectivo", "mercadopago"] },
+        telefono: { type: "string", description: "Solo en el chat de la web: teléfono de contacto que te dio la persona. Por WhatsApp no hace falta." },
       },
       required: ["items", "lat", "lng", "nombre", "direccion", "pago"],
       additionalProperties: false,
@@ -166,6 +167,11 @@ export const crearPedido: Herramienta = {
     if (!c.ok || c.total === null) return JSON.stringify({ creado: false, motivo: "El pedido no es válido", cotizacion: c });
     if (!c.abierto) return JSON.stringify({ creado: false, motivo: c.motivo_cerrado ?? "El local está cerrado." });
     const pago = entrada.pago === "efectivo" ? "efectivo" : "mp";
+    const web = esChatWeb(ctx);
+    const telefono = web ? String(entrada.telefono ?? "").replace(/[^\d+]/g, "") : ctx.telefono.replace(/^\+?549/, "");
+    if (telefono.replace(/\D/g, "").length < 8) {
+      return JSON.stringify({ creado: false, motivo: "Falta un teléfono de contacto: pedíselo a la persona (con característica) y volvé a intentar." });
+    }
     if (pago === "efectivo" && !c.efectivo) return JSON.stringify({ creado: false, motivo: "Hoy no se acepta efectivo." });
 
     const cuerpo = {
@@ -177,12 +183,14 @@ export const crearPedido: Herramienta = {
       })),
       nombre: String(entrada.nombre ?? "").trim(),
       // La web guarda el teléfono como lo escribió el cliente: se manda sin el 549 para que el panel lo reconozca.
-      telefono: ctx.telefono.replace(/^\+?549/, ""),
+      telefono,
       direccion: String(entrada.direccion ?? "").trim(),
       referencia: String(entrada.referencia ?? "").trim(),
       lat: entrada.lat,
       lng: entrada.lng,
-      notas: ["[Pedido por WhatsApp]", String(entrada.notas ?? "").trim()].filter(Boolean).join(" "),
+      notas: [web ? "[Morfi · chat web]" : "[Morfi · WhatsApp]", String(entrada.notas ?? "").trim()].filter(Boolean).join(" "),
+      // Con la clave del agente, la web lo marca con este canal y, si es en efectivo, ya confirmado.
+      canal: web ? "chat" : "whatsapp",
     };
 
     // Mientras la ficha no lo habilite, no se toca el sistema real: se simula para probar sin mandar pedidos a la cocina.
@@ -200,7 +208,7 @@ export const crearPedido: Herramienta = {
 
     const r = await fetch(`${baseUrl(ctx)}/api/pedidos`, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", ...autorizacion(ctx) },
       body: JSON.stringify(cuerpo),
       signal: AbortSignal.timeout(15000),
     });

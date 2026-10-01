@@ -172,6 +172,7 @@ const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const usd = (n) => "US$ " + Number(n || 0).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fecha = (iso) => iso ? new Date(iso).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—";
 const hace = (min) => min == null ? "" : min < 60 ? `hace ${min} min` : min < 1440 ? `hace ${Math.round(min / 60)} h` : `hace ${Math.round(min / 1440)} d`;
+const nombreCharla = (t) => t.startsWith("web-publico-") ? "Burbuja en la web (cliente)" : t.startsWith("web-borrador-") ? "Prueba de borrador" : t.startsWith("web-") ? "Chat web de prueba" : "+" + t;
 const SEMAFORO = { verde: "Funcionando", amarillo: "Con charlas derivadas", rojo: "Con errores o sin saldo", gris: "Pausado" };
 
 function ponerTema(t) {
@@ -315,7 +316,7 @@ async function verCharlas(fichaId) {
     const { conversaciones } = await api("conversaciones", { ficha_id: fichaId, solo_derivadas: $("#solo-der").checked });
     $("#lista").innerHTML = conversaciones.length ? conversaciones.map((c) => `
       <div class="item-charla" data-id="${c.id}">
-        <div class="fila"><span class="punto ${c.estado === "humano" ? "amarillo" : "verde"}"></span><b>${esc(c.telefono.startsWith("web-") ? "Chat web de prueba" : "+" + c.telefono)}</b></div>
+        <div class="fila"><span class="punto ${c.estado === "humano" ? "amarillo" : "verde"}"></span><b>${esc(nombreCharla(c.telefono))}</b></div>
         <div class="chico">${esc((c.ultimo_texto || "").slice(0, 80))}</div>
         <div class="suave chico">${fecha(c.ultimo_creado || c.actualizada)} · ${c.mensajes} msj · ${usd(c.usd)}</div>
       </div>`).join("") : `<p class="suave" style="padding:10px">No hay charlas.</p>`;
@@ -332,14 +333,14 @@ async function abrirCharla(id) {
   const esWeb = c.telefono.startsWith("web-");
   $("#detalle").innerHTML = `
     <div class="fila" style="justify-content:space-between">
-      <b>${esc(esWeb ? "Chat web de prueba" : "+" + c.telefono)}</b>
+      <b>${esc(nombreCharla(c.telefono))}</b>
       ${c.estado === "humano" ? `<button class="primario" id="b-liberar">Devolver al agente</button>` : `<span class="suave chico">La atiende el agente</span>`}
     </div>
     ${c.estado === "humano" ? `<div class="aviso"><b>Derivada</b> ${hace(Math.round((Date.now() - Date.parse(c.derivada_en)) / 60000))}: ${esc(c.derivada_motivo)} — ${esc(c.derivada_resumen)}<br>
       <span class="chico">El agente no responde hasta que la devuelvas.</span></div>` : ""}
     <div class="mensajes" id="msjs">${mensajes.map((m) => `
       <div class="msg ${m.rol}">${esc(m.texto)}<small>${m.rol === "humano" ? "Persona del equipo · " : ""}${fecha(m.creado)}${m.herramientas?.length ? " · " + esc(m.herramientas.join(", ")) : ""}${m.usd ? " · " + usd(m.usd) : ""}</small></div>`).join("")}</div>
-    ${esWeb ? `<p class="suave chico">Charla del chat web de prueba: no se le puede escribir desde acá.</p>` : `
+    ${esWeb ? `<p class="suave chico">Charla del chat de la web: no hay un número de WhatsApp para escribirle desde acá.</p>` : `
     <form id="f-resp" style="margin-top:10px">
       <label for="resp">Responder como persona del equipo (le llega por WhatsApp; la charla queda en tus manos)</label>
       <textarea id="resp" rows="3" required></textarea>
@@ -388,6 +389,7 @@ async function verFicha(id) {
         <div class="grilla">
           <div><label>Tipo</label><input name="int_tipo" value="${esc(c.integracion?.tipo || "")}" placeholder="ej. semorfa"></div>
           <div><label>Dirección (base_url)</label><input name="int_base_url" value="${esc(c.integracion?.base_url || "")}" placeholder="https://..."></div>
+          <div><label>Clave (nombre de la variable en Vercel)</label><input name="int_clave" value="${esc(c.integracion?.clave_env || "")}" placeholder="ej. SEMORFA_AGENTE_CLAVE"></div>
           <div><label class="fila" style="color:var(--texto);margin-top:30px"><input type="checkbox" name="int_crear" style="width:auto" ${c.integracion?.crear_pedidos ? "checked" : ""}> Crear pedidos de verdad</label></div>
         </div>
       </div>
@@ -395,6 +397,20 @@ async function verFicha(id) {
         <h3 style="margin-top:0">Qué sabe y cómo habla</h3>
         <p class="suave chico">Cada campo completa la plantilla <b>${esc(c.plantilla)}</b>.</p>
         ${campos.map((k) => `<label>${esc(k.replace(/_/g, " "))}</label><textarea name="dato_${esc(k)}" rows="${Math.min(14, Math.max(3, String(c.datos?.[k] || "").split("\n").length + 1))}">${esc(c.datos?.[k] || "")}</textarea>`).join("")}
+      </div>
+      <div class="tarjeta" style="margin-top:12px">
+        <h3 style="margin-top:0">Chat en la web del cliente (burbuja)</h3>
+        <label class="fila" style="color:var(--texto)"><input type="checkbox" name="cw_activo" style="width:auto" ${c.chat_web?.activo ? "checked" : ""}> Mostrar la burbuja en su web</label>
+        <div class="grilla">
+          <div><label>Color</label><input name="cw_color" type="color" value="${esc(c.chat_web?.color || "#2563eb")}" style="height:40px;padding:4px"></div>
+          <div><label>Mensajes por hora por conexión</label><input name="cw_ip" type="number" min="1" value="${c.chat_web?.mensajes_por_ip_hora ?? 20}"></div>
+          <div><label>Tope de mensajes por día (todo el chat)</label><input name="cw_dia" type="number" min="10" value="${c.chat_web?.mensajes_por_dia ?? 400}"></div>
+        </div>
+        <label>Saludo al abrir (no gasta: no lo escribe la IA)</label>
+        <input name="cw_saludo" value="${esc(c.chat_web?.saludo || "")}" placeholder="¡Hola! ¿Qué se te antoja hoy?">
+        <label>Código para pegar en su web (una sola vez, antes de &lt;/body&gt;)</label>
+        <textarea readonly rows="2" onclick="this.select()" style="font-family:var(--numeros);font-size:12px">&lt;script src="${location.origin}/widget.js" data-ficha="${esc(f.id)}" defer&gt;&lt;/script&gt;</textarea>
+        <p class="suave chico">Se prende y apaga desde acá (al publicar). Con la burbuja apagada, el código no muestra nada. Para verla antes de activarla: <a target="_blank" rel="noopener" href="/widget.html?ficha=${encodeURIComponent(f.id)}">abrí la ventana del chat</a> (solo anda con la ficha publicada y activa).</p>
       </div>
       <div class="tarjeta" style="margin-top:12px">
         <h3 style="margin-top:0">Contrato y WhatsApp <span class="suave chico">(se guardan al instante, no van al borrador)</span></h3>
@@ -423,8 +439,10 @@ async function verFicha(id) {
       herramientas: [...form.querySelectorAll("input[name=herr]:checked")].map((x) => x.value),
       datos: Object.fromEntries(campos.map((k) => [k, form.elements["dato_" + k].value])),
     };
-    if (v("int_base_url").trim()) nueva.integracion = { tipo: v("int_tipo").trim(), base_url: v("int_base_url").trim(), crear_pedidos: form.elements.int_crear.checked };
+    if (v("int_base_url").trim()) nueva.integracion = { ...(c.integracion || {}), tipo: v("int_tipo").trim(), base_url: v("int_base_url").trim(), crear_pedidos: form.elements.int_crear.checked, clave_env: v("int_clave").trim() || undefined };
     else delete nueva.integracion;
+    nueva.chat_web = { activo: form.elements.cw_activo.checked, color: v("cw_color"), saludo: v("cw_saludo").trim(),
+      mensajes_por_ip_hora: Number(v("cw_ip")) || 20, mensajes_por_dia: Number(v("cw_dia")) || 400 };
     try {
       const r = await api("guardar", { id, config: nueva, abono_usd_mes: Number(v("abono")), whatsapp_phone_number_id: v("wa") });
       aviso(r.problemas.length ? "Borrador guardado, pero hay cosas para corregir" : "Borrador guardado. Probalo y publicalo.");

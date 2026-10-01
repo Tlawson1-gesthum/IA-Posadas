@@ -12,5 +12,20 @@
       "maxDuration": 30,
       "includeFiles": "{fichas,plantillas}/**"
     }
-  }
+  },
+  "headers": [
+    {
+      "source": "/widget.js",
+      "headers": [
+        {
+          "key": "cache-control",
+          "value": "public, max-age=300"
+        },
+        {
+          "key": "access-control-allow-origin",
+          "value": "*"
+        }
+      ]
+    }
+  ]
 }

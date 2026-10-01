@@ -1,4 +1,5 @@
-// Integración con el sistema propio de MORFA (semorfa.com.ar). API pública, sin login.
+// Integración con el sistema propio de MORFA (semorfa.com.ar). La carta y el seguimiento son públicos;
+// buscar pedidos por teléfono, confirmar efectivo y marcar los pedidos de Morfi usan una clave (integracion.clave_env).
 import type { ContextoHerramienta, Herramienta } from "../tipos.js";
 
 const CACHE_MS = 60_000;
@@ -10,8 +11,18 @@ export function baseUrl(ctx: ContextoHerramienta): string {
   return url.replace(/\/$/, "");
 }
 
-async function pedirJson(url: string): Promise<{ status: number; cuerpo: any }> {
-  const r = await fetch(url, { signal: AbortSignal.timeout(8000), headers: { accept: "application/json" } });
+/** Encabezado con la clave del agente, si la ficha tiene una configurada en Vercel. */
+export function autorizacion(ctx: ContextoHerramienta): Record<string, string> {
+  const nombre = ctx.ficha.integracion?.clave_env;
+  const clave = nombre ? process.env[nombre] : undefined;
+  return clave ? { authorization: `Bearer ${clave}` } : {};
+}
+
+/** El chat de la web no tiene un teléfono verificado (cualquiera podría escribir uno ajeno). */
+export const esChatWeb = (ctx: ContextoHerramienta) => !/^\d{8,}$/.test(ctx.telefono);
+
+async function pedirJson(url: string, init: RequestInit = {}): Promise<{ status: number; cuerpo: any }> {
+  const r = await fetch(url, { signal: AbortSignal.timeout(8000), ...init, headers: { accept: "application/json", ...init.headers } });
   const cuerpo = await r.json().catch(() => null);
   return { status: r.status, cuerpo };
 }
@@ -124,5 +135,63 @@ export const consultarPedido: Herramienta = {
       total: p.total,
       seguimiento: `${baseUrl(ctx)}/#/pedido/${p.codigo}`,
     });
+  },
+};
+
+export const misPedidos: Herramienta = {
+  definicion: {
+    name: "mis_pedidos",
+    description:
+      "Busca los pedidos de las últimas 48 horas hechos con el teléfono de quien te escribe por WhatsApp (no hace falta el código). Usala cuando pregunte por su pedido. En el chat de la web no funciona: ahí pedí el código y usá consultar_pedido.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  async ejecutar(_entrada, ctx) {
+    if (esChatWeb(ctx)) return JSON.stringify({ error: "En el chat de la web no se busca por teléfono. Pedile el código del pedido." });
+    const auth = autorizacion(ctx);
+    if (!auth.authorization) return JSON.stringify({ error: "Esta búsqueda no está disponible. Pedile el código del pedido." });
+    const { status, cuerpo } = await pedirJson(`${baseUrl(ctx)}/api/agente/pedidos?telefono=${encodeURIComponent(ctx.telefono)}`, { headers: auth });
+    if (status !== 200 || !cuerpo) throw new Error(`La web respondió ${status}`);
+    const pedidos = (cuerpo.pedidos ?? []).map((p: any) => ({
+      codigo: p.codigo,
+      estado: p.estado,
+      que_decir: QUE_DECIR[p.estado] ?? p.estado,
+      pago: p.pago,
+      esperando_confirmacion_del_local: p.pago === "efectivo" && p.estado === "nuevo" && !p.confirmado,
+      canal: p.canal,
+      creado: p.creado,
+      salio: p.salio,
+      entregado: p.entregado,
+      items: p.items,
+      total: p.total,
+      seguimiento: `${baseUrl(ctx)}/#/pedido/${p.codigo}`,
+    }));
+    return JSON.stringify(pedidos.length ? { pedidos } : { pedidos: [], nota: "No hay pedidos de este teléfono en las últimas 48 horas. Puede haber pedido con otro número: pedile el código." });
+  },
+};
+
+export const confirmarPedidoEfectivo: Herramienta = {
+  definicion: {
+    name: "confirmar_pedido_efectivo",
+    description:
+      "Confirma un pedido en efectivo hecho en la web que está esperando confirmación, cuando la persona te dice que sí lo quiere. Solo funciona si el pedido es del mismo teléfono que te escribe por WhatsApp. Con eso el local lo pone a cocinar.",
+    input_schema: {
+      type: "object",
+      properties: { codigo: { type: "string", description: "Código del pedido (sale de mis_pedidos o lo da la persona)." } },
+      required: ["codigo"],
+      additionalProperties: false,
+    },
+    strict: true,
+  },
+  async ejecutar(entrada, ctx) {
+    if (esChatWeb(ctx)) return JSON.stringify({ ok: false, error: "Desde el chat de la web no se pueden confirmar pedidos. El local le va a escribir por WhatsApp." });
+    const auth = autorizacion(ctx);
+    if (!auth.authorization) return JSON.stringify({ ok: false, error: "No disponible: derivá a una persona para confirmar." });
+    const { status, cuerpo } = await pedirJson(`${baseUrl(ctx)}/api/agente/confirmar`, {
+      method: "POST",
+      headers: { ...auth, "content-type": "application/json" },
+      body: JSON.stringify({ codigo: String(entrada.codigo ?? ""), telefono: ctx.telefono }),
+    });
+    if (status === 200) return JSON.stringify({ ok: true, ...cuerpo, nota: "Pedido confirmado: el local lo pone a cocinar." });
+    return JSON.stringify({ ok: false, error: cuerpo?.error ?? `La web respondió ${status}` });
   },
 };

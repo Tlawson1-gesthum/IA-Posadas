@@ -29,7 +29,11 @@ export interface Ficha {
     base_url: string;
     /** false = los pedidos se simulan (pruebas); true = se cargan de verdad en el sistema del cliente. */
     crear_pedidos?: boolean;
+    /** Nombre de la variable de entorno (en Vercel) con la clave para hablar con el sistema del cliente. Ej. SEMORFA_AGENTE_CLAVE. */
+    clave_env?: string;
   };
+  /** Burbuja de chat en la web del cliente. Apagada si falta o activo = false. */
+  chat_web?: ChatWeb;
   /** Valores que reemplazan los {{campos}} de la plantilla. */
   datos: Record<string, string>;
 }
@@ -78,3 +82,17 @@ export const LIMITES_POR_DEFECTO: Limites = {
   usd_por_persona_dia: 0.5,
   caracteres_por_mensaje: 1000,
 };
+
+export interface ChatWeb {
+  activo: boolean;
+  /** Primer mensaje que se ve al abrir la burbuja (no gasta: no lo escribe la IA). */
+  saludo?: string;
+  /** Color de la burbuja, ej. #E3261C. */
+  color?: string;
+  /** Mensajes por hora desde una misma conexión (IP). */
+  mensajes_por_ip_hora?: number;
+  /** Tope de mensajes por día de todo el chat de la web, para que un ataque no se coma el saldo del mes. */
+  mensajes_por_dia?: number;
+}
+
+export const CHAT_WEB_POR_DEFECTO = { mensajes_por_ip_hora: 20, mensajes_por_dia: 400 };

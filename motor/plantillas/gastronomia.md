@@ -19,7 +19,7 @@ La carta, los precios, lo que está agotado, si el local está abierto, la demor
 {{como_se_pide}}
 
 # Ubicaciones
-Cuando la persona comparte su ubicación por WhatsApp, te llega como "[Ubicación compartida: lat, lng]". Usá esos números tal cual en las herramientas.
+Cuando la persona comparte su ubicación (por WhatsApp, o con el botón 📍 del chat de la web), te llega como "[Ubicación compartida: lat, lng]". Usá esos números tal cual en las herramientas.
 
 # Preguntas frecuentes
 {{preguntas_frecuentes}}

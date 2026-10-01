@@ -41,7 +41,8 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
 
   // Solo para pruebas: un administrador escribe /reiniciar y la charla vuelve al agente, de cero.
   const admins = (process.env.ADMIN_TELEFONOS ?? "").split(",").map((t) => t.trim()).filter(Boolean);
-  const esAdmin = admins.includes(m.de) || m.de.startsWith("web-"); // el chat web ya pide clave
+  // El chat web de prueba ya pide clave; la burbuja pública (web-publico-) no puede reiniciar.
+  const esAdmin = admins.includes(m.de) || (m.de.startsWith("web-") && !m.de.startsWith("web-publico-"));
   if (m.texto.trim().toLowerCase() === "/reiniciar" && esAdmin) {
     await almacen.reiniciar(conv.id);
     await mandar("[Charla reiniciada: el agente vuelve a responder, sin memoria de lo anterior]");

@@ -19,6 +19,7 @@ mensaje ─► cerebro (src/cerebro.ts) ─► Claude ─► herramientas ─►
 | `fichas/morfa.json` | Semilla de la ficha de MORFA para probar en la compu. **La ficha real vive en Supabase y se edita desde el panel.** |
 | `api/panel.ts` + `public/panel.html` | Panel de gobierno: clientes con semáforo, pausar, costo contra abono, alertas, charlas, responder como persona, editar fichas con borrador, historial y vuelta atrás, alta de clientes. |
 | `api/chat.ts` + `public/index.html` | Chat web de prueba: `/?ficha=<id>` prueba lo publicado; `/?ficha=<id>&borrador=1` prueba los cambios sin publicar. |
+| `public/widget.js` + `public/widget.html` | Burbuja de chat para la web del cliente: `<script src="https://ia-posadas.vercel.app/widget.js" data-ficha="<id>" defer></script>`. Se prende desde la ficha (`chat_web.activo`). |
 | `pruebas/morfa.json` | 20 conversaciones de ejemplo con lo que se espera de cada respuesta. |
 
 ## Cómo probarlo (en tu compu)
@@ -56,6 +57,6 @@ En el chat: `ubicacion -27.37 -55.90` simula mandar el pin de ubicación; `liber
 2. ✅ **Conexión con WhatsApp Cloud API:** `api/whatsapp.ts` (webhook en Vercel: verifica la firma de Meta, responde 200 al toque y atiende en segundo plano), `src/atender.ts` (pausa, derivación, tope de gasto, `/reiniciar` para administradores) y memoria mínima en Supabase (`supabase/001_esquema.sql`). Cómo configurarlo: [GUIA-PASO-2-WHATSAPP.md](GUIA-PASO-2-WHATSAPP.md). Prueba local sin Meta: `npm run webhook-local`.
 3. **La central (Supabase):** fichas en la base con borrador, versiones e historial (`supabase/002_central.sql`); eventos (errores, derivaciones, límites, publicaciones); resúmenes calculados en la base. ✅
 5. **Panel de gobierno:** ✅ (`/panel.html`, clave `PANEL_CLAVE`). Falta: roles (fundador, ingeniero, closer) y el portal de cada cliente.
-4. **Del lado de semorfa (Cloudflare):** clave servidor a servidor; marcar los pedidos de WhatsApp con `canal = whatsapp` y, si son en efectivo, ya confirmados; buscar pedidos por teléfono; confirmar pedidos en efectivo de la web cuando el cliente responde "SÍ".
+4. ✅ **Morfi conectado a semorfa y burbuja en la web:** `AGENTE_CLAVE` servidor a servidor; pedidos de Morfi con canal `whatsapp` o `chat` (los de WhatsApp en efectivo entran confirmados); `mis_pedidos` y `confirmar_pedido_efectivo`; burbuja (`public/widget.js` + `widget.html`) con límites por conexión y por día. Guía: [GUIA-PASO-4-SEMORFA-Y-BURBUJA.md](GUIA-PASO-4-SEMORFA-Y-BURBUJA.md).
 5b. **Portal del cliente y roles:** que cada dueño vea solo lo suyo (sus charlas, pedidos y reporte) y usuarios con permisos distintos.
 6. **Salida a producción:** primero fuera de horario, después todo el día.
