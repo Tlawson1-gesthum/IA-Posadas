@@ -64,6 +64,9 @@ Vas a ir juntando datos. Anotalos en un Bloc de notas **que no compartas con nad
      | `WHATSAPP_VERIFY_TOKEN` | inventá una palabra larga, ej. `morfi-verifica-8472` |
      | `FICHA_POR_DEFECTO` | `morfa` |
      | `ADMIN_TELEFONOS` | tu número como lo manda WhatsApp: `549` + característica sin 0 + número sin 15. Ej: `5493764123456` |
+     | `CHAT_CLAVE` | una clave para el chat web de prueba, ej. `morfi-prueba-2026` |
+
+     Si todavía no tenés Meta, cargá todo menos `WHATSAPP_TOKEN` y `META_APP_SECRET`: el chat web funciona igual. Esas dos se agregan después (**Settings → Environment Variables**) y se hace **Redeploy**.
 
    - **Deploy**.
 4. El código del motor está en la rama `claude/pensive-gates-rc4r0l`, no en `main`. Si el deploy dice que no encuentra la carpeta `motor`: **Settings → Environments → Production → Branch Tracking** (o **Settings → Git → Production Branch**) → poné `claude/pensive-gates-rc4r0l` → guardá → **Deployments → Redeploy**.
@@ -72,6 +75,7 @@ Vas a ir juntando datos. Anotalos en un Bloc de notas **que no compartas con nad
    https://TU-DOMINIO.vercel.app/api/whatsapp
    ```
 6. Probá abrir en el navegador `https://TU-DOMINIO.vercel.app/api/whatsapp`. Tiene que decir **No autorizado**: eso está bien, significa que el motor está vivo.
+7. **Chat web de prueba (sin WhatsApp):** abrí `https://TU-DOMINIO.vercel.app`. Te pide la `CHAT_CLAVE` una vez y ya podés chatear con Morfi, con memoria real. El botón 📍 manda tu ubicación. **Nueva charla** empieza de cero.
 
 ## D. Conectar Meta con Vercel (5 min)
 

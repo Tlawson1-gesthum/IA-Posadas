@@ -3,6 +3,10 @@
     "api/whatsapp.ts": {
       "maxDuration": 60,
       "includeFiles": "{fichas,plantillas}/**"
+    },
+    "api/chat.ts": {
+      "maxDuration": 60,
+      "includeFiles": "{fichas,plantillas}/**"
     }
   }
 }

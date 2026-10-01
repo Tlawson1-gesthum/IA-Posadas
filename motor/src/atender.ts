@@ -1,4 +1,5 @@
-// El recorrido completo de un mensaje de WhatsApp: ficha → reglas → cerebro → respuesta → registro.
+// El recorrido completo de un mensaje: ficha → reglas → cerebro → respuesta → registro.
+// Sirve para WhatsApp y para el chat web: lo único que cambia es cómo se manda la respuesta.
 import { obtenerAlmacen } from "./almacen.js";
 import { responder } from "./cerebro.js";
 import { fichaPorNumero } from "./fichas.js";
@@ -8,7 +9,10 @@ const NO_LEO = "Por ahora solo leo mensajes de texto y ubicaciones. ¿Me lo escr
 const ERROR = "Uh, se me trabó algo. Ya le aviso a alguien del equipo para que te responda.";
 const SIN_SALDO = "Ahora no puedo responderte por acá. Ya le aviso a alguien del equipo.";
 
-export async function atender(m: MensajeEntrante): Promise<void> {
+type Enviar = (texto: string) => Promise<void>;
+
+export async function atender(m: MensajeEntrante, enviar?: Enviar): Promise<void> {
+  const mandar: Enviar = enviar ?? ((texto) => enviarTexto(m.phoneNumberId, m.de, texto));
   const ficha = fichaPorNumero(m.phoneNumberId);
   if (!ficha) {
     console.warn(`Mensaje a un número sin ficha: ${m.phoneNumberId}`);
@@ -25,9 +29,10 @@ export async function atender(m: MensajeEntrante): Promise<void> {
 
   // Solo para pruebas: un administrador escribe /reiniciar y la charla vuelve al agente, de cero.
   const admins = (process.env.ADMIN_TELEFONOS ?? "").split(",").map((t) => t.trim()).filter(Boolean);
-  if (m.texto.trim().toLowerCase() === "/reiniciar" && admins.includes(m.de)) {
+  const esAdmin = admins.includes(m.de) || m.de.startsWith("web-"); // el chat web ya pide clave
+  if (m.texto.trim().toLowerCase() === "/reiniciar" && esAdmin) {
     await almacen.reiniciar(conv.id);
-    await enviarTexto(m.phoneNumberId, m.de, "[Charla reiniciada: Morfi vuelve a responder, sin memoria de lo anterior]");
+    await mandar("[Charla reiniciada: Morfi vuelve a responder, sin memoria de lo anterior]");
     return;
   }
 
@@ -35,7 +40,7 @@ export async function atender(m: MensajeEntrante): Promise<void> {
   if (conv.estado === "humano") return;
 
   const contestar = async (texto: string, extra: Partial<Parameters<typeof almacen.guardar>[0]> = {}) => {
-    await enviarTexto(m.phoneNumberId, m.de, texto);
+    await mandar(texto);
     await almacen.guardar({ conversacionId: conv.id, fichaId: ficha.id, rol: "agente", texto, ...extra });
   };
 
