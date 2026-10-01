@@ -3,10 +3,12 @@
 import { obtenerAlmacen } from "./almacen.js";
 import { responder } from "./cerebro.js";
 import { fichaPorNumero } from "./fichas.js";
+import { LIMITES_POR_DEFECTO } from "./tipos.js";
 import { enviarTexto, type MensajeEntrante } from "./whatsapp.js";
 
 const NO_LEO = "Por ahora solo leo mensajes de texto y ubicaciones. ¿Me lo escribís?";
 const ERROR = "Uh, se me trabó algo. Ya le aviso a alguien del equipo para que te responda.";
+const MUCHOS_MENSAJES = "Recibimos muchos mensajes seguidos. Para seguir, pedí en https://semorfa.com.ar o escribinos más tarde.";
 const SIN_SALDO = "Ahora no puedo responderte por acá. Ya le aviso a alguien del equipo.";
 
 type Enviar = (texto: string) => Promise<void>;
@@ -20,6 +22,10 @@ export async function atender(m: MensajeEntrante, enviar?: Enviar): Promise<void
   }
   // Agente pausado (falta de pago o pedido del cliente): no responde ni gasta.
   if (ficha.estado !== "activo") return;
+
+  const limites = { ...LIMITES_POR_DEFECTO, ...ficha.limites };
+  // Un mensaje larguísimo cuesta más y no lo manda un cliente real: se corta.
+  m = { ...m, texto: m.texto.slice(0, limites.caracteres_por_mensaje) };
 
   const almacen = obtenerAlmacen();
   const conv = await almacen.conversacion(ficha.id, m.de);
@@ -46,6 +52,19 @@ export async function atender(m: MensajeEntrante, enviar?: Enviar): Promise<void
 
   if (m.noSoportado) return contestar(NO_LEO);
   if (!m.texto.trim()) return;
+
+  // Límites por persona: cuando se pasa, se avisa una sola vez y después el agente no responde (ni gasta).
+  const hora = await almacen.actividad(conv.id, new Date(Date.now() - 3600_000));
+  const dia = await almacen.actividad(conv.id, new Date(Date.now() - 24 * 3600_000));
+  const excedido =
+    hora.mensajes > limites.mensajes_por_hora || dia.mensajes > limites.mensajes_por_dia || dia.usd >= limites.usd_por_persona_dia;
+  if (excedido) {
+    const ultimaDelAgente = (await almacen.historial(conv.id)).filter((t) => t.rol === "agente").at(-1);
+    const primeraVez = ultimaDelAgente?.texto !== MUCHOS_MENSAJES;
+    console.warn(`Ficha ${ficha.id}: límite por persona (${m.de}) · ${hora.mensajes}/h · ${dia.mensajes}/día · US$ ${dia.usd.toFixed(3)}/día`);
+    if (primeraVez) return contestar(MUCHOS_MENSAJES);
+    return;
+  }
 
   if ((await almacen.gastoDelMes(ficha.id)) >= ficha.tope_usd_mes) {
     console.error(`Ficha ${ficha.id}: se alcanzó el tope mensual de US$ ${ficha.tope_usd_mes}`);

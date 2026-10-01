@@ -17,6 +17,8 @@ export interface Ficha {
   esfuerzo: "low" | "medium" | "high";
   /** Tope de gasto mensual en API de Claude, en USD. */
   tope_usd_mes: number;
+  /** Límites por persona, para que nadie haga gastar de más. Si falta alguno se usa el valor por defecto. */
+  limites?: Partial<Limites>;
   /** Id del número de WhatsApp del cliente en Meta (Phone number ID). */
   whatsapp_phone_number_id?: string;
   /** Herramientas habilitadas para este cliente (nombres del registro de herramientas). */
@@ -58,3 +60,21 @@ export interface Respuesta {
   herramientasUsadas: string[];
   uso: { entrada: number; salida: number; cacheLeida: number; cacheEscrita: number; usd: number };
 }
+
+export interface Limites {
+  /** Mensajes que una persona puede mandar en una hora. */
+  mensajes_por_hora: number;
+  /** Mensajes que una persona puede mandar en un día. */
+  mensajes_por_dia: number;
+  /** Gasto máximo de API por persona por día, en USD. */
+  usd_por_persona_dia: number;
+  /** Largo máximo de un mensaje; lo que sobra se corta. */
+  caracteres_por_mensaje: number;
+}
+
+export const LIMITES_POR_DEFECTO: Limites = {
+  mensajes_por_hora: 30,
+  mensajes_por_dia: 80,
+  usd_por_persona_dia: 0.5,
+  caracteres_por_mensaje: 1000,
+};

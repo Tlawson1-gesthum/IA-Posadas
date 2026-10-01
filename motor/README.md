@@ -45,7 +45,7 @@ En el chat: `ubicacion -27.37 -55.90` simula mandar el pin de ubicación; `liber
 - **Pedidos solo con código.** Al modelo no le llega la dirección del pedido.
 - **Derivación.** Cuando deriva, el motor marca la charla y el agente se calla hasta que una persona la libere.
 - **Modelo.** `claude-opus-5-5` con esfuerzo `low` (rápido y barato para chat). Se cambia por ficha (`modelo`, `esfuerzo`). Tiene activado el respaldo automático del servidor (`fallbacks: "default"`): si el modelo rechaza un mensaje, otro modelo responde en la misma llamada.
-- **Costo.** Cada respuesta devuelve tokens y US$; en el paso 3 se guarda por cliente y se corta al llegar a `tope_usd_mes`.
+- **Costo y abuso.** Cada respuesta guarda tokens y US$. Topes: `tope_usd_mes` por cliente (negocio) y `limites` por persona que escribe (mensajes por hora y por día, US$ por día, largo máximo del mensaje). Al pasarse, avisa una sola vez y después no responde ni gasta. Además, cada mensaje tiene como máximo 5 vueltas de herramientas y los últimos 20 turnos de historial.
 
 ## Paso a paso
 

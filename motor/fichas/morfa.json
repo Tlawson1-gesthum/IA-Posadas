@@ -7,6 +7,12 @@
   "modelo": "claude-opus-5-5",
   "esfuerzo": "low",
   "tope_usd_mes": 30,
+  "limites": {
+    "mensajes_por_hora": 30,
+    "mensajes_por_dia": 80,
+    "usd_por_persona_dia": 0.5,
+    "caracteres_por_mensaje": 1000
+  },
   "herramientas": [
     "ver_carta_y_estado",
     "consultar_pedido",

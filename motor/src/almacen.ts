@@ -32,6 +32,8 @@ export interface Almacen {
   /** Devuelve la charla al agente y empieza de cero (el historial queda guardado, pero no se usa). */
   reiniciar(conversacionId: string): Promise<void>;
   gastoDelMes(fichaId: string): Promise<number>;
+  /** Cuántos mensajes mandó la persona y cuánto gastó el agente con ella desde una fecha. */
+  actividad(conversacionId: string, desde: Date): Promise<{ mensajes: number; usd: number }>;
 }
 
 function inicioDeMes(): string {
@@ -110,6 +112,15 @@ function almacenSupabase(url: string, clave: string): Almacen {
           .eq("id", conversacionId),
       );
     },
+    async actividad(conversacionId, desde) {
+      const filas = ok(
+        await db.from("mensajes").select("rol, usd").eq("conversacion_id", conversacionId).gte("creado", desde.toISOString()),
+      ) as { rol: string; usd: number }[];
+      return {
+        mensajes: filas.filter((f) => f.rol === "cliente").length,
+        usd: filas.reduce((s, f) => s + Number(f.usd), 0),
+      };
+    },
     async gastoDelMes(fichaId) {
       const filas = ok(
         await db.from("mensajes").select("usd").eq("ficha_id", fichaId).gte("creado", inicioDeMes()),
@@ -151,6 +162,13 @@ function almacenEnMemoria(): Almacen {
     async reiniciar(id) {
       const c = convs.get(id);
       if (c) Object.assign(c, { estado: "agente", reiniciada: Date.now() });
+    },
+    async actividad(id, desde) {
+      const propios = msgs.filter((m) => m.conversacionId === id && m.creado >= desde.getTime());
+      return {
+        mensajes: propios.filter((m) => m.rol === "cliente").length,
+        usd: propios.reduce((s, m) => s + (m.usd ?? 0), 0),
+      };
     },
     async gastoDelMes(fichaId) {
       return msgs.filter((m) => m.fichaId === fichaId).reduce((s, m) => s + (m.usd ?? 0), 0);
