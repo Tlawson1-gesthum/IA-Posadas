@@ -8,7 +8,7 @@ import { responder } from "../src/cerebro.js";
 import { cargarFicha } from "../src/fichas.js";
 import type { Turno } from "../src/tipos.js";
 
-const ficha = cargarFicha(process.argv[2] ?? "morfa");
+const ficha = await cargarFicha(process.argv[2] ?? "morfa");
 const historial: Turno[] = [];
 let total = 0;
 let derivada = false;

@@ -19,7 +19,7 @@ interface Caso {
 
 const id = process.argv[2] ?? "morfa";
 const filtro = process.argv[3]?.toLowerCase();
-const ficha = cargarFicha(id);
+const ficha = await cargarFicha(id);
 const casos: Caso[] = JSON.parse(readFileSync(new URL(`../pruebas/${id}.json`, import.meta.url), "utf8"));
 
 let fallas = 0;

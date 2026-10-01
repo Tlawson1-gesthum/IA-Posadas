@@ -16,7 +16,9 @@ mensaje ─► cerebro (src/cerebro.ts) ─► Claude ─► herramientas ─►
 | `src/fichas.ts` | Carga la ficha y arma el prompt. Falla si falta completar un campo de la plantilla. |
 | `src/herramientas/` | `ver_carta_y_estado` y `consultar_pedido` (leen en vivo la API de MORFA); `cotizar_pedido` y `crear_pedido` (toman pedidos por WhatsApp y los cargan en el sistema); `derivar_a_persona`. |
 | `plantillas/gastronomia.md` | Instrucciones base para cualquier local gastronómico. |
-| `fichas/morfa.json` | La ficha de MORFA: voz, preguntas frecuentes, cuándo derivar, modelo, tope de gasto. |
+| `fichas/morfa.json` | Semilla de la ficha de MORFA para probar en la compu. **La ficha real vive en Supabase y se edita desde el panel.** |
+| `api/panel.ts` + `public/panel.html` | Panel de gobierno: clientes con semáforo, pausar, costo contra abono, alertas, charlas, responder como persona, editar fichas con borrador, historial y vuelta atrás, alta de clientes. |
+| `api/chat.ts` + `public/index.html` | Chat web de prueba: `/?ficha=<id>` prueba lo publicado; `/?ficha=<id>&borrador=1` prueba los cambios sin publicar. |
 | `pruebas/morfa.json` | 20 conversaciones de ejemplo con lo que se espera de cada respuesta. |
 
 ## Cómo probarlo (en tu compu)
@@ -33,6 +35,7 @@ npm run chat                 # chatear con el agente en la terminal
 npm run chat-abierto         # igual, pero haciendo de cuenta que el local está abierto (para probar pedidos de día)
 npm run probar               # correr la batería de pruebas (cuesta centavos de dólar)
 npm run probar -- morfa celí # correr solo los casos que contienen "celí"
+npm run local                # chat y panel en http://localhost:3000 (sin Supabase usa memoria y las fichas de fichas/)
 ```
 
 En el chat: `ubicacion -27.37 -55.90` simula mandar el pin de ubicación; `liberar` devuelve la charla al agente después de una derivación; `salir` termina.
@@ -50,8 +53,9 @@ En el chat: `ubicacion -27.37 -55.90` simula mandar el pin de ubicación; `liber
 ## Paso a paso
 
 1. **Cerebro + ficha de MORFA + simulador + pruebas.** ✅
-2. **Conexión con WhatsApp Cloud API:** `api/whatsapp.ts` (webhook en Vercel: verifica la firma de Meta, responde 200 al toque y atiende en segundo plano), `src/atender.ts` (pausa, derivación, tope de gasto, `/reiniciar` para administradores) y memoria mínima en Supabase (`supabase/001_esquema.sql`). Cómo configurarlo: [GUIA-PASO-2-WHATSAPP.md](GUIA-PASO-2-WHATSAPP.md). Prueba local sin Meta: `npm run webhook-local`.
-3. **Base de datos (Supabase):** fichas, conversaciones, mensajes, derivaciones, consumo y tope de gasto por cliente.
+2. ✅ **Conexión con WhatsApp Cloud API:** `api/whatsapp.ts` (webhook en Vercel: verifica la firma de Meta, responde 200 al toque y atiende en segundo plano), `src/atender.ts` (pausa, derivación, tope de gasto, `/reiniciar` para administradores) y memoria mínima en Supabase (`supabase/001_esquema.sql`). Cómo configurarlo: [GUIA-PASO-2-WHATSAPP.md](GUIA-PASO-2-WHATSAPP.md). Prueba local sin Meta: `npm run webhook-local`.
+3. **La central (Supabase):** fichas en la base con borrador, versiones e historial (`supabase/002_central.sql`); eventos (errores, derivaciones, límites, publicaciones); resúmenes calculados en la base. ✅
+5. **Panel de gobierno:** ✅ (`/panel.html`, clave `PANEL_CLAVE`). Falta: roles (fundador, ingeniero, closer) y el portal de cada cliente.
 4. **Del lado de semorfa (Cloudflare):** clave servidor a servidor; marcar los pedidos de WhatsApp con `canal = whatsapp` y, si son en efectivo, ya confirmados; buscar pedidos por teléfono; confirmar pedidos en efectivo de la web cuando el cliente responde "SÍ".
-5. **Panel de gobierno y portal del cliente:** semáforo, pausar, ver charlas, tomar el control, editar la ficha con historial.
+5b. **Portal del cliente y roles:** que cada dueño vea solo lo suyo (sus charlas, pedidos y reporte) y usuarios con permisos distintos.
 6. **Salida a producción:** primero fuera de horario, después todo el día.

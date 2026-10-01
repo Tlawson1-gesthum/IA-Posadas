@@ -10,7 +10,8 @@
     "herramientas": "tsx scripts/herramientas.ts",
     "tipos": "tsc --noEmit",
     "chat-abierto": "tsx scripts/chat.ts morfa --abierto",
-    "webhook-local": "tsx scripts/webhook-local.ts"
+    "webhook-local": "tsx scripts/webhook-local.ts",
+    "local": "tsx scripts/servidor-local.ts"
   },
   "engines": {
     "node": ">=20"

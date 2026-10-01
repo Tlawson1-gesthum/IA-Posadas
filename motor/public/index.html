@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Morfi · prueba</title>
+<title>Chat de prueba</title>
 <style>
   :root {
     --fondo: #efe7de; --barra: #1f1f1f; --texto: #111; --suave: #667;
@@ -36,8 +36,8 @@
 </head>
 <body>
 <header>
-  <div class="avatar">M</div>
-  <div><b>Morfi · MORFA</b><small id="estado">chat de prueba</small></div>
+  <div class="avatar" id="avatar">·</div>
+  <div><b id="titulo">Chat de prueba</b><small id="estado">chat de prueba</small></div>
   <button id="nueva" type="button" title="Empezar una charla nueva, sin memoria">Nueva charla</button>
 </header>
 <main id="charla" aria-live="polite"></main>
@@ -52,9 +52,15 @@
   const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
   const nuevaSesion = () => Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
 
-  let clave = leer("morfi-clave") || "";
-  let sesion = leer("morfi-sesion") || nuevaSesion();
-  guardar("morfi-sesion", sesion);
+  const params = new URLSearchParams(location.search);
+  const ficha = (params.get("ficha") || "").replace(/[^a-z0-9-]/g, "");
+  const borrador = params.get("borrador") === "1";
+  const claveSesion = "chat-sesion-" + (ficha || "def") + (borrador ? "-b" : "");
+  let clave = leer("chat-clave") || "";
+  let sesion = leer(claveSesion) || nuevaSesion();
+  guardar(claveSesion, sesion);
+  const estadoBase = borrador ? "probando el BORRADOR (sin publicar)" : "chat de prueba";
+  $("estado").textContent = estadoBase;
 
   function burbuja(texto, clase) {
     const d = document.createElement("div");
@@ -74,22 +80,27 @@
   }
 
   async function mandar(texto) {
-    if (!clave) {
-      clave = prompt("Clave del chat de prueba (CHAT_CLAVE en Vercel):") || "";
-      guardar("morfi-clave", clave);
+    if (!clave && !borrador) {
+      clave = prompt("Clave del chat de prueba (CHAT_CLAVE en Vercel). Si entraste al panel, dejalo vacío:") || "";
+      guardar("chat-clave", clave);
     }
     burbuja(texto.startsWith("[Ubicación") ? "📍 Ubicación compartida" : texto, "cliente");
     $("enviar").disabled = true; $("estado").textContent = "escribiendo…";
     try {
       const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ clave, sesion, texto }) });
+        body: JSON.stringify({ clave, sesion, texto, ficha, borrador }) });
       const j = await r.json().catch(() => ({}));
-      if (r.status === 403) { clave = ""; guardar("morfi-clave", ""); aviso("Clave incorrecta. Probá de nuevo."); }
+      if (j.ficha) {
+        $("titulo").textContent = (j.ficha.agente ? j.ficha.agente + " · " : "") + j.ficha.nombre;
+        $("avatar").textContent = (j.ficha.agente || j.ficha.nombre)[0];
+        document.title = $("titulo").textContent;
+      }
+      if (r.status === 403) { clave = ""; guardar("chat-clave", ""); aviso(j.error || "Clave incorrecta. Probá de nuevo."); }
       else if (!r.ok) aviso("Error: " + (j.error || r.status));
-      else if (!j.respuestas.length) aviso("(Morfi no responde: la charla está derivada a una persona. Escribí /reiniciar o tocá «Nueva charla».)");
+      else if (!j.respuestas.length) aviso("(El agente no responde: la charla está derivada a una persona o el agente está pausado. Escribí /reiniciar o tocá «Nueva charla».)");
       else j.respuestas.forEach((t) => burbuja(t, "agente"));
     } catch (e) { aviso("No se pudo conectar: " + e.message); }
-    $("enviar").disabled = false; $("estado").textContent = "chat de prueba"; $("texto").focus();
+    $("enviar").disabled = false; $("estado").textContent = estadoBase; $("texto").focus();
   }
 
   $("form").addEventListener("submit", (e) => {
@@ -112,10 +123,10 @@
     );
   });
   $("nueva").addEventListener("click", () => {
-    sesion = nuevaSesion(); guardar("morfi-sesion", sesion);
-    $("charla").innerHTML = ""; aviso("Charla nueva. Morfi no recuerda lo anterior.");
+    sesion = nuevaSesion(); guardar(claveSesion, sesion);
+    $("charla").innerHTML = ""; aviso("Charla nueva. El agente no recuerda lo anterior.");
   });
-  aviso("Chat de prueba de Morfi. Los pedidos son simulados: a la cocina no le llega nada.");
+  aviso(borrador ? "Probando los cambios sin publicar. Los clientes reales siguen con la versión publicada." : "Chat de prueba. Si el agente toma pedidos, revisá en su ficha si están simulados.");
   $("texto").focus();
 </script>
 </body>

@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Central de agentes</title>
+<style>
+  :root {
+    --fondo: #f5f5f4; --tarjeta: #fff; --texto: #1c1917; --suave: #6b6560; --borde: #e7e5e4;
+    --acento: #2563eb; --acento-txt: #fff; --verde: #16a34a; --amarillo: #d97706; --rojo: #dc2626; --gris: #a8a29e;
+    --cliente: #e8f0fe; --agente: #f1f5f0; --humano: #fff4e0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --fondo: #121212; --tarjeta: #1d1d1d; --texto: #ececec; --suave: #a3a3a3; --borde: #333;
+      --acento: #60a5fa; --acento-txt: #0b1220; --cliente: #1e2a3d; --agente: #1f2a22; --humano: #3a2f1a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fondo); color: var(--texto); }
+  header.barra { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 10px 16px;
+    background: var(--tarjeta); border-bottom: 1px solid var(--borde); }
+  header.barra h1 { font-size: 17px; margin: 0; cursor: pointer; }
+  header.barra .der { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  main { max-width: 1150px; margin: 0 auto; padding: 16px; }
+  h2 { font-size: 18px; margin: 22px 0 10px; } h3 { font-size: 15px; margin: 16px 0 8px; }
+  .tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 14px; }
+  button, .boton { font: inherit; border: 1px solid var(--borde); background: var(--tarjeta); color: var(--texto); border-radius: 8px;
+    padding: 7px 12px; cursor: pointer; text-decoration: none; display: inline-block; }
+  button.primario, .boton.primario { background: var(--acento); color: var(--acento-txt); border-color: var(--acento); }
+  button.peligro { color: var(--rojo); border-color: var(--rojo); }
+  button:disabled { opacity: .5; cursor: default; }
+  input, select, textarea { font: inherit; color: var(--texto); background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 8px; padding: 7px 9px; width: 100%; }
+  textarea { min-height: 90px; resize: vertical; }
+  label { display: block; font-size: 13px; color: var(--suave); margin: 10px 0 4px; }
+  .suave { color: var(--suave); } .chico { font-size: 13px; }
+  .fila { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px 14px; }
+  .punto { width: 11px; height: 11px; border-radius: 50%; display: inline-block; flex: none; }
+  .verde { background: var(--verde); } .amarillo { background: var(--amarillo); } .rojo { background: var(--rojo); } .gris { background: var(--gris); }
+  .tabla { width: 100%; border-collapse: collapse; }
+  .tabla th, .tabla td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
+  .tabla th { font-size: 12px; color: var(--suave); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+  .tabla tr.click { cursor: pointer; } .tabla tr.click:hover { background: var(--fondo); }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .neg { color: var(--rojo); font-weight: 600; }
+  .alerta { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-left: 4px solid var(--amarillo); background: var(--tarjeta);
+    border-radius: 8px; margin-bottom: 8px; cursor: pointer; border-top: 1px solid var(--borde); border-right: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
+  .alerta.error, .alerta.tope_mes { border-left-color: var(--rojo); }
+  .pestanas { display: flex; gap: 4px; border-bottom: 1px solid var(--borde); margin: 12px 0 14px; overflow-x: auto; }
+  .pestanas button { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 9px 12px; }
+  .pestanas button.on { border-bottom-color: var(--acento); font-weight: 600; }
+  .charla { display: grid; grid-template-columns: minmax(240px, 340px) 1fr; gap: 14px; }
+  .lista-charlas { max-height: 70vh; overflow-y: auto; }
+  .item-charla { padding: 10px; border-bottom: 1px solid var(--borde); cursor: pointer; }
+  .item-charla.sel { background: var(--fondo); }
+  .mensajes { display: flex; flex-direction: column; gap: 6px; max-height: 55vh; overflow-y: auto; padding: 4px; }
+  .msg { max-width: 85%; padding: 7px 10px; border-radius: 10px; white-space: pre-wrap; word-wrap: break-word; }
+  .msg.cliente { align-self: flex-start; background: var(--cliente); }
+  .msg.agente { align-self: flex-end; background: var(--agente); }
+  .msg.humano { align-self: flex-end; background: var(--humano); }
+  .msg small { display: block; font-size: 11px; color: var(--suave); margin-top: 3px; }
+  .aviso { padding: 10px 12px; border-radius: 8px; background: var(--humano); margin: 8px 0; }
+  .problemas { color: var(--rojo); margin: 6px 0; padding-left: 18px; }
+  .centro { min-height: 80vh; display: grid; place-items: center; }
+  .oculto { display: none !important; }
+  #toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--texto); color: var(--fondo);
+    padding: 10px 16px; border-radius: 8px; z-index: 20; max-width: 90vw; }
+  @media (max-width: 760px) {
+    .charla { grid-template-columns: 1fr; }
+    .tabla .opcional { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="barra">
+  <h1 onclick="ir('')">Central de agentes</h1>
+  <div class="der oculto" id="barra-der">
+    <span id="cuenta-alertas" class="chico"></span>
+    <button onclick="salir()">Salir</button>
+  </div>
+</header>
+<main id="vista"></main>
+<div id="toast" class="oculto"></div>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const usd = (n) => "US$ " + Number(n || 0).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fecha = (iso) => iso ? new Date(iso).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—";
+const hace = (min) => min == null ? "" : min < 60 ? `hace ${min} min` : min < 1440 ? `hace ${Math.round(min / 60)} h` : `hace ${Math.round(min / 1440)} d`;
+const SEMAFORO = { verde: "Funcionando", amarillo: "Con charlas derivadas", rojo: "Con errores o sin saldo", gris: "Pausado" };
+
+function aviso(texto) {
+  const t = $("#toast"); t.textContent = texto; t.classList.remove("oculto");
+  clearTimeout(aviso.t); aviso.t = setTimeout(() => t.classList.add("oculto"), 4000);
+}
+
+async function api(accion, datos = {}) {
+  const r = await fetch("/api/panel", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ accion, ...datos }) });
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401 && accion !== "entrar") { mostrarEntrar(); throw new Error(j.error || "Sesión vencida"); }
+  if (!r.ok) throw new Error(j.error || "Algo salió mal");
+  return j;
+}
+
+function ir(ruta) { location.hash = ruta ? "#" + ruta : ""; }
+window.addEventListener("hashchange", enrutar);
+
+async function enrutar() {
+  const [vista, id, sub] = location.hash.slice(1).split("/");
+  try {
+    if (vista === "cliente" && id) await verCliente(decodeURIComponent(id), sub || "charlas");
+    else if (vista === "nuevo") verNuevo();
+    else await verTablero();
+    $("#barra-der").classList.remove("oculto");
+  } catch (e) { if (!String(e.message).includes("Sesión")) aviso(e.message); }
+}
+
+// ------------------------------------------------------------------ entrar
+function mostrarEntrar() {
+  $("#barra-der").classList.add("oculto");
+  $("#vista").innerHTML = `
+    <div class="centro"><form class="tarjeta" id="f-entrar" style="width:min(360px,100%)">
+      <h2 style="margin-top:0">Entrar</h2>
+      <label for="clave">Clave del panel</label>
+      <input id="clave" type="password" autocomplete="current-password" required autofocus>
+      <p class="fila" style="margin-top:14px"><button class="primario" type="submit">Entrar</button></p>
+    </form></div>`;
+  $("#f-entrar").onsubmit = async (e) => {
+    e.preventDefault();
+    try { await api("entrar", { clave: $("#clave").value }); enrutar(); } catch (err) { aviso(err.message); }
+  };
+}
+async function salir() { await api("salir").catch(() => {}); mostrarEntrar(); }
+
+// ------------------------------------------------------------------ tablero
+async function verTablero() {
+  const { clientes, alertas } = await api("tablero");
+  const derivadas = alertas.filter((a) => a.tipo === "derivada").length;
+  $("#cuenta-alertas").innerHTML = alertas.length ? `<span class="punto rojo"></span> ${alertas.length} alerta${alertas.length > 1 ? "s" : ""}` : "";
+  const totalGasto = clientes.reduce((s, c) => s + c.gasto_mes, 0), totalAbono = clientes.filter((c) => c.estado === "activo").reduce((s, c) => s + c.abono_mes, 0);
+  $("#vista").innerHTML = `
+    <div class="grilla">
+      <div class="tarjeta"><div class="suave chico">Clientes activos</div><b style="font-size:22px">${clientes.filter((c) => c.estado === "activo").length} / ${clientes.length}</b></div>
+      <div class="tarjeta"><div class="suave chico">Abonos del mes (activos)</div><b style="font-size:22px">${usd(totalAbono)}</b></div>
+      <div class="tarjeta"><div class="suave chico">Costo de IA del mes</div><b style="font-size:22px">${usd(totalGasto)}</b></div>
+      <div class="tarjeta"><div class="suave chico">Charlas esperando a una persona</div><b style="font-size:22px">${derivadas}</b></div>
+    </div>
+    <h2>Alertas</h2>
+    <div id="alertas">${alertas.length ? alertas.map((a, i) => `
+      <div class="alerta ${esc(a.tipo)}" data-i="${i}">
+        <div><b>${esc(a.cliente)}</b> · ${a.tipo === "derivada" ? "Charla derivada sin resolver" : a.tipo === "tope_mes" ? "Llegó al tope de gasto" : "Error del agente"}
+        <span class="suave chico">${hace(a.minutos)}</span><br><span class="chico">${esc(a.detalle)}</span></div>
+      </div>`).join("") : `<p class="suave">Sin alertas. Todo en orden.</p>`}</div>
+    <div class="fila" style="justify-content:space-between"><h2>Clientes</h2><button class="primario" onclick="ir('nuevo')">+ Cliente nuevo</button></div>
+    <div class="tarjeta" style="padding:0;overflow-x:auto"><table class="tabla">
+      <thead><tr><th></th><th>Cliente</th><th class="num">Costo IA / tope</th><th class="num opcional">Abono</th><th class="num">Margen</th>
+        <th class="num opcional">Mensajes</th><th class="num opcional">Charlas</th><th></th></tr></thead>
+      <tbody>${clientes.map((c) => {
+        const margen = c.abono_mes - c.gasto_mes;
+        return `<tr class="click" data-id="${esc(c.id)}">
+          <td title="${SEMAFORO[c.semaforo]}"><span class="punto ${c.semaforo}"></span></td>
+          <td><b>${esc(c.nombre)}</b><div class="suave chico">${esc(c.rubro)} · v${c.version}${c.hay_borrador ? " · borrador sin publicar" : ""}${c.whatsapp ? "" : " · sin WhatsApp"}
+            ${c.derivadas_pendientes ? ` · ${c.derivadas_pendientes} derivada(s)` : ""}${c.errores_24h ? ` · ${c.errores_24h} error(es)` : ""}</div></td>
+          <td class="num">${usd(c.gasto_mes)} <span class="suave chico">/ ${usd(c.tope_mes)}</span></td>
+          <td class="num opcional">${usd(c.abono_mes)}</td>
+          <td class="num ${margen < 0 ? "neg" : ""}">${usd(margen)}</td>
+          <td class="num opcional">${c.mensajes_mes}</td>
+          <td class="num opcional">${c.charlas_mes}</td>
+          <td><button data-estado="${c.estado === "activo" ? "pausado" : "activo"}" data-id="${esc(c.id)}" class="${c.estado === "activo" ? "peligro" : ""}">${c.estado === "activo" ? "Pausar" : "Activar"}</button></td>
+        </tr>`;
+      }).join("")}</tbody></table></div>
+    <p class="suave chico">Margen = abono del mes − costo de IA del mes. No incluye el costo de WhatsApp (Meta) ni el de Vercel o Supabase.</p>`;
+  $("#alertas").onclick = (e) => {
+    const a = alertas[e.target.closest(".alerta")?.dataset.i];
+    if (!a) return;
+    verCliente.abrir = a.conversacion_id;
+    ir(`cliente/${a.ficha_id}/charlas`);
+  };
+  $("tbody").onclick = async (e) => {
+    const b = e.target.closest("button[data-estado]");
+    if (b) {
+      e.stopPropagation();
+      const pausar = b.dataset.estado === "pausado";
+      if (pausar && !confirm("¿Pausar este agente? Deja de responder a todos sus clientes hasta que lo actives.")) return;
+      try { await api("estado", { id: b.dataset.id, estado: b.dataset.estado }); aviso(pausar ? "Agente pausado" : "Agente activado"); verTablero(); } catch (err) { aviso(err.message); }
+      return;
+    }
+    const fila = e.target.closest("tr[data-id]");
+    if (fila) ir("cliente/" + fila.dataset.id);
+  };
+}
+
+// ------------------------------------------------------------------ cliente
+async function verCliente(id, sub) {
+  const { ficha } = await api("ficha", { id });
+  const nombre = (ficha.borrador || ficha.config).nombre;
+  const tabs = [["charlas", "Charlas"], ["ficha", "Ficha"], ["historial", "Historial"], ["eventos", "Eventos"]];
+  $("#vista").innerHTML = `
+    <p class="fila"><a href="#" class="suave chico">← Todos los clientes</a></p>
+    <div class="fila" style="justify-content:space-between">
+      <h2 style="margin:6px 0">${esc(nombre)} <span class="suave chico">(${esc(ficha.id)} · v${ficha.version} · ${ficha.estado})</span></h2>
+      <a class="boton" target="_blank" rel="noopener" href="/?ficha=${encodeURIComponent(ficha.id)}">Probar el agente</a>
+    </div>
+    <nav class="pestanas">${tabs.map(([k, t]) => `<button class="${k === sub ? "on" : ""}" onclick="ir('cliente/${esc(ficha.id)}/${k}')">${t}</button>`).join("")}</nav>
+    <div id="sub"></div>`;
+  if (sub === "ficha") return verFicha(id);
+  if (sub === "historial") return verHistorial(id);
+  if (sub === "eventos") return verEventos(id);
+  return verCharlas(id);
+}
+
+async function verCharlas(fichaId) {
+  const sub = $("#sub");
+  sub.innerHTML = `<div class="charla">
+    <div class="tarjeta" style="padding:0">
+      <div class="fila" style="padding:10px"><label class="fila" style="margin:0;color:var(--texto)"><input type="checkbox" id="solo-der" style="width:auto"> Solo derivadas</label></div>
+      <div class="lista-charlas" id="lista"></div>
+    </div>
+    <div class="tarjeta" id="detalle"><p class="suave">Elegí una charla.</p></div>
+  </div>`;
+  const cargar = async () => {
+    const { conversaciones } = await api("conversaciones", { ficha_id: fichaId, solo_derivadas: $("#solo-der").checked });
+    $("#lista").innerHTML = conversaciones.length ? conversaciones.map((c) => `
+      <div class="item-charla" data-id="${c.id}">
+        <div class="fila"><span class="punto ${c.estado === "humano" ? "amarillo" : "verde"}"></span><b>${esc(c.telefono.startsWith("web-") ? "Chat web de prueba" : "+" + c.telefono)}</b></div>
+        <div class="chico">${esc((c.ultimo_texto || "").slice(0, 80))}</div>
+        <div class="suave chico">${fecha(c.ultimo_creado || c.actualizada)} · ${c.mensajes} msj · ${usd(c.usd)}</div>
+      </div>`).join("") : `<p class="suave" style="padding:10px">No hay charlas.</p>`;
+    if (verCliente.abrir) { abrirCharla(verCliente.abrir); verCliente.abrir = null; }
+  };
+  $("#solo-der").onchange = cargar;
+  $("#lista").onclick = (e) => { const it = e.target.closest(".item-charla"); if (it) abrirCharla(it.dataset.id); };
+  await cargar();
+}
+
+async function abrirCharla(id) {
+  document.querySelectorAll(".item-charla").forEach((x) => x.classList.toggle("sel", x.dataset.id === id));
+  const { conversacion: c, mensajes } = await api("conversacion", { id });
+  const esWeb = c.telefono.startsWith("web-");
+  $("#detalle").innerHTML = `
+    <div class="fila" style="justify-content:space-between">
+      <b>${esc(esWeb ? "Chat web de prueba" : "+" + c.telefono)}</b>
+      ${c.estado === "humano" ? `<button class="primario" id="b-liberar">Devolver al agente</button>` : `<span class="suave chico">La atiende el agente</span>`}
+    </div>
+    ${c.estado === "humano" ? `<div class="aviso"><b>Derivada</b> ${hace(Math.round((Date.now() - Date.parse(c.derivada_en)) / 60000))}: ${esc(c.derivada_motivo)} — ${esc(c.derivada_resumen)}<br>
+      <span class="chico">El agente no responde hasta que la devuelvas.</span></div>` : ""}
+    <div class="mensajes" id="msjs">${mensajes.map((m) => `
+      <div class="msg ${m.rol}">${esc(m.texto)}<small>${m.rol === "humano" ? "Persona del equipo · " : ""}${fecha(m.creado)}${m.herramientas?.length ? " · " + esc(m.herramientas.join(", ")) : ""}${m.usd ? " · " + usd(m.usd) : ""}</small></div>`).join("")}</div>
+    ${esWeb ? `<p class="suave chico">Charla del chat web de prueba: no se le puede escribir desde acá.</p>` : `
+    <form id="f-resp" style="margin-top:10px">
+      <label for="resp">Responder como persona del equipo (le llega por WhatsApp; la charla queda en tus manos)</label>
+      <textarea id="resp" rows="3" required></textarea>
+      <p class="fila"><button class="primario" type="submit">Enviar</button></p>
+    </form>`}`;
+  const msjs = $("#msjs"); msjs.scrollTop = msjs.scrollHeight;
+  $("#b-liberar")?.addEventListener("click", async () => {
+    try { await api("liberar", { id }); aviso("La charla volvió al agente"); abrirCharla(id); } catch (e) { aviso(e.message); }
+  });
+  $("#f-resp")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try { await api("responder", { id, texto: $("#resp").value }); aviso("Mensaje enviado"); abrirCharla(id); } catch (err) { aviso(err.message); }
+  });
+}
+
+async function verFicha(id) {
+  const d = await api("ficha", { id });
+  const f = d.ficha, c = structuredClone(f.borrador || f.config), o = d.opciones;
+  const campos = [...new Set([...o.campos, ...Object.keys(c.datos || {})])];
+  const lim = { ...o.limites, ...(c.limites || {}) };
+  $("#sub").innerHTML = `
+    ${f.borrador ? `<div class="aviso">Hay <b>cambios sin publicar</b>. El agente sigue usando la v${f.version} hasta que publiques.</div>` : ""}
+    ${d.problemas.length ? `<ul class="problemas">${d.problemas.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>` : ""}
+    <form id="f-ficha">
+      <div class="tarjeta">
+        <h3 style="margin-top:0">Datos generales</h3>
+        <div class="grilla">
+          <div><label>Nombre del negocio</label><input name="nombre" value="${esc(c.nombre)}"></div>
+          <div><label>Rubro</label><input name="rubro" value="${esc(c.rubro)}"></div>
+          <div><label>Plantilla</label><select name="plantilla">${o.plantillas.map((p) => `<option ${p === c.plantilla ? "selected" : ""}>${esc(p)}</option>`).join("")}</select></div>
+          <div><label>Modelo</label><select name="modelo">${o.modelos.map((m) => `<option ${m === c.modelo ? "selected" : ""}>${esc(m)}</option>`).join("")}</select></div>
+          <div><label>Esfuerzo</label><select name="esfuerzo">${["low", "medium", "high"].map((m) => `<option ${m === c.esfuerzo ? "selected" : ""}>${m}</option>`).join("")}</select></div>
+          <div><label>Tope de gasto mensual (US$)</label><input name="tope_usd_mes" type="number" min="1" step="1" value="${esc(c.tope_usd_mes)}"></div>
+        </div>
+        <h3>Límites por persona</h3>
+        <div class="grilla">
+          <div><label>Mensajes por hora</label><input name="lim_mensajes_por_hora" type="number" min="1" value="${lim.mensajes_por_hora}"></div>
+          <div><label>Mensajes por día</label><input name="lim_mensajes_por_dia" type="number" min="1" value="${lim.mensajes_por_dia}"></div>
+          <div><label>Gasto por persona por día (US$)</label><input name="lim_usd_por_persona_dia" type="number" min="0.05" step="0.05" value="${lim.usd_por_persona_dia}"></div>
+          <div><label>Largo máximo del mensaje</label><input name="lim_caracteres_por_mensaje" type="number" min="100" value="${lim.caracteres_por_mensaje}"></div>
+        </div>
+        <h3>Herramientas</h3>
+        ${o.herramientas.map((h) => `<label class="fila" style="color:var(--texto);align-items:flex-start"><input type="checkbox" name="herr" value="${esc(h.nombre)}" style="width:auto;margin-top:3px" ${c.herramientas?.includes(h.nombre) ? "checked" : ""}>
+          <span><b>${esc(h.nombre)}</b><br><span class="suave chico">${esc(h.descripcion)}</span></span></label>`).join("")}
+        <h3>Integración con el sistema del cliente</h3>
+        <div class="grilla">
+          <div><label>Tipo</label><input name="int_tipo" value="${esc(c.integracion?.tipo || "")}" placeholder="ej. semorfa"></div>
+          <div><label>Dirección (base_url)</label><input name="int_base_url" value="${esc(c.integracion?.base_url || "")}" placeholder="https://..."></div>
+          <div><label class="fila" style="color:var(--texto);margin-top:30px"><input type="checkbox" name="int_crear" style="width:auto" ${c.integracion?.crear_pedidos ? "checked" : ""}> Crear pedidos de verdad</label></div>
+        </div>
+      </div>
+      <div class="tarjeta" style="margin-top:12px">
+        <h3 style="margin-top:0">Qué sabe y cómo habla</h3>
+        <p class="suave chico">Cada campo completa la plantilla <b>${esc(c.plantilla)}</b>.</p>
+        ${campos.map((k) => `<label>${esc(k.replace(/_/g, " "))}</label><textarea name="dato_${esc(k)}" rows="${Math.min(14, Math.max(3, String(c.datos?.[k] || "").split("\n").length + 1))}">${esc(c.datos?.[k] || "")}</textarea>`).join("")}
+      </div>
+      <div class="tarjeta" style="margin-top:12px">
+        <h3 style="margin-top:0">Contrato y WhatsApp <span class="suave chico">(se guardan al instante, no van al borrador)</span></h3>
+        <div class="grilla">
+          <div><label>Abono mensual (US$)</label><input name="abono" type="number" min="0" step="1" value="${f.abono_usd_mes}"></div>
+          <div><label>Phone number ID de Meta</label><input name="wa" value="${esc(f.whatsapp_phone_number_id || "")}" inputmode="numeric"></div>
+        </div>
+      </div>
+      <p class="fila" style="margin-top:14px">
+        <button class="primario" type="submit">Guardar borrador</button>
+        ${f.borrador ? `<a class="boton" target="_blank" rel="noopener" href="/?ficha=${encodeURIComponent(f.id)}&borrador=1">Probar borrador</a>
+        <button type="button" id="b-publicar" class="primario">Publicar</button>
+        <button type="button" id="b-descartar" class="peligro">Descartar borrador</button>` : ""}
+      </p>
+    </form>`;
+  const form = $("#f-ficha");
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const v = (n) => form.elements[n].value;
+    const nueva = {
+      ...c,
+      nombre: v("nombre").trim(), rubro: v("rubro").trim(), plantilla: v("plantilla"), modelo: v("modelo"), esfuerzo: v("esfuerzo"),
+      tope_usd_mes: Number(v("tope_usd_mes")),
+      limites: { mensajes_por_hora: Number(v("lim_mensajes_por_hora")), mensajes_por_dia: Number(v("lim_mensajes_por_dia")),
+        usd_por_persona_dia: Number(v("lim_usd_por_persona_dia")), caracteres_por_mensaje: Number(v("lim_caracteres_por_mensaje")) },
+      herramientas: [...form.querySelectorAll("input[name=herr]:checked")].map((x) => x.value),
+      datos: Object.fromEntries(campos.map((k) => [k, form.elements["dato_" + k].value])),
+    };
+    if (v("int_base_url").trim()) nueva.integracion = { tipo: v("int_tipo").trim(), base_url: v("int_base_url").trim(), crear_pedidos: form.elements.int_crear.checked };
+    else delete nueva.integracion;
+    try {
+      const r = await api("guardar", { id, config: nueva, abono_usd_mes: Number(v("abono")), whatsapp_phone_number_id: v("wa") });
+      aviso(r.problemas.length ? "Borrador guardado, pero hay cosas para corregir" : "Borrador guardado. Probalo y publicalo.");
+      verFicha(id);
+    } catch (err) { aviso(err.message); }
+  };
+  $("#b-publicar")?.addEventListener("click", async () => {
+    const nota = prompt("¿Qué cambiaste? (queda en el historial)");
+    if (!nota) return;
+    try { const r = await api("publicar", { id, nota }); aviso(`Publicada la v${r.version}`); verCliente(id, "ficha"); } catch (e) { aviso(e.message); }
+  });
+  $("#b-descartar")?.addEventListener("click", async () => {
+    if (!confirm("¿Descartar todos los cambios sin publicar?")) return;
+    try { await api("descartar", { id }); aviso("Borrador descartado"); verFicha(id); } catch (e) { aviso(e.message); }
+  });
+}
+
+async function verHistorial(id) {
+  const { historial, ficha } = await api("ficha", { id });
+  $("#sub").innerHTML = `<div class="tarjeta" style="padding:0"><table class="tabla">
+    <thead><tr><th>Versión</th><th>Cuándo</th><th>Quién</th><th>Qué cambió</th><th></th></tr></thead>
+    <tbody>${historial.map((v) => `<tr><td><b>v${v.version}</b>${v.version === ficha.version ? ' <span class="suave chico">(activa)</span>' : ""}</td>
+      <td>${fecha(v.creado)}</td><td>${esc(v.autor)}</td><td>${esc(v.nota)}</td>
+      <td>${v.version !== ficha.version ? `<button data-v="${v.version}">Volver a esta</button>` : ""}</td></tr>`).join("") || `<tr><td colspan="5" class="suave">Sin versiones publicadas.</td></tr>`}</tbody>
+  </table></div>
+  <p class="suave chico">"Volver a esta" la carga como borrador: la probás y la publicás como una versión nueva.</p>`;
+  $("#sub tbody").onclick = async (e) => {
+    const b = e.target.closest("button[data-v]");
+    if (!b) return;
+    try { await api("restaurar", { id, version: Number(b.dataset.v) }); aviso(`v${b.dataset.v} cargada como borrador`); ir(`cliente/${id}/ficha`); } catch (err) { aviso(err.message); }
+  };
+}
+
+async function verEventos(id) {
+  const { eventos } = await api("eventos", { ficha_id: id, dias: 14 });
+  $("#sub").innerHTML = `<div class="tarjeta" style="padding:0"><table class="tabla">
+    <thead><tr><th>Cuándo</th><th>Qué</th><th>Detalle</th></tr></thead>
+    <tbody>${eventos.map((e) => `<tr><td>${fecha(e.creado)}</td><td>${esc(e.tipo)}</td><td class="chico">${esc(e.detalle)}</td></tr>`).join("") || `<tr><td colspan="3" class="suave">Sin eventos en los últimos 14 días.</td></tr>`}</tbody>
+  </table></div>`;
+}
+
+// ------------------------------------------------------------------ cliente nuevo
+async function verNuevo() {
+  const opciones = await api("opciones");
+  $("#vista").innerHTML = `
+    <p><a href="#" class="suave chico">← Todos los clientes</a></p>
+    <form class="tarjeta" id="f-nuevo" style="max-width:520px">
+      <h2 style="margin-top:0">Cliente nuevo</h2>
+      <label>Nombre del negocio</label><input name="nombre" required placeholder="Clínica Sonrisa">
+      <label>Id (minúsculas, sin espacios)</label><input name="id" required pattern="[a-z0-9\-]{2,40}" placeholder="clinica-sonrisa">
+      <label>Plantilla del rubro</label><select name="plantilla">${opciones.plantillas.map((p) => `<option>${esc(p)}</option>`).join("")}</select>
+      <label>Abono mensual (US$)</label><input name="abono" type="number" min="0" step="1" value="200">
+      <p class="suave chico">Se crea <b>pausado</b>. Completá la ficha, probala con "Probar borrador", publicala y recién ahí activala.</p>
+      <p class="fila"><button class="primario" type="submit">Crear</button></p>
+    </form>`;
+  const f = $("#f-nuevo");
+  f.elements.nombre.oninput = () => { if (!f.elements.id.dataset.tocado) f.elements.id.value = f.elements.nombre.value.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40); };
+  f.elements.id.oninput = () => (f.elements.id.dataset.tocado = "1");
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const r = await api("crear", { id: f.elements.id.value, nombre: f.elements.nombre.value, plantilla: f.elements.plantilla.value, abono_usd_mes: Number(f.elements.abono.value) });
+      aviso("Cliente creado"); ir(`cliente/${r.id}/ficha`);
+    } catch (err) { aviso(err.message); }
+  };
+}
+
+enrutar();
+</script>
+</body>
+</html>

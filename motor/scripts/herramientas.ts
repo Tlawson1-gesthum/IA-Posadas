@@ -4,7 +4,7 @@ import { cargarFicha } from "../src/fichas.js";
 import { armarPrompt } from "../src/fichas.js";
 import { REGISTRO } from "../src/herramientas/index.js";
 
-const ficha = cargarFicha(process.argv[2] ?? "morfa");
+const ficha = await cargarFicha(process.argv[2] ?? "morfa");
 const ctx = { ficha, telefono: "5493760000000" };
 
 const prompt = armarPrompt(ficha);

@@ -3,19 +3,24 @@
 import { obtenerAlmacen } from "./almacen.js";
 import { responder } from "./cerebro.js";
 import { fichaPorNumero } from "./fichas.js";
-import { LIMITES_POR_DEFECTO } from "./tipos.js";
+import { LIMITES_POR_DEFECTO, type Ficha } from "./tipos.js";
 import { enviarTexto, type MensajeEntrante } from "./whatsapp.js";
 
 const NO_LEO = "Por ahora solo leo mensajes de texto y ubicaciones. ¿Me lo escribís?";
 const ERROR = "Uh, se me trabó algo. Ya le aviso a alguien del equipo para que te responda.";
-const MUCHOS_MENSAJES = "Recibimos muchos mensajes seguidos. Para seguir, pedí en https://semorfa.com.ar o escribinos más tarde.";
+const MUCHOS_MENSAJES = "Recibimos muchos mensajes seguidos. Para seguir, escribinos más tarde.";
 const SIN_SALDO = "Ahora no puedo responderte por acá. Ya le aviso a alguien del equipo.";
 
-type Enviar = (texto: string) => Promise<void>;
+interface Opciones {
+  /** Cómo mandar la respuesta. Por defecto, por WhatsApp. */
+  enviar?: (texto: string) => Promise<void>;
+  /** Ficha a usar. Por defecto, la del número que recibió el mensaje. (El chat web la pasa, a veces en borrador.) */
+  ficha?: Ficha;
+}
 
-export async function atender(m: MensajeEntrante, enviar?: Enviar): Promise<void> {
-  const mandar: Enviar = enviar ?? ((texto) => enviarTexto(m.phoneNumberId, m.de, texto));
-  const ficha = fichaPorNumero(m.phoneNumberId);
+export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Promise<void> {
+  const mandar = opciones.enviar ?? ((texto: string) => enviarTexto(m.phoneNumberId, m.de, texto));
+  const ficha = opciones.ficha ?? (await fichaPorNumero(m.phoneNumberId));
   if (!ficha) {
     console.warn(`Mensaje a un número sin ficha: ${m.phoneNumberId}`);
     return;
@@ -28,7 +33,8 @@ export async function atender(m: MensajeEntrante, enviar?: Enviar): Promise<void
   m = { ...m, texto: m.texto.slice(0, limites.caracteres_por_mensaje) };
 
   const almacen = obtenerAlmacen();
-  const conv = await almacen.conversacion(ficha.id, m.de);
+  const conv = await almacen.conversacion(ficha.id, m.de, m.phoneNumberId);
+  const evento = (tipo: string, detalle: string) => almacen.evento(ficha.id, conv.id, tipo, detalle);
   const textoGuardado = m.noSoportado ? `[${m.noSoportado}]` : m.texto;
   const nuevo = await almacen.guardar({ conversacionId: conv.id, fichaId: ficha.id, rol: "cliente", texto: textoGuardado, waId: m.waId });
   if (!nuevo) return; // Meta reenvió un aviso que ya atendimos.
@@ -38,14 +44,14 @@ export async function atender(m: MensajeEntrante, enviar?: Enviar): Promise<void
   const esAdmin = admins.includes(m.de) || m.de.startsWith("web-"); // el chat web ya pide clave
   if (m.texto.trim().toLowerCase() === "/reiniciar" && esAdmin) {
     await almacen.reiniciar(conv.id);
-    await mandar("[Charla reiniciada: Morfi vuelve a responder, sin memoria de lo anterior]");
+    await mandar("[Charla reiniciada: el agente vuelve a responder, sin memoria de lo anterior]");
     return;
   }
 
   // Charla derivada: la atiende una persona, el agente no se mete.
   if (conv.estado === "humano") return;
 
-  const contestar = async (texto: string, extra: Partial<Parameters<typeof almacen.guardar>[0]> = {}) => {
+  const contestar = async (texto: string, extra: { herramientas?: string[]; tokensEntrada?: number; tokensSalida?: number; usd?: number } = {}) => {
     await mandar(texto);
     await almacen.guardar({ conversacionId: conv.id, fichaId: ficha.id, rol: "agente", texto, ...extra });
   };
@@ -60,15 +66,16 @@ export async function atender(m: MensajeEntrante, enviar?: Enviar): Promise<void
     hora.mensajes > limites.mensajes_por_hora || dia.mensajes > limites.mensajes_por_dia || dia.usd >= limites.usd_por_persona_dia;
   if (excedido) {
     const ultimaDelAgente = (await almacen.historial(conv.id)).filter((t) => t.rol === "agente").at(-1);
-    const primeraVez = ultimaDelAgente?.texto !== MUCHOS_MENSAJES;
-    console.warn(`Ficha ${ficha.id}: límite por persona (${m.de}) · ${hora.mensajes}/h · ${dia.mensajes}/día · US$ ${dia.usd.toFixed(3)}/día`);
-    if (primeraVez) return contestar(MUCHOS_MENSAJES);
+    if (ultimaDelAgente?.texto !== MUCHOS_MENSAJES) {
+      await evento("limite_persona", `${m.de} · ${hora.mensajes}/h · ${dia.mensajes}/día · US$ ${dia.usd.toFixed(3)}/día`);
+      return contestar(MUCHOS_MENSAJES);
+    }
     return;
   }
 
   if ((await almacen.gastoDelMes(ficha.id)) >= ficha.tope_usd_mes) {
-    console.error(`Ficha ${ficha.id}: se alcanzó el tope mensual de US$ ${ficha.tope_usd_mes}`);
     await almacen.derivar(conv.id, "otro", "Se alcanzó el tope de gasto mensual del agente.");
+    await evento("tope_mes", `Se alcanzó el tope mensual de US$ ${ficha.tope_usd_mes}`);
     return contestar(SIN_SALDO);
   }
 
@@ -79,7 +86,9 @@ export async function atender(m: MensajeEntrante, enviar?: Enviar): Promise<void
     r = await responder(ficha, historial, m.texto, m.de);
   } catch (e) {
     console.error(`Ficha ${ficha.id}: falló el cerebro`, e);
-    await almacen.derivar(conv.id, "otro", `Error del agente: ${(e as Error).message}`.slice(0, 300));
+    const detalle = `Error del agente: ${(e as Error).message}`.slice(0, 300);
+    await almacen.derivar(conv.id, "otro", detalle);
+    await evento("error", detalle);
     return contestar(ERROR);
   }
   if (r.texto) {
@@ -92,6 +101,6 @@ export async function atender(m: MensajeEntrante, enviar?: Enviar): Promise<void
   }
   if (r.derivada) {
     await almacen.derivar(conv.id, r.derivada.motivo, r.derivada.resumen);
-    console.log(`DERIVADA · ${ficha.id} · ${m.de} · ${r.derivada.motivo}: ${r.derivada.resumen}`);
+    await evento("derivacion", `${r.derivada.motivo}: ${r.derivada.resumen}`);
   }
 }
