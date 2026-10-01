@@ -21,6 +21,20 @@ const MAX_VUELTAS = 5;
 
 const TEXTO_SI_FALLA = "Uh, se me trabó algo. Ya le aviso a alguien del equipo para que te responda.";
 
+/** Red de seguridad: deja el texto como lo muestra WhatsApp, aunque el modelo se escape del formato. */
+export function paraWhatsApp(texto: string): string {
+  return texto
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?(b|strong)>/gi, "*")
+    .replace(/<\/?[a-z][^>]*>/gi, "")
+    .replace(/\*\*(.+?)\*\*/g, "*$1*")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, "$1: $2")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 export async function responder(
   ficha: Ficha,
   historial: Turno[],
@@ -77,9 +91,8 @@ export async function responder(
       const texto = r.content
         .filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === "text")
         .map((b) => b.text)
-        .join("\n")
-        .trim();
-      return { texto, derivada, herramientasUsadas, uso };
+        .join("\n");
+      return { texto: paraWhatsApp(texto), derivada, herramientasUsadas, uso };
     }
 
     // Se devuelve el turno completo (con sus bloques de pensamiento) tal cual: el historial solo crece.
