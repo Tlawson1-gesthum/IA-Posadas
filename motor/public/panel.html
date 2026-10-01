@@ -1,82 +1,166 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-tema="presentacion">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Central de agentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
+  /* ---------- Tema simple (claro u oscuro según el sistema) ---------- */
   :root {
-    --fondo: #f5f5f4; --tarjeta: #fff; --texto: #1c1917; --suave: #6b6560; --borde: #e7e5e4;
-    --acento: #2563eb; --acento-txt: #fff; --verde: #16a34a; --amarillo: #d97706; --rojo: #dc2626; --gris: #a8a29e;
-    --cliente: #e8f0fe; --agente: #f1f5f0; --humano: #fff4e0;
+    --fondo: #f4f5f7; --fondo-img: none; --tarjeta: #ffffff; --tarjeta-img: none; --texto: #14161a; --suave: #667085; --borde: #e4e7ec;
+    --acento: #2563eb; --acento-txt: #fff; --primario: #2563eb; --resalte: #2563eb;
+    --verde: #12b76a; --amarillo: #f79009; --rojo: #f04438; --gris: #98a2b3;
+    --cliente: #eef4ff; --agente: #ecfdf3; --humano: #fffaeb; --barra: rgba(255,255,255,.85);
+    --sombra: 0 1px 2px rgba(16,24,40,.06); --sombra-hover: 0 8px 24px -12px rgba(16,24,40,.25); --brillo: 0 0 0 transparent;
+    --radio: 14px; --titulos: "Space Grotesk", system-ui, sans-serif; --numeros: "JetBrains Mono", ui-monospace, monospace;
+    color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --fondo: #121212; --tarjeta: #1d1d1d; --texto: #ececec; --suave: #a3a3a3; --borde: #333;
-      --acento: #60a5fa; --acento-txt: #0b1220; --cliente: #1e2a3d; --agente: #1f2a22; --humano: #3a2f1a; }
+    :root:not([data-tema="presentacion"]) {
+      --fondo: #0f1115; --tarjeta: #171a21; --texto: #e7e9ee; --suave: #98a2b3; --borde: #262b36;
+      --acento: #60a5fa; --acento-txt: #0b1220; --primario: #3b82f6; --resalte: #60a5fa;
+      --cliente: #16233a; --agente: #13261d; --humano: #2c2412; --barra: rgba(15,17,21,.85);
+      --sombra: none; --sombra-hover: 0 8px 24px -12px rgba(0,0,0,.6); color-scheme: dark;
+    }
   }
+  /* ---------- Tema de la presentación (siempre oscuro, neón) ---------- */
+  :root[data-tema="presentacion"] {
+    --fondo: #0c0716; --tarjeta: #181029; --texto: #efeafa; --suave: #a99fc4; --borde: #33244f;
+    --fondo-img: radial-gradient(1200px 600px at 80% -10%, #2a1150 0, transparent 60%), radial-gradient(900px 500px at -10% 110%, #0b2a3a 0, transparent 60%);
+    --tarjeta-img: linear-gradient(180deg, #20153a, #181029);
+    --acento: #22d3ee; --acento-txt: #0c0716; --primario: linear-gradient(135deg, #8b5cf6, #d946ef); --resalte: #22d3ee;
+    --verde: #34d399; --amarillo: #fbbf24; --rojo: #fb7185; --gris: #6b5f86;
+    --cliente: rgba(34,211,238,.10); --agente: rgba(139,92,246,.16); --humano: rgba(251,191,36,.12); --barra: rgba(12,7,22,.72);
+    --sombra: 0 0 0 1px rgba(139,92,246,.06) inset; --sombra-hover: 0 10px 40px -16px #d946ef; --brillo: 0 0 18px -2px currentColor;
+    color-scheme: dark;
+  }
+
   * { box-sizing: border-box; }
-  body { margin: 0; font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fondo); color: var(--texto); }
-  header.barra { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 10px 16px;
-    background: var(--tarjeta); border-bottom: 1px solid var(--borde); }
-  header.barra h1 { font-size: 17px; margin: 0; cursor: pointer; }
+  html { background: var(--fondo); }
+  body { margin: 0; min-height: 100vh; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--texto);
+    background: var(--fondo-img), var(--fondo); background-attachment: fixed; -webkit-font-smoothing: antialiased; }
+  :root[data-tema="presentacion"] body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .35;
+    background-image: linear-gradient(rgba(139,92,246,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,.08) 1px, transparent 1px);
+    background-size: 44px 44px; mask-image: linear-gradient(180deg, #000, transparent 70%); }
+  header.barra, main { position: relative; z-index: 1; }
+
+  header.barra { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 10px 20px;
+    background: var(--barra); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--borde); }
+  .marca { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .marca .logo { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font: 700 15px var(--titulos); color: #fff;
+    background: var(--primario); box-shadow: var(--brillo); }
+  :root:not([data-tema="presentacion"]) .marca .logo { background: var(--acento); color: var(--acento-txt); }
+  .marca h1 { font: 600 17px var(--titulos); letter-spacing: -.01em; margin: 0; }
+  .marca small { display: block; font: 500 10px var(--numeros); letter-spacing: .14em; text-transform: uppercase; color: var(--suave); }
   header.barra .der { margin-left: auto; display: flex; gap: 8px; align-items: center; }
-  main { max-width: 1150px; margin: 0 auto; padding: 16px; }
-  h2 { font-size: 18px; margin: 22px 0 10px; } h3 { font-size: 15px; margin: 16px 0 8px; }
-  .tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 14px; }
-  button, .boton { font: inherit; border: 1px solid var(--borde); background: var(--tarjeta); color: var(--texto); border-radius: 8px;
-    padding: 7px 12px; cursor: pointer; text-decoration: none; display: inline-block; }
-  button.primario, .boton.primario { background: var(--acento); color: var(--acento-txt); border-color: var(--acento); }
-  button.peligro { color: var(--rojo); border-color: var(--rojo); }
+  .temas { display: inline-flex; padding: 3px; border: 1px solid var(--borde); border-radius: 999px; background: var(--tarjeta); }
+  .temas button { border: 0; border-radius: 999px; padding: 5px 12px; font-size: 13px; background: none; color: var(--suave); }
+  .temas button.on { background: var(--primario); color: #fff; }
+  :root:not([data-tema="presentacion"]) .temas button.on { background: var(--acento); color: var(--acento-txt); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 20px; }
+  h2 { font: 600 18px var(--titulos); letter-spacing: -.01em; margin: 26px 0 12px; } h3 { font: 600 15px var(--titulos); margin: 16px 0 8px; }
+  .etiqueta { font: 500 11px var(--numeros); letter-spacing: .12em; text-transform: uppercase; color: var(--suave); }
+  .tarjeta { background: var(--tarjeta-img), var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio); padding: 16px; box-shadow: var(--sombra); }
+  .kpi { transition: transform .15s, box-shadow .15s; }
+  .kpi:hover { transform: translateY(-2px); box-shadow: var(--sombra-hover); }
+  .kpi b { display: block; font: 700 26px var(--numeros); letter-spacing: -.02em; margin-top: 6px; }
+  :root[data-tema="presentacion"] .kpi b { background: linear-gradient(90deg, #efeafa, #22d3ee); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .kpi.alerta-on { border-color: var(--amarillo); }
+
+  button, .boton { font: inherit; border: 1px solid var(--borde); background: var(--tarjeta); color: var(--texto); border-radius: 10px;
+    padding: 7px 13px; cursor: pointer; text-decoration: none; display: inline-block; transition: border-color .15s, box-shadow .15s, transform .1s; }
+  button:hover, .boton:hover { border-color: var(--acento); }
+  button:active { transform: translateY(1px); }
+  button.primario, .boton.primario { background: var(--primario); color: #fff; border-color: transparent; font-weight: 600; }
+  :root[data-tema="presentacion"] button.primario:hover, :root[data-tema="presentacion"] .boton.primario:hover { box-shadow: 0 6px 24px -8px #d946ef; }
+  button.peligro { color: var(--rojo); border-color: color-mix(in srgb, var(--rojo) 55%, transparent); background: transparent; }
   button:disabled { opacity: .5; cursor: default; }
-  input, select, textarea { font: inherit; color: var(--texto); background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 8px; padding: 7px 9px; width: 100%; }
+  input, select, textarea { font: inherit; color: var(--texto); background: var(--fondo); border: 1px solid var(--borde); border-radius: 10px; padding: 8px 10px; width: 100%; }
+  :root[data-tema="presentacion"] input, :root[data-tema="presentacion"] select, :root[data-tema="presentacion"] textarea { background: rgba(12,7,22,.6); }
+  input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--acento) 60%, transparent); outline-offset: 1px; border-color: var(--acento); }
   textarea { min-height: 90px; resize: vertical; }
   label { display: block; font-size: 13px; color: var(--suave); margin: 10px 0 4px; }
+  a { color: var(--acento); }
   .suave { color: var(--suave); } .chico { font-size: 13px; }
   .fila { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px 14px; }
-  .punto { width: 11px; height: 11px; border-radius: 50%; display: inline-block; flex: none; }
-  .verde { background: var(--verde); } .amarillo { background: var(--amarillo); } .rojo { background: var(--rojo); } .gris { background: var(--gris); }
+  .grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px 14px; }
+
+  .punto { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+  .verde { background: var(--verde); color: var(--verde); } .amarillo { background: var(--amarillo); color: var(--amarillo); }
+  .rojo { background: var(--rojo); color: var(--rojo); } .gris { background: var(--gris); color: var(--gris); }
+  .punto.verde, .punto.amarillo, .punto.rojo { box-shadow: var(--brillo); }
+  .punto.amarillo, .punto.rojo { animation: latido 1.8s ease-in-out infinite; }
+  @keyframes latido { 50% { opacity: .45; transform: scale(.8); } }
+  @media (prefers-reduced-motion: reduce) { .punto { animation: none !important; } .kpi:hover { transform: none; } }
+
   .tabla { width: 100%; border-collapse: collapse; }
-  .tabla th, .tabla td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
-  .tabla th { font-size: 12px; color: var(--suave); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
-  .tabla tr.click { cursor: pointer; } .tabla tr.click:hover { background: var(--fondo); }
-  .num { text-align: right; font-variant-numeric: tabular-nums; }
-  .neg { color: var(--rojo); font-weight: 600; }
-  .alerta { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-left: 4px solid var(--amarillo); background: var(--tarjeta);
-    border-radius: 8px; margin-bottom: 8px; cursor: pointer; border-top: 1px solid var(--borde); border-right: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
+  .tabla th, .tabla td { text-align: left; padding: 11px 10px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
+  .tabla th { font: 500 11px var(--numeros); color: var(--suave); text-transform: uppercase; letter-spacing: .1em; }
+  .tabla tr:last-child td { border-bottom: 0; }
+  .tabla tr.click { cursor: pointer; transition: background .12s; } .tabla tr.click:hover { background: color-mix(in srgb, var(--acento) 7%, transparent); }
+  .num { text-align: right; font-family: var(--numeros); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .neg { color: var(--rojo); font-weight: 700; }
+  .barrita { height: 4px; border-radius: 4px; background: color-mix(in srgb, var(--suave) 25%, transparent); margin-top: 6px; overflow: hidden; }
+  .barrita i { display: block; height: 100%; border-radius: 4px; background: var(--acento); }
+  :root[data-tema="presentacion"] .barrita i { background: linear-gradient(90deg, #22d3ee, #8b5cf6, #d946ef); }
+  .barrita i.lleno { background: var(--rojo); }
+
+  .alerta { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; background: var(--tarjeta-img), var(--tarjeta); border: 1px solid var(--borde);
+    border-left: 3px solid var(--amarillo); border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: box-shadow .15s; }
+  .alerta:hover { box-shadow: var(--sombra-hover); }
   .alerta.error, .alerta.tope_mes { border-left-color: var(--rojo); }
-  .pestanas { display: flex; gap: 4px; border-bottom: 1px solid var(--borde); margin: 12px 0 14px; overflow-x: auto; }
-  .pestanas button { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 9px 12px; }
-  .pestanas button.on { border-bottom-color: var(--acento); font-weight: 600; }
+  .pestanas { display: flex; gap: 4px; border-bottom: 1px solid var(--borde); margin: 12px 0 16px; overflow-x: auto; }
+  .pestanas button { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; padding: 10px 14px; color: var(--suave); }
+  .pestanas button.on { border-bottom-color: var(--acento); color: var(--texto); font-weight: 600; }
   .charla { display: grid; grid-template-columns: minmax(240px, 340px) 1fr; gap: 14px; }
   .lista-charlas { max-height: 70vh; overflow-y: auto; }
-  .item-charla { padding: 10px; border-bottom: 1px solid var(--borde); cursor: pointer; }
-  .item-charla.sel { background: var(--fondo); }
-  .mensajes { display: flex; flex-direction: column; gap: 6px; max-height: 55vh; overflow-y: auto; padding: 4px; }
-  .msg { max-width: 85%; padding: 7px 10px; border-radius: 10px; white-space: pre-wrap; word-wrap: break-word; }
-  .msg.cliente { align-self: flex-start; background: var(--cliente); }
-  .msg.agente { align-self: flex-end; background: var(--agente); }
-  .msg.humano { align-self: flex-end; background: var(--humano); }
-  .msg small { display: block; font-size: 11px; color: var(--suave); margin-top: 3px; }
-  .aviso { padding: 10px 12px; border-radius: 8px; background: var(--humano); margin: 8px 0; }
+  .item-charla { padding: 11px 12px; border-bottom: 1px solid var(--borde); cursor: pointer; transition: background .12s; }
+  .item-charla:hover, .item-charla.sel { background: color-mix(in srgb, var(--acento) 8%, transparent); }
+  .mensajes { display: flex; flex-direction: column; gap: 8px; max-height: 55vh; overflow-y: auto; padding: 4px; }
+  .msg { max-width: 85%; padding: 8px 12px; border-radius: 14px; white-space: pre-wrap; word-wrap: break-word; border: 1px solid transparent; }
+  .msg.cliente { align-self: flex-start; background: var(--cliente); border-bottom-left-radius: 4px; }
+  .msg.agente { align-self: flex-end; background: var(--agente); border-bottom-right-radius: 4px; }
+  .msg.humano { align-self: flex-end; background: var(--humano); border-bottom-right-radius: 4px; }
+  :root[data-tema="presentacion"] .msg.cliente { border-color: rgba(34,211,238,.25); }
+  :root[data-tema="presentacion"] .msg.agente { border-color: rgba(139,92,246,.35); }
+  :root[data-tema="presentacion"] .msg.humano { border-color: rgba(251,191,36,.3); }
+  .msg small { display: block; font: 500 11px var(--numeros); color: var(--suave); margin-top: 4px; }
+  .aviso { padding: 11px 14px; border-radius: 12px; background: var(--humano); border: 1px solid color-mix(in srgb, var(--amarillo) 35%, transparent); margin: 8px 0; }
   .problemas { color: var(--rojo); margin: 6px 0; padding-left: 18px; }
-  .centro { min-height: 80vh; display: grid; place-items: center; }
+  .centro { min-height: 78vh; display: grid; place-items: center; }
   .oculto { display: none !important; }
-  #toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--texto); color: var(--fondo);
-    padding: 10px 16px; border-radius: 8px; z-index: 20; max-width: 90vw; }
+  #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--texto); color: var(--fondo);
+    padding: 10px 16px; border-radius: 10px; z-index: 20; max-width: 90vw; box-shadow: var(--sombra-hover); }
   @media (max-width: 760px) {
     .charla { grid-template-columns: 1fr; }
     .tabla .opcional { display: none; }
+    .marca small, #cuenta-alertas { display: none; }
+    .marca h1 { font-size: 15px; white-space: nowrap; }
+    .marca .logo { width: 26px; height: 26px; font-size: 13px; }
+    header.barra { padding: 8px 12px; gap: 8px; }
+    .temas button { padding: 4px 9px; font-size: 12px; }
+    header.barra .der > button { padding: 5px 10px; font-size: 13px; }
+    .tabla td, .tabla th { padding: 10px 6px; }
+    main { padding: 14px; }
   }
+  @media (max-width: 440px) { .marca h1 { display: none; } }
 </style>
 </head>
 <body>
 <header class="barra">
-  <h1 onclick="ir('')">Central de agentes</h1>
-  <div class="der oculto" id="barra-der">
+  <div class="marca" onclick="ir('')"><span class="logo">IA</span><div><h1>Central de agentes</h1><small>IA Posadas · gobierno</small></div></div>
+  <div class="der">
     <span id="cuenta-alertas" class="chico"></span>
-    <button onclick="salir()">Salir</button>
+    <div class="temas" role="group" aria-label="Tema">
+      <button data-tema="simple" onclick="ponerTema('simple')">Simple</button>
+      <button data-tema="presentacion" onclick="ponerTema('presentacion')">Futurista</button>
+    </div>
+    <button class="oculto" id="b-salir" onclick="salir()">Salir</button>
   </div>
 </header>
 <main id="vista"></main>
@@ -89,6 +173,13 @@ const usd = (n) => "US$ " + Number(n || 0).toLocaleString("es-AR", { minimumFrac
 const fecha = (iso) => iso ? new Date(iso).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—";
 const hace = (min) => min == null ? "" : min < 60 ? `hace ${min} min` : min < 1440 ? `hace ${Math.round(min / 60)} h` : `hace ${Math.round(min / 1440)} d`;
 const SEMAFORO = { verde: "Funcionando", amarillo: "Con charlas derivadas", rojo: "Con errores o sin saldo", gris: "Pausado" };
+
+function ponerTema(t) {
+  document.documentElement.dataset.tema = t;
+  try { localStorage.setItem("panel-tema", t); } catch {}
+  document.querySelectorAll(".temas button").forEach((b) => b.classList.toggle("on", b.dataset.tema === t));
+}
+ponerTema((() => { try { return localStorage.getItem("panel-tema"); } catch { return null; } })() || "presentacion");
 
 function aviso(texto) {
   const t = $("#toast"); t.textContent = texto; t.classList.remove("oculto");
@@ -112,16 +203,16 @@ async function enrutar() {
     if (vista === "cliente" && id) await verCliente(decodeURIComponent(id), sub || "charlas");
     else if (vista === "nuevo") verNuevo();
     else await verTablero();
-    $("#barra-der").classList.remove("oculto");
+    $("#b-salir").classList.remove("oculto");
   } catch (e) { if (!String(e.message).includes("Sesión")) aviso(e.message); }
 }
 
 // ------------------------------------------------------------------ entrar
 function mostrarEntrar() {
-  $("#barra-der").classList.add("oculto");
+  $("#b-salir").classList.add("oculto"); $("#cuenta-alertas").innerHTML = "";
   $("#vista").innerHTML = `
-    <div class="centro"><form class="tarjeta" id="f-entrar" style="width:min(360px,100%)">
-      <h2 style="margin-top:0">Entrar</h2>
+    <div class="centro"><form class="tarjeta" id="f-entrar" style="width:min(380px,100%);padding:24px">
+      <div class="marca" style="margin-bottom:6px"><span class="logo">IA</span><div><h1>Central de agentes</h1><small>Acceso del equipo</small></div></div>
       <label for="clave">Clave del panel</label>
       <input id="clave" type="password" autocomplete="current-password" required autofocus>
       <p class="fila" style="margin-top:14px"><button class="primario" type="submit">Entrar</button></p>
@@ -141,10 +232,10 @@ async function verTablero() {
   const totalGasto = clientes.reduce((s, c) => s + c.gasto_mes, 0), totalAbono = clientes.filter((c) => c.estado === "activo").reduce((s, c) => s + c.abono_mes, 0);
   $("#vista").innerHTML = `
     <div class="grilla">
-      <div class="tarjeta"><div class="suave chico">Clientes activos</div><b style="font-size:22px">${clientes.filter((c) => c.estado === "activo").length} / ${clientes.length}</b></div>
-      <div class="tarjeta"><div class="suave chico">Abonos del mes (activos)</div><b style="font-size:22px">${usd(totalAbono)}</b></div>
-      <div class="tarjeta"><div class="suave chico">Costo de IA del mes</div><b style="font-size:22px">${usd(totalGasto)}</b></div>
-      <div class="tarjeta"><div class="suave chico">Charlas esperando a una persona</div><b style="font-size:22px">${derivadas}</b></div>
+      <div class="tarjeta kpi"><div class="etiqueta">Agentes activos</div><b>${clientes.filter((c) => c.estado === "activo").length}<span class="suave" style="font-size:16px"> / ${clientes.length}</span></b></div>
+      <div class="tarjeta kpi"><div class="etiqueta">Abonos del mes</div><b>${usd(totalAbono)}</b></div>
+      <div class="tarjeta kpi"><div class="etiqueta">Costo de IA del mes</div><b>${usd(totalGasto)}</b></div>
+      <div class="tarjeta kpi ${derivadas ? "alerta-on" : ""}"><div class="etiqueta">Esperando a una persona</div><b>${derivadas}</b></div>
     </div>
     <h2>Alertas</h2>
     <div id="alertas">${alertas.length ? alertas.map((a, i) => `
@@ -162,7 +253,8 @@ async function verTablero() {
           <td title="${SEMAFORO[c.semaforo]}"><span class="punto ${c.semaforo}"></span></td>
           <td><b>${esc(c.nombre)}</b><div class="suave chico">${esc(c.rubro)} · v${c.version}${c.hay_borrador ? " · borrador sin publicar" : ""}${c.whatsapp ? "" : " · sin WhatsApp"}
             ${c.derivadas_pendientes ? ` · ${c.derivadas_pendientes} derivada(s)` : ""}${c.errores_24h ? ` · ${c.errores_24h} error(es)` : ""}</div></td>
-          <td class="num">${usd(c.gasto_mes)} <span class="suave chico">/ ${usd(c.tope_mes)}</span></td>
+          <td class="num">${usd(c.gasto_mes)} <span class="suave chico">/ ${usd(c.tope_mes)}</span>
+            <div class="barrita"><i class="${c.gasto_mes >= c.tope_mes ? "lleno" : ""}" style="width:${Math.min(100, Math.round(c.gasto_mes / (c.tope_mes || 1) * 100))}%"></i></div></td>
           <td class="num opcional">${usd(c.abono_mes)}</td>
           <td class="num ${margen < 0 ? "neg" : ""}">${usd(margen)}</td>
           <td class="num opcional">${c.mensajes_mes}</td>
