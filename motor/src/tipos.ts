@@ -20,7 +20,12 @@ export interface Ficha {
   /** Herramientas habilitadas para este cliente (nombres del registro de herramientas). */
   herramientas: string[];
   /** Configuración de la integración con el sistema del cliente, si tiene. */
-  integracion?: { tipo: string; base_url: string };
+  integracion?: {
+    tipo: string;
+    base_url: string;
+    /** false = los pedidos se simulan (pruebas); true = se cargan de verdad en el sistema del cliente. */
+    crear_pedidos?: boolean;
+  };
   /** Valores que reemplazan los {{campos}} de la plantilla. */
   datos: Record<string, string>;
 }

@@ -8,7 +8,8 @@
     "chat": "tsx scripts/chat.ts",
     "probar": "tsx scripts/probar.ts",
     "herramientas": "tsx scripts/herramientas.ts",
-    "tipos": "tsc --noEmit"
+    "tipos": "tsc --noEmit",
+    "chat-abierto": "tsx scripts/chat.ts morfa --abierto"
   },
   "engines": {
     "node": ">=20"

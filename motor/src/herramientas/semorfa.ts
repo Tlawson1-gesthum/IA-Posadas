@@ -2,9 +2,9 @@
 import type { ContextoHerramienta, Herramienta } from "../tipos.js";
 
 const CACHE_MS = 60_000;
-let cacheCarta: { url: string; hasta: number; datos: unknown } | null = null;
+let cacheCarta: { url: string; hasta: number; carta: any } | null = null;
 
-function baseUrl(ctx: ContextoHerramienta): string {
+export function baseUrl(ctx: ContextoHerramienta): string {
   const url = ctx.ficha.integracion?.base_url;
   if (!url) throw new Error(`La ficha ${ctx.ficha.id} no tiene integracion.base_url`);
   return url.replace(/\/$/, "");
@@ -16,16 +16,37 @@ async function pedirJson(url: string): Promise<{ status: number; cuerpo: any }> 
   return { status: r.status, cuerpo };
 }
 
+/** La respuesta cruda de /api/menu, con 60 s de caché. */
+export async function traerCarta(ctx: ContextoHerramienta): Promise<any> {
+  const url = `${baseUrl(ctx)}/api/menu`;
+  if (cacheCarta && cacheCarta.url === url && cacheCarta.hasta > Date.now()) return conEstadoDePrueba(cacheCarta.carta);
+  const { status, cuerpo } = await pedirJson(url);
+  if (status !== 200 || !cuerpo) throw new Error(`La web respondió ${status}`);
+  cacheCarta = { url, hasta: Date.now() + CACHE_MS, carta: cuerpo };
+  return conEstadoDePrueba(cuerpo);
+}
+
+/** Solo en pruebas: FORZAR_ABIERTO=1 hace de cuenta que el local está abierto, para probar pedidos de día. */
+function conEstadoDePrueba(carta: any): any {
+  if (process.env.FORZAR_ABIERTO !== "1") return carta;
+  return { ...carta, estado: { abierto: true, motivo: "" } };
+}
+
 /** Deja solo lo que el agente necesita para responder, para gastar menos tokens. */
 function resumirCarta(m: any) {
   const extras = new Map<string, any>((m.extras ?? []).map((e: any) => [e.id, e]));
+  const costosEnvio = [...new Set((m.envio ?? []).map((t: any) => t.precio))];
   return {
     estado: m.estado,
     demora: m.demora,
     efectivo: m.efectivo,
-    envio: m.envio,
+    envio: {
+      costos_posibles: costosEnvio,
+      nota: "Depende de la distancia a la cocina. El costo exacto sale de cotizar_pedido con la ubicación. No hables de kilómetros.",
+    },
     categorias: m.categorias,
     productos: (m.productos ?? []).map((p: any) => ({
+      id: p.id,
       categoria: p.categoria,
       nombre: p.variante ? `${p.nombre} (${p.variante})` : p.nombre,
       descripcion: p.descripcion || undefined,
@@ -35,7 +56,7 @@ function resumirCarta(m: any) {
       adicionales: (p.extras ?? [])
         .map((id: string) => extras.get(id))
         .filter(Boolean)
-        .map((e: any) => ({ nombre: e.nombre, precio: e.precio, max: e.max, disponible: e.activo === 1 })),
+        .map((e: any) => ({ id: e.id, nombre: e.nombre, precio: e.precio, max: e.max, disponible: e.activo === 1 })),
     })),
   };
 }
@@ -44,19 +65,11 @@ export const verCartaYEstado: Herramienta = {
   definicion: {
     name: "ver_carta_y_estado",
     description:
-      "Trae en vivo desde la web del local: carta con precios y disponibilidad, adicionales, si está abierto ahora (estado.abierto y estado.motivo, listo para mostrar), demora actual, tramos de costo de envío por distancia y si acepta efectivo. Usala siempre que la respuesta dependa de alguno de esos datos.",
+      "Trae en vivo desde la web del local: carta con ids, precios y disponibilidad, adicionales, si está abierto ahora (estado.abierto y estado.motivo, listo para mostrar), demora actual, costos de envío posibles y si acepta efectivo. Usala siempre que la respuesta dependa de alguno de esos datos.",
     input_schema: { type: "object", properties: {}, additionalProperties: false },
   },
   async ejecutar(_entrada, ctx) {
-    const url = `${baseUrl(ctx)}/api/menu`;
-    if (cacheCarta && cacheCarta.url === url && cacheCarta.hasta > Date.now()) {
-      return JSON.stringify(cacheCarta.datos);
-    }
-    const { status, cuerpo } = await pedirJson(url);
-    if (status !== 200 || !cuerpo) throw new Error(`La web respondió ${status}`);
-    const datos = resumirCarta(cuerpo);
-    cacheCarta = { url, hasta: Date.now() + CACHE_MS, datos };
-    return JSON.stringify(datos);
+    return JSON.stringify(resumirCarta(await traerCarta(ctx)));
   },
 };
 

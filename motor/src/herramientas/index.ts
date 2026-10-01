@@ -1,5 +1,6 @@
 // Registro de herramientas. Cada ficha elige cuáles habilita por nombre.
 import type { Herramienta } from "../tipos.js";
+import { cotizarPedido, crearPedido } from "./pedidos-semorfa.js";
 import { consultarPedido, verCartaYEstado } from "./semorfa.js";
 
 /** Pasa la charla a una persona. El motor la marca y el agente queda en silencio. */
@@ -13,9 +14,9 @@ const derivarAPersona: Herramienta = {
       properties: {
         motivo: {
           type: "string",
-          enum: ["reclamo", "plata", "alergia", "pedido_especial", "cancelacion", "enojo", "pidio_persona", "no_entiendo", "otro"],
+          enum: ["transferencia", "pedido_sin_ubicacion", "reclamo", "plata", "alergia", "pedido_especial", "cancelacion", "enojo", "pidio_persona", "no_entiendo", "otro"],
         },
-        resumen: { type: "string", description: "Resumen de la charla en 1 o 2 líneas para que la persona no tenga que leer todo." },
+        resumen: { type: "string", description: "Resumen para que la persona no tenga que leer todo. Si hay un pedido armado, incluí productos, total, nombre, dirección y forma de pago." },
       },
       required: ["motivo", "resumen"],
       additionalProperties: false,
@@ -31,5 +32,7 @@ const derivarAPersona: Herramienta = {
 export const REGISTRO: Record<string, Herramienta> = {
   [verCartaYEstado.definicion.name]: verCartaYEstado,
   [consultarPedido.definicion.name]: consultarPedido,
+  [cotizarPedido.definicion.name]: cotizarPedido,
+  [crearPedido.definicion.name]: crearPedido,
   [derivarAPersona.definicion.name]: derivarAPersona,
 };

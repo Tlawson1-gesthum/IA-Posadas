@@ -13,6 +13,8 @@ interface Caso {
   deriva?: boolean;
   contiene?: string[];
   no_contiene?: string[];
+  /** Hace de cuenta que el local está abierto (para probar pedidos fuera de horario). */
+  abierto?: boolean;
 }
 
 const id = process.argv[2] ?? "morfa";
@@ -23,6 +25,7 @@ const casos: Caso[] = JSON.parse(readFileSync(new URL(`../pruebas/${id}.json`, i
 let fallas = 0;
 let usd = 0;
 for (const caso of casos.filter((c) => !filtro || c.nombre.toLowerCase().includes(filtro))) {
+  process.env.FORZAR_ABIERTO = caso.abierto ? "1" : "";
   const historial: Turno[] = [];
   const usadas = new Set<string>();
   let derivada = false;
