@@ -56,15 +56,19 @@ function ipHash(request: Request): string {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  let b: { clave?: string; sesion?: string; texto?: string; ficha?: string; borrador?: boolean; publico?: boolean };
+  let b: { clave?: string; sesion?: string; texto?: string; ficha?: string; borrador?: boolean; publico?: boolean; contexto?: string };
   try {
     b = await request.json();
   } catch {
     return Response.json({ error: "Pedido inválido" }, { status: 400 });
   }
   const sesion = String(b.sesion ?? "").replace(/[^a-z0-9]/gi, "").slice(0, 32);
-  const texto = String(b.texto ?? "").trim().slice(0, 2000);
-  if (!sesion || !texto) return Response.json({ error: "Falta el mensaje" }, { status: 400 });
+  // Contexto que manda la web del cliente (ej. "rol: Encargado · pestaña: Caja"): va al principio del mensaje.
+  // Lo escribe el navegador, así que es una pista para responder mejor, nunca un permiso.
+  const contexto = String(b.contexto ?? "").replace(/[\[\]\r\n]/g, " ").trim().slice(0, 200);
+  const mensaje = String(b.texto ?? "").trim().slice(0, 2000);
+  const texto = (contexto ? `[Contexto: ${contexto}] ` : "") + mensaje;
+  if (!sesion || !mensaje) return Response.json({ error: "Falta el mensaje" }, { status: 400 });
   const fichaId = String(b.ficha || process.env.FICHA_POR_DEFECTO || "");
 
   const delPanel = sesionValida(request);

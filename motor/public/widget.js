@@ -3,6 +3,8 @@
 // Opcionales: data-ocultar-en="#/cocina,#/panel" (no se muestra ahí) · data-mostrar-en="#/panel" (solo se muestra ahí)
 //             data-lado="izquierda" (por defecto, derecha). Puede haber varias burbujas (de fichas distintas) en la misma web.
 // Si el chat está apagado desde la central, no dibuja nada.
+// Contexto: si la web define window.contextoAgente (texto, objeto o función que recibe la ficha), se le pasa al agente
+// con cada mensaje. Ej.: { rol: "Encargado", pestaña: "Caja" }. Lo escribe la web: sirve de pista, no de permiso.
 (function () {
   var script = document.currentScript;
   if (!script) return;
@@ -67,7 +69,19 @@
     }
     boton.onclick = function () { alternar(!abierta); };
     globo.onclick = function (e) { if (e.target.classList.contains("x")) { globo.classList.add(p + "oculto"); try { sessionStorage.setItem(p + "globo-visto", "1"); } catch (er) {} } else alternar(true); };
-    window.addEventListener("message", function (e) { if (e.origin === origen && e.data === "ba-cerrar:" + ficha) alternar(false); });
+    window.addEventListener("message", function (e) {
+      if (e.origin !== origen) return;
+      if (e.data === "ba-cerrar:" + ficha) alternar(false);
+      if (e.data === "ba-contexto:" + ficha && e.source) e.source.postMessage({ ba: "contexto", ficha: ficha, contexto: contexto() }, origen);
+    });
+    function contexto() {
+      try {
+        var c = window.contextoAgente;
+        if (typeof c === "function") c = c(ficha);
+        if (c && typeof c === "object") c = Object.keys(c).filter(function (k) { return c[k] != null && c[k] !== ""; }).map(function (k) { return k + ": " + c[k]; }).join(" \u00b7 ");
+        return typeof c === "string" ? c.slice(0, 200) : "";
+      } catch (er) { return ""; }
+    }
 
     function segunRuta() {
       var en = function (r) { return location.hash.indexOf(r) === 0 || location.pathname.indexOf(r) === 0; };

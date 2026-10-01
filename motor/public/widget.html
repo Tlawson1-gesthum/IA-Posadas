@@ -72,12 +72,27 @@
   }
   function aviso(t) { const d = document.createElement("div"); d.className = "aviso"; d.textContent = t; $("charla").append(d); $("charla").scrollTop = 1e9; }
 
+  // La web puede contar dónde está la persona (rol, pestaña): se le pregunta a la burbuja, con poca espera.
+  function pedirContexto() {
+    return new Promise((ok) => {
+      if (parent === window) return ok("");
+      const fin = setTimeout(() => { removeEventListener("message", oir); ok(""); }, 400);
+      function oir(e) {
+        if (e.source !== parent || e.data?.ba !== "contexto" || e.data.ficha !== ficha) return;
+        clearTimeout(fin); removeEventListener("message", oir); ok(String(e.data.contexto || ""));
+      }
+      addEventListener("message", oir);
+      parent.postMessage("ba-contexto:" + ficha, "*");
+    });
+  }
+
   async function mandar(texto) {
     burbuja(texto.startsWith("[Ubicación") ? "📍 Ubicación compartida" : texto, "cliente");
     $("enviar").disabled = true;
     const esc = document.createElement("div"); esc.className = "escribiendo"; esc.textContent = "escribiendo…"; $("charla").append(esc); $("charla").scrollTop = 1e9;
     try {
-      const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ publico: true, ficha, sesion, texto }) });
+      const contexto = await pedirContexto();
+      const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ publico: true, ficha, sesion, texto, contexto }) });
       const j = await r.json().catch(() => ({}));
       esc.remove();
       if (j.respuestas?.length) j.respuestas.forEach((t) => burbuja(t, "agente"));
