@@ -1,10 +1,54 @@
 {
-  "nota": "Precios orientativos en USD definidos por el fundador. Se editan en la presentación (pantalla Precios) y en este archivo.",
+  "nota": "Precios en USD definidos por el fundador.",
   "ofertas": [
-    { "id": "L", "nombre": "Landing", "descripcion": "Landing sin automatizaciones: tu local digital, con botón a WhatsApp.", "implementacion_usd": 300, "rango": null, "mantenimiento_usd_mes": 0, "horas_armado": 6 },
-    { "id": "T", "nombre": "Landing + turnero", "descripcion": "Landing con una funcionalidad: turnero incorporado.", "implementacion_usd": 400, "rango": null, "mantenimiento_usd_mes": 0, "horas_armado": 10 },
-    { "id": "A", "nombre": "Agente con automatizaciones", "descripcion": "Agente de WhatsApp con agenda, seguimientos y recordatorios. El precio depende del alcance.", "implementacion_usd": 2000, "rango": [1000, 3000], "mantenimiento_usd_mes": 200, "horas_armado": 25 },
-    { "id": "G", "nombre": "Agente sin costo inicial", "descripcion": "Regalamos el agente y cobramos solo el mantenimiento, con permanencia mínima.", "implementacion_usd": 0, "rango": null, "mantenimiento_usd_mes": 200, "horas_armado": 25 }
+    {
+      "id": "L",
+      "nombre": "Landing",
+      "descripcion": "Landing sin automatizaciones: tu local digital, con botón a WhatsApp.",
+      "implementacion_usd": 300,
+      "rango": null,
+      "mantenimiento_usd_mes": 0,
+      "horas_armado": 6
+    },
+    {
+      "id": "T",
+      "nombre": "Landing + turnero",
+      "descripcion": "Landing con una funcionalidad: turnero incorporado.",
+      "implementacion_usd": 400,
+      "rango": null,
+      "mantenimiento_usd_mes": 0,
+      "horas_armado": 10
+    },
+    {
+      "id": "A",
+      "nombre": "Agente con automatizaciones",
+      "descripcion": "Agente de WhatsApp con agenda, seguimientos y recordatorios. El precio depende del alcance.",
+      "implementacion_usd": 2000,
+      "rango": [
+        1000,
+        3000
+      ],
+      "mantenimiento_usd_mes": 200,
+      "horas_armado": 25
+    },
+    {
+      "id": "G",
+      "nombre": "Agente sin costo inicial",
+      "descripcion": "Regalamos el agente y cobramos solo el mantenimiento, con permanencia mínima.",
+      "implementacion_usd": 0,
+      "rango": null,
+      "mantenimiento_usd_mes": 200,
+      "horas_armado": 25
+    },
+    {
+      "id": "M",
+      "nombre": "MORFA",
+      "descripcion": "Suscripción para locales gastronómicos: carta, pedidos y reservas por WhatsApp. Se lanza una vez validada con los primeros locales.",
+      "implementacion_usd": 0,
+      "rango": null,
+      "mantenimiento_usd_mes": 20,
+      "horas_armado": 2
+    }
   ],
   "oferta_por_defecto": "A",
   "mantenimiento": {
@@ -16,15 +60,30 @@
       "Reporte mensual",
       "Soporte"
     ],
-    "cobro": "Suscripción mensual por Mercado Pago. El cobro por link de pago ronda el 5% + IVA según fuentes de terceros; verificar las condiciones de suscripciones.",
+    "cobro": "Suscripción mensual con Mercado Pago. Comisión de referencia: 3,49% + IVA con el dinero a 30 días, 4,99% + IVA a 14 días o 6,29% + IVA al instante.",
     "corte_por_falta_de_pago": [
-      { "dia": "Día 1", "accion": "Aviso de pago vencido por WhatsApp y mail." },
-      { "dia": "Días 2 a 7", "accion": "Gracia de 5 a 7 días: el agente sigue funcionando y se reclama el pago." },
-      { "dia": "Fin de la gracia", "accion": "Pausa del agente, con aviso al cliente." },
-      { "dia": "Hasta 30 días", "accion": "Datos conservados; si paga, se reactiva." },
-      { "dia": "Después de 30 días", "accion": "Se eliminan o se devuelven los datos según el contrato." }
+      {
+        "dia": "Día 1",
+        "accion": "Aviso de pago vencido por WhatsApp y mail."
+      },
+      {
+        "dia": "Días 2 a 7",
+        "accion": "Gracia de 5 a 7 días: el agente sigue funcionando y se reclama el pago."
+      },
+      {
+        "dia": "Fin de la gracia",
+        "accion": "Pausa del agente, con aviso al cliente."
+      },
+      {
+        "dia": "Hasta 30 días",
+        "accion": "Datos conservados; si paga, se reactiva."
+      },
+      {
+        "dia": "Después de 30 días",
+        "accion": "Se eliminan o se devuelven los datos según el contrato."
+      }
     ],
     "por_que_cuentas_de_la_agencia": "El agente corre en cuentas de la agencia (servidor, claves de API, número de WhatsApp Business bajo control de la agencia o con acceso delegado). Si viviera en cuentas del cliente, no habría forma de pausarlo por falta de pago.",
-    "clausula_sugerida": "El servicio de mantenimiento se factura por mes adelantado. Ante la falta de pago a los [DÍAS_GRACIA] días corridos del vencimiento, el PRESTADOR podrá suspender el agente sin responsabilidad por los perjuicios derivados de la suspensión. Los datos del CLIENTE se conservarán por [DÍAS_CONSERVACIÓN] días desde la suspensión; regularizado el pago, el servicio se reactivará. Vencido ese plazo, el PRESTADOR eliminará o devolverá los datos según lo pactado. El prompt, la configuración y la infraestructura del agente son propiedad del PRESTADOR; el CLIENTE conserva la titularidad de sus datos y contenidos. Borrador orientativo: validar con abogado antes de usar."
+    "clausula_sugerida": "El servicio de mantenimiento se factura por mes adelantado. Ante la falta de pago a los 7 días corridos del vencimiento, el PRESTADOR podrá suspender el agente sin responsabilidad por los perjuicios derivados de la suspensión. Los datos del CLIENTE se conservarán por 30 días desde la suspensión; regularizado el pago, el servicio se reactivará. Vencido ese plazo, el PRESTADOR eliminará o devolverá los datos según lo pactado. El prompt, la configuración y la infraestructura del agente son propiedad del PRESTADOR; el CLIENTE conserva la titularidad de sus datos y contenidos. Borrador orientativo: validar con abogado antes de usar."
   }
 }
