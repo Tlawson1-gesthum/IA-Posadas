@@ -17,6 +17,8 @@ export interface Ficha {
   esfuerzo: "low" | "medium" | "high";
   /** Tope de gasto mensual en API de Claude, en USD. */
   tope_usd_mes: number;
+  /** Id del número de WhatsApp del cliente en Meta (Phone number ID). */
+  whatsapp_phone_number_id?: string;
   /** Herramientas habilitadas para este cliente (nombres del registro de herramientas). */
   herramientas: string[];
   /** Configuración de la integración con el sistema del cliente, si tiene. */

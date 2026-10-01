@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/whatsapp.ts": {
+      "maxDuration": 60,
+      "includeFiles": "{fichas,plantillas}/**"
+    }
+  }
+}

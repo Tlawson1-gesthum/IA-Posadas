@@ -49,8 +49,8 @@ En el chat: `ubicacion -27.37 -55.90` simula mandar el pin de ubicación; `liber
 
 ## Paso a paso
 
-1. **Cerebro + ficha de MORFA + simulador + pruebas.** ✅ (este paso)
-2. **Conexión con WhatsApp Cloud API:** endpoint en Vercel que recibe el webhook de Meta, verifica la firma y contesta. Se prueba con el número de prueba de Meta.
+1. **Cerebro + ficha de MORFA + simulador + pruebas.** ✅
+2. **Conexión con WhatsApp Cloud API:** `api/whatsapp.ts` (webhook en Vercel: verifica la firma de Meta, responde 200 al toque y atiende en segundo plano), `src/atender.ts` (pausa, derivación, tope de gasto, `/reiniciar` para administradores) y memoria mínima en Supabase (`supabase/001_esquema.sql`). Cómo configurarlo: [GUIA-PASO-2-WHATSAPP.md](GUIA-PASO-2-WHATSAPP.md). Prueba local sin Meta: `npm run webhook-local`.
 3. **Base de datos (Supabase):** fichas, conversaciones, mensajes, derivaciones, consumo y tope de gasto por cliente.
 4. **Del lado de semorfa (Cloudflare):** clave servidor a servidor; marcar los pedidos de WhatsApp con `canal = whatsapp` y, si son en efectivo, ya confirmados; buscar pedidos por teléfono; confirmar pedidos en efectivo de la web cuando el cliente responde "SÍ".
 5. **Panel de gobierno y portal del cliente:** semáforo, pausar, ver charlas, tomar el control, editar la ficha con historial.
