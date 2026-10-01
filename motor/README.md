@@ -16,6 +16,7 @@ mensaje ─► cerebro (src/cerebro.ts) ─► Claude ─► herramientas ─►
 | `src/fichas.ts` | Carga la ficha y arma el prompt. Falla si falta completar un campo de la plantilla. |
 | `src/herramientas/` | `ver_carta_y_estado` y `consultar_pedido` (leen en vivo la API de MORFA); `cotizar_pedido` y `crear_pedido` (toman pedidos por WhatsApp y los cargan en el sistema); `derivar_a_persona`. |
 | `plantillas/gastronomia.md` | Instrucciones base para cualquier local gastronómico. |
+| `plantillas/soporte.md` | **Agente de soporte de PENSA** dentro del sistema de un cliente: resuelve dudas de uso leyendo en vivo el manual que publica el sistema (`conocimiento.url`) y deriva al equipo lo que no está ahí. Ejemplo: `fichas/morfa-soporte.json` (lee `semorfa.com.ar/api/ayuda`). |
 | `fichas/morfa.json` | Semilla de la ficha de MORFA para probar en la compu. **La ficha real vive en Supabase y se edita desde el panel.** |
 | `api/panel.ts` + `public/panel.html` | Panel de gobierno: clientes con semáforo, pausar, costo contra abono, alertas, charlas, responder como persona, editar fichas con borrador, historial y vuelta atrás, alta de clientes. |
 | `api/chat.ts` + `public/index.html` | Chat web de prueba: `/?ficha=<id>` prueba lo publicado; `/?ficha=<id>&borrador=1` prueba los cambios sin publicar. |
@@ -59,4 +60,5 @@ En el chat: `ubicacion -27.37 -55.90` simula mandar el pin de ubicación; `liber
 5. **Panel de gobierno:** ✅ (`/panel.html`, clave `PANEL_CLAVE`). Falta: roles (fundador, ingeniero, closer) y el portal de cada cliente.
 4. ✅ **Morfi conectado a semorfa y burbuja en la web:** `AGENTE_CLAVE` servidor a servidor; pedidos de Morfi con canal `whatsapp` o `chat` (los de WhatsApp en efectivo entran confirmados); `mis_pedidos` y `confirmar_pedido_efectivo`; burbuja (`public/widget.js` + `widget.html`) con límites por conexión y por día. Guía: [GUIA-PASO-4-SEMORFA-Y-BURBUJA.md](GUIA-PASO-4-SEMORFA-Y-BURBUJA.md).
 5b. **Portal del cliente y roles:** que cada dueño vea solo lo suyo (sus charlas, pedidos y reporte) y usuarios con permisos distintos.
+4b. ✅ **Agente de soporte PENSA** (nueva línea del motor): plantilla `soporte`, conocimiento en vivo, varias burbujas por web (`data-mostrar-en`, `data-lado`), y las respuestas del equipo desde el panel le aparecen a la persona en la burbuja. Alta en Supabase: `supabase/005_soporte_morfa.sql`.
 6. **Salida a producción:** primero fuera de horario, después todo el día.

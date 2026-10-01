@@ -106,6 +106,8 @@ export interface Almacen {
   // Charlas
   conversacion(fichaId: string, telefono: string, numeroNegocio?: string): Promise<Conversacion>;
   detalleConversacion(id: string): Promise<DetalleConversacion | null>;
+  /** La charla de esa persona con esa ficha, si existe (sin crearla). */
+  buscarConversacion(fichaId: string, telefono: string): Promise<DetalleConversacion | null>;
   listarConversaciones(fichaId: string | null, soloDerivadas: boolean, limite: number): Promise<FilaConversacion[]>;
   mensajes(conversacionId: string): Promise<MensajeGuardado[]>;
   historial(conversacionId: string): Promise<Turno[]>;
@@ -195,6 +197,16 @@ function almacenSupabase(url: string, clave: string): Almacen {
           .from("conversaciones")
           .select("id, ficha_id, telefono, numero_negocio, estado, derivada_motivo, derivada_resumen, derivada_en, actualizada")
           .eq("id", id)
+          .maybeSingle(),
+      ) as DetalleConversacion | null;
+    },
+    async buscarConversacion(fichaId, telefono) {
+      return ok(
+        await db
+          .from("conversaciones")
+          .select("id, ficha_id, telefono, numero_negocio, estado, derivada_motivo, derivada_resumen, derivada_en, actualizada")
+          .eq("ficha_id", fichaId)
+          .eq("telefono", telefono)
           .maybeSingle(),
       ) as DetalleConversacion | null;
     },
@@ -397,6 +409,10 @@ function almacenEnMemoria(): Almacen {
     },
     async detalleConversacion(id) {
       const c = convs.get(id);
+      return c ? structuredClone(sinReinicio(c)) : null;
+    },
+    async buscarConversacion(fichaId, telefono) {
+      const c = [...convs.values()].find((x) => x.ficha_id === fichaId && x.telefono === telefono);
       return c ? structuredClone(sinReinicio(c)) : null;
     },
     async listarConversaciones(fichaId, soloDerivadas, limite) {

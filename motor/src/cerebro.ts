@@ -1,6 +1,7 @@
 // El cerebro: recibe la ficha, el historial y el mensaje nuevo; devuelve qué contestar.
 // No sabe nada de WhatsApp ni de la base de datos: eso lo hacen las capas de afuera.
 import Anthropic from "@anthropic-ai/sdk";
+import { leerConocimiento } from "./conocimiento.js";
 import { armarPrompt } from "./fichas.js";
 import { REGISTRO } from "./herramientas/index.js";
 import type { ContextoHerramienta, Ficha, Respuesta, Turno } from "./tipos.js";
@@ -61,6 +62,9 @@ export async function responder(
   let derivada: Respuesta["derivada"];
   const precio = PRECIOS[ficha.modelo] ?? PRECIOS["claude-opus-5-5"];
 
+  // El prompt se arma una vez por mensaje; si la ficha tiene conocimiento en vivo, se lee antes (con caché).
+  const prompt = armarPrompt(ficha, ficha.conocimiento?.url ? await leerConocimiento(ficha.conocimiento.url) : undefined);
+
   for (let vuelta = 0; vuelta < MAX_VUELTAS; vuelta++) {
     const r = await client.beta.messages.create({
       model: ficha.modelo,
@@ -69,7 +73,7 @@ export async function responder(
       fallbacks: "default",
       output_config: { effort: ficha.esfuerzo },
       cache_control: { type: "ephemeral" },
-      system: [{ type: "text", text: armarPrompt(ficha), cache_control: { type: "ephemeral" } }],
+      system: [{ type: "text", text: prompt, cache_control: { type: "ephemeral" } }],
       tools: herramientas.map((h) => h.definicion as Anthropic.Beta.BetaTool),
       messages: mensajes,
     });

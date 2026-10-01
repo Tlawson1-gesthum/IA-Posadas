@@ -22,11 +22,29 @@ async function fichaPublica(id: string): Promise<Ficha | null> {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const id = new URL(request.url).searchParams.get("config") ?? "";
+  const q = new URL(request.url).searchParams;
+  // ?novedades=1&ficha=&sesion=&desde= → respuestas de una persona del equipo para esta charla de la burbuja.
+  if (q.get("novedades")) {
+    const sesion = (q.get("sesion") ?? "").replace(/[^a-z0-9]/gi, "").slice(0, 32);
+    const fichaId = (q.get("ficha") ?? "").replace(/[^a-z0-9-]/g, "");
+    const desde = q.get("desde") ?? "";
+    const sinCache = { "cache-control": "no-store" };
+    if (!sesion || !fichaId) return Response.json({ mensajes: [] }, { headers: sinCache });
+    const almacen = obtenerAlmacen();
+    const conv = await almacen.buscarConversacion(fichaId, `web-publico-${sesion}`);
+    if (!conv) return Response.json({ mensajes: [] }, { headers: sinCache });
+    const mensajes = (await almacen.mensajes(conv.id))
+      .filter((m) => m.rol === "humano" && (!desde || m.creado > desde))
+      .map((m) => ({ texto: m.texto, creado: m.creado }));
+    return Response.json({ mensajes, derivada: conv.estado === "humano" }, { headers: sinCache });
+  }
+  const id = q.get("config") ?? "";
   const f = await fichaPublica(id);
   if (!f) return Response.json({ activo: false }, { headers: CORS });
   return Response.json(
-    { activo: true, nombre: f.nombre, agente: f.datos?.nombre_agente ?? f.nombre, color: f.chat_web?.color ?? "#2563eb", saludo: f.chat_web?.saludo ?? "" },
+    { activo: true, nombre: f.nombre, agente: f.datos?.nombre_agente ?? f.nombre, color: f.chat_web?.color ?? "#2563eb", saludo: f.chat_web?.saludo ?? "",
+      // El botón 📍 solo tiene sentido si el agente usa ubicaciones (toma pedidos).
+      ubicacion: f.herramientas.includes("cotizar_pedido") },
     { headers: CORS },
   );
 }

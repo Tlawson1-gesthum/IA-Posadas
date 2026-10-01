@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Central de agentes</title>
+<title>PENSA · Central de agentes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -153,7 +153,7 @@
 </head>
 <body>
 <header class="barra">
-  <div class="marca" onclick="ir('')"><span class="logo">IA</span><div><h1>Central de agentes</h1><small>IA Posadas · gobierno</small></div></div>
+  <div class="marca" onclick="ir('')"><span class="logo">P</span><div><h1>Central de agentes</h1><small>PENSA · gobierno</small></div></div>
   <div class="der">
     <span id="cuenta-alertas" class="chico"></span>
     <div class="temas" role="group" aria-label="Tema">
@@ -213,7 +213,7 @@ function mostrarEntrar() {
   $("#b-salir").classList.add("oculto"); $("#cuenta-alertas").innerHTML = "";
   $("#vista").innerHTML = `
     <div class="centro"><form class="tarjeta" id="f-entrar" style="width:min(380px,100%);padding:24px">
-      <div class="marca" style="margin-bottom:6px"><span class="logo">IA</span><div><h1>Central de agentes</h1><small>Acceso del equipo</small></div></div>
+      <div class="marca" style="margin-bottom:6px"><span class="logo">P</span><div><h1>Central de agentes</h1><small>PENSA · acceso del equipo</small></div></div>
       <label for="clave">Clave del panel</label>
       <input id="clave" type="password" autocomplete="current-password" required autofocus>
       <p class="fila" style="margin-top:14px"><button class="primario" type="submit">Entrar</button></p>
@@ -340,9 +340,9 @@ async function abrirCharla(id) {
       <span class="chico">El agente no responde hasta que la devuelvas.</span></div>` : ""}
     <div class="mensajes" id="msjs">${mensajes.map((m) => `
       <div class="msg ${m.rol}">${esc(m.texto)}<small>${m.rol === "humano" ? "Persona del equipo · " : ""}${fecha(m.creado)}${m.herramientas?.length ? " · " + esc(m.herramientas.join(", ")) : ""}${m.usd ? " · " + usd(m.usd) : ""}</small></div>`).join("")}</div>
-    ${esWeb ? `<p class="suave chico">Charla del chat de la web: no hay un número de WhatsApp para escribirle desde acá.</p>` : `
+    ${c.telefono.startsWith("web-") && !c.telefono.startsWith("web-publico-") ? `<p class="suave chico">Charla del chat de prueba: no se le puede escribir desde acá.</p>` : `
     <form id="f-resp" style="margin-top:10px">
-      <label for="resp">Responder como persona del equipo (le llega por WhatsApp; la charla queda en tus manos)</label>
+      <label for="resp">Responder como persona del equipo (${esWeb ? "le aparece en el chat de la web si lo tiene abierto" : "le llega por WhatsApp"}; la charla queda en tus manos)</label>
       <textarea id="resp" rows="3" required></textarea>
       <p class="fila"><button class="primario" type="submit">Enviar</button></p>
     </form>`}`;
@@ -385,6 +385,9 @@ async function verFicha(id) {
         <h3>Herramientas</h3>
         ${o.herramientas.map((h) => `<label class="fila" style="color:var(--texto);align-items:flex-start"><input type="checkbox" name="herr" value="${esc(h.nombre)}" style="width:auto;margin-top:3px" ${c.herramientas?.includes(h.nombre) ? "checked" : ""}>
           <span><b>${esc(h.nombre)}</b><br><span class="suave chico">${esc(h.descripcion)}</span></span></label>`).join("")}
+        <h3>Conocimiento en vivo</h3>
+        <label>Dirección de un texto que el agente lee siempre actualizado (por ejemplo, el manual del sistema). Va en {{conocimiento}} de la plantilla.</label>
+        <input name="conocimiento_url" value="${esc(c.conocimiento?.url || "")}" placeholder="https://.../api/ayuda">
         <h3>Integración con el sistema del cliente</h3>
         <div class="grilla">
           <div><label>Tipo</label><input name="int_tipo" value="${esc(c.integracion?.tipo || "")}" placeholder="ej. semorfa"></div>
@@ -444,6 +447,8 @@ async function verFicha(id) {
     if (v("int_base_url").trim()) nueva.integracion = { ...(c.integracion || {}), tipo: v("int_tipo").trim(), base_url: v("int_base_url").trim(), crear_pedidos: form.elements.int_crear.checked, clave_env: v("int_clave").trim() || undefined,
       pagos_agente: [...form.querySelectorAll("input[name=int_pago]:checked")].map((x) => x.value) };
     else delete nueva.integracion;
+    if (v("conocimiento_url").trim()) nueva.conocimiento = { url: v("conocimiento_url").trim() };
+    else delete nueva.conocimiento;
     nueva.chat_web = { activo: form.elements.cw_activo.checked, color: v("cw_color"), saludo: v("cw_saludo").trim(),
       mensajes_por_ip_hora: Number(v("cw_ip")) || 20, mensajes_por_dia: Number(v("cw_dia")) || 400 };
     try {

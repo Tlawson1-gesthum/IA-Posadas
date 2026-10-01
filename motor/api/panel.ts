@@ -133,15 +133,17 @@ const ACCIONES: Record<string, (b: Cuerpo) => Promise<Response>> = {
     if (!texto) return falla("Escribí un mensaje");
     const c = await almacen.detalleConversacion(String(b.id ?? ""));
     if (!c) return falla("No existe esa charla", 404);
-    if (c.telefono.startsWith("web-")) return falla("Es una charla del chat web de prueba: no se le puede escribir.");
-    if (!c.numero_negocio) return falla("No se sabe por qué número entró esta charla.");
-    try {
-      await enviarTexto(c.numero_negocio, c.telefono, texto);
-    } catch (e) {
-      const m = (e as Error).message;
-      // Meta solo deja escribir libremente hasta 24 h después del último mensaje del cliente.
-      if (m.includes("131047")) return falla("Pasaron más de 24 horas desde el último mensaje del cliente: WhatsApp no deja escribirle sin una plantilla aprobada.");
-      throw e;
+    // En los chats de la web no hay nada que enviar: el chat de la persona trae las respuestas nuevas solo.
+    if (!c.telefono.startsWith("web-")) {
+      if (!c.numero_negocio) return falla("No se sabe por qué número entró esta charla.");
+      try {
+        await enviarTexto(c.numero_negocio, c.telefono, texto);
+      } catch (e) {
+        const m = (e as Error).message;
+        // Meta solo deja escribir libremente hasta 24 h después del último mensaje del cliente.
+        if (m.includes("131047")) return falla("Pasaron más de 24 horas desde el último mensaje del cliente: WhatsApp no deja escribirle sin una plantilla aprobada.");
+        throw e;
+      }
     }
     if (c.estado !== "humano") await almacen.derivar(c.id, "tomada", "Una persona tomó la charla desde el panel.");
     await almacen.guardar({ conversacionId: c.id, fichaId: c.ficha_id, rol: "humano", texto });

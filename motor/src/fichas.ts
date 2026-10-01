@@ -41,14 +41,20 @@ export function plantillasDisponibles(): string[] {
 /** Los {{campos}} que pide una plantilla, en orden. */
 export function camposDePlantilla(plantilla: string): string[] {
   const texto = readFileSync(path.join(RAIZ, "plantillas", `${plantilla}.md`), "utf8");
-  return [...new Set([...texto.matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]))].filter((c) => c !== "nombre");
+  // "nombre" sale de la ficha y "conocimiento" se lee en vivo de ficha.conocimiento.url: no se escriben a mano.
+  return [...new Set([...texto.matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]))].filter((c) => c !== "nombre" && c !== "conocimiento");
 }
 
-/** Reemplaza cada {{campo}} de la plantilla. Falla si queda alguno sin completar. */
-export function armarPrompt(ficha: Ficha): string {
+/**
+ * Reemplaza cada {{campo}} de la plantilla. Falla si queda alguno sin completar.
+ * `conocimiento` es el texto leído en vivo; sin él (al validar) alcanza con que la ficha tenga la dirección.
+ */
+export function armarPrompt(ficha: Ficha, conocimiento?: string): string {
   if (!plantillasDisponibles().includes(ficha.plantilla)) throw new Error(`No existe la plantilla ${ficha.plantilla}`);
   const plantilla = readFileSync(path.join(RAIZ, "plantillas", `${ficha.plantilla}.md`), "utf8");
   const valores: Record<string, string> = { nombre: ficha.nombre, ...ficha.datos };
+  const enVivo = conocimiento ?? (ficha.conocimiento?.url ? "(se lee en vivo de la dirección de la ficha)" : undefined);
+  if (enVivo !== undefined) valores.conocimiento = enVivo;
   const faltan = new Set<string>();
   const prompt = plantilla.replace(/\{\{(\w+)\}\}/g, (_, campo: string) => {
     const valor = valores[campo];
@@ -72,6 +78,7 @@ export function validarFicha(ficha: Ficha): string[] {
   for (const h of ficha.herramientas ?? []) if (!REGISTRO[h]) problemas.push(`Herramienta desconocida: ${h}.`);
   const integra = (ficha.herramientas ?? []).some((h) => h !== "derivar_a_persona");
   if (integra && !ficha.integracion?.base_url) problemas.push("Las herramientas elegidas necesitan integracion.base_url.");
+  if (ficha.conocimiento?.url && !/^https:\/\//.test(ficha.conocimiento.url)) problemas.push("La dirección del conocimiento tiene que empezar con https://.");
   if (ficha.herramientas?.includes("crear_pedido") && ficha.integracion?.pagos_agente?.length === 0)
     problemas.push("Elegí al menos una forma de pago para los pedidos que toma el agente.");
   try {

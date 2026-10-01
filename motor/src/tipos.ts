@@ -34,6 +34,8 @@ export interface Ficha {
     /** Formas de pago con las que el agente puede cargar un pedido. Si falta, todas. Ej. ["mercadopago"]. */
     pagos_agente?: ("efectivo" | "mercadopago")[];
   };
+  /** Texto que el agente lee en vivo y se inserta en {{conocimiento}} de la plantilla (por ejemplo, el manual del sistema del cliente). */
+  conocimiento?: { url: string };
   /** Burbuja de chat en la web del cliente. Apagada si falta o activo = false. */
   chat_web?: ChatWeb;
   /** Valores que reemplazan los {{campos}} de la plantilla. */
