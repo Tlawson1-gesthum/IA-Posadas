@@ -72,6 +72,8 @@ export function validarFicha(ficha: Ficha): string[] {
   for (const h of ficha.herramientas ?? []) if (!REGISTRO[h]) problemas.push(`Herramienta desconocida: ${h}.`);
   const integra = (ficha.herramientas ?? []).some((h) => h !== "derivar_a_persona");
   if (integra && !ficha.integracion?.base_url) problemas.push("Las herramientas elegidas necesitan integracion.base_url.");
+  if (ficha.herramientas?.includes("crear_pedido") && ficha.integracion?.pagos_agente?.length === 0)
+    problemas.push("Elegí al menos una forma de pago para los pedidos que toma el agente.");
   try {
     armarPrompt(ficha);
   } catch (e) {

@@ -391,6 +391,8 @@ async function verFicha(id) {
           <div><label>Dirección (base_url)</label><input name="int_base_url" value="${esc(c.integracion?.base_url || "")}" placeholder="https://..."></div>
           <div><label>Clave (nombre de la variable en Vercel)</label><input name="int_clave" value="${esc(c.integracion?.clave_env || "")}" placeholder="ej. SEMORFA_AGENTE_CLAVE"></div>
           <div><label class="fila" style="color:var(--texto);margin-top:30px"><input type="checkbox" name="int_crear" style="width:auto" ${c.integracion?.crear_pedidos ? "checked" : ""}> Crear pedidos de verdad</label></div>
+          <div><label>Pagos que puede cobrar el agente</label>
+            ${["mercadopago", "efectivo"].map((pg) => `<label class="fila" style="color:var(--texto);margin:4px 0"><input type="checkbox" name="int_pago" value="${pg}" style="width:auto" ${(c.integracion?.pagos_agente ?? ["efectivo", "mercadopago"]).includes(pg) ? "checked" : ""}> ${pg === "mercadopago" ? "Mercado Pago" : "Efectivo"}</label>`).join("")}</div>
         </div>
       </div>
       <div class="tarjeta" style="margin-top:12px">
@@ -439,7 +441,8 @@ async function verFicha(id) {
       herramientas: [...form.querySelectorAll("input[name=herr]:checked")].map((x) => x.value),
       datos: Object.fromEntries(campos.map((k) => [k, form.elements["dato_" + k].value])),
     };
-    if (v("int_base_url").trim()) nueva.integracion = { ...(c.integracion || {}), tipo: v("int_tipo").trim(), base_url: v("int_base_url").trim(), crear_pedidos: form.elements.int_crear.checked, clave_env: v("int_clave").trim() || undefined };
+    if (v("int_base_url").trim()) nueva.integracion = { ...(c.integracion || {}), tipo: v("int_tipo").trim(), base_url: v("int_base_url").trim(), crear_pedidos: form.elements.int_crear.checked, clave_env: v("int_clave").trim() || undefined,
+      pagos_agente: [...form.querySelectorAll("input[name=int_pago]:checked")].map((x) => x.value) };
     else delete nueva.integracion;
     nueva.chat_web = { activo: form.elements.cw_activo.checked, color: v("cw_color"), saludo: v("cw_saludo").trim(),
       mensajes_por_ip_hora: Number(v("cw_ip")) || 20, mensajes_por_dia: Number(v("cw_dia")) || 400 };

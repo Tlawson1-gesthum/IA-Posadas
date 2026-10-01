@@ -31,6 +31,8 @@ export interface Ficha {
     crear_pedidos?: boolean;
     /** Nombre de la variable de entorno (en Vercel) con la clave para hablar con el sistema del cliente. Ej. SEMORFA_AGENTE_CLAVE. */
     clave_env?: string;
+    /** Formas de pago con las que el agente puede cargar un pedido. Si falta, todas. Ej. ["mercadopago"]. */
+    pagos_agente?: ("efectivo" | "mercadopago")[];
   };
   /** Burbuja de chat en la web del cliente. Apagada si falta o activo = false. */
   chat_web?: ChatWeb;

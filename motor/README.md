@@ -44,7 +44,7 @@ En el chat: `ubicacion -27.37 -55.90` simula mandar el pin de ubicación; `liber
 ## Decisiones de la versión 1
 
 - **Datos en vivo.** Carta, precios, agotados, horario, demora, envío y efectivo se leen de `semorfa.com.ar/api/menu` (con 60 s de caché). El prompt no tiene ningún precio.
-- **Toma pedidos por WhatsApp** (o manda a la web, según prefiera el cliente). Productos, total y envío los calcula el código con la carta en vivo, nunca el modelo. El envío usa la ubicación que comparte el cliente y la misma cuenta que la web (distancia en línea recta). Efectivo y Mercado Pago se cargan con `POST /api/pedidos`, el mismo de la web, con la nota `[Pedido por WhatsApp]`. Transferencia: arma el pedido y lo deriva al encargado.
+- **Toma pedidos por WhatsApp** (o manda a la web, según prefiera el cliente). Productos, total y envío los calcula el código con la carta en vivo, nunca el modelo. El envío usa la ubicación que comparte el cliente y la misma cuenta que la web (distancia en línea recta). Se cargan con `POST /api/pedidos`, el mismo de la web. Las formas de pago que puede cobrar el agente se eligen por ficha (`integracion.pagos_agente`) y el código no deja cargar otras: MORFA usa solo Mercado Pago (efectivo → la web o una persona; transferencia → una persona).
 - **Pedidos simulados hasta que se habilite.** Con `integracion.crear_pedidos: false` (como está hoy), `crear_pedido` no toca el sistema y devuelve el código `PRUEBA1`. Se pasa a `true` recién al salir a producción.
 - **Pedidos solo con código.** Al modelo no le llega la dirección del pedido.
 - **Derivación.** Cuando deriva, el motor marca la charla y el agente se calla hasta que una persona la libere.

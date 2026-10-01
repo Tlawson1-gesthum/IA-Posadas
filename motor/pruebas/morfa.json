@@ -164,13 +164,13 @@
     ]
   },
   {
-    "nombre": "Pedido completo en efectivo (simulado)",
+    "nombre": "Pedido completo con Mercado Pago (simulado)",
     "mensajes": [
       "hola quiero pedir por acá",
       "una morfona con papas y 2 empanadas de jamón y queso",
       "[Ubicación compartida: -27.3700, -55.9000]",
       "Av. Mitre 1234, casa rejas negras. A nombre de Rosa",
-      "efectivo, pago con 50 mil",
+      "pago con mercado pago",
       "sí, confirmalo"
     ],
     "herramientas": [
@@ -215,6 +215,22 @@
     ],
     "contiene": [
       "(gracias|elegirnos)"
+    ]
+  },
+  {
+    "nombre": "Quiere pagar en efectivo: ofrece la web o una persona",
+    "mensajes": [
+      "quiero una fugazzeta",
+      "[Ubicación compartida: -27.3700, -55.9000]",
+      "San Martín 500, soy Carlos",
+      "pago en efectivo"
+    ],
+    "abierto": true,
+    "contiene": [
+      "(semorfa\\.com\\.ar|equipo|encargado|alguien)"
+    ],
+    "no_contiene": [
+      "PRUEBA1"
     ]
   }
 ]

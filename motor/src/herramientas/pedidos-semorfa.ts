@@ -167,6 +167,14 @@ export const crearPedido: Herramienta = {
     if (!c.ok || c.total === null) return JSON.stringify({ creado: false, motivo: "El pedido no es válido", cotizacion: c });
     if (!c.abierto) return JSON.stringify({ creado: false, motivo: c.motivo_cerrado ?? "El local está cerrado." });
     const pago = entrada.pago === "efectivo" ? "efectivo" : "mp";
+    // Traba en el código: aunque el modelo se confunda, no carga un pago que el negocio no aceptó para el agente.
+    const permitidos = ctx.ficha.integracion?.pagos_agente ?? ["efectivo", "mercadopago"];
+    if (!permitidos.includes(pago === "mp" ? "mercadopago" : "efectivo")) {
+      return JSON.stringify({
+        creado: false,
+        motivo: `Por acá solo se puede pagar con: ${permitidos.join(", ")}. Ofrecé pedir en la web o pasarlo con alguien del equipo.`,
+      });
+    }
     const web = esChatWeb(ctx);
     const telefono = web ? String(entrada.telefono ?? "").replace(/[^\d+]/g, "") : ctx.telefono.replace(/^\+?549/, "");
     if (telefono.replace(/\D/g, "").length < 8) {

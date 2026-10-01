@@ -7,9 +7,9 @@ Qué suma:
 
 Hacelo en este orden.
 
-## 1. Base de datos (2 min)
-Supabase → **SQL Editor** → **New query** → pegá `motor/supabase/003_paso4.sql` → **Run**.
-Crea la tabla para los límites de la burbuja y deja los cambios de MORFA como **borrador** (todavía no afectan a nadie).
+## 1. Base de datos (3 min)
+Supabase → **SQL Editor** → **New query** → pegá `motor/supabase/003_paso4.sql` → **Run**. Después, en otra query, `motor/supabase/004_solo_mercadopago.sql` → **Run**.
+Crean la tabla para los límites de la burbuja y dejan los cambios de MORFA como **borrador** (todavía no afectan a nadie): herramientas nuevas, burbuja apagada y **pedidos de Morfi solo con Mercado Pago** (efectivo → la web o una persona; transferencia → una persona).
 
 ## 2. Una clave para que Morfi hable con la web (5 min)
 1. Inventá una clave larga (40 letras y números). En PowerShell podés generarla con:
