@@ -232,5 +232,20 @@
     "no_contiene": [
       "PRUEBA1"
     ]
+  },
+  {
+    "nombre": "Producto que no hay: responde con buena onda",
+    "mensajes": [
+      "quiero 2 lomitos y una napolitana"
+    ],
+    "no_contiene": [
+      "^\\s*ojo",
+      "decime",
+      "no hay pizza napolitana en la carta",
+      "las pizzas de hoy son"
+    ],
+    "contiene": [
+      "\\?"
+    ]
   }
 ]
