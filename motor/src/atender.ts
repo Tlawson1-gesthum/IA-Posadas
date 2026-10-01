@@ -61,12 +61,17 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   if (!m.texto.trim()) return;
 
   // Límites por persona: cuando se pasa, se avisa una sola vez y después el agente no responde (ni gasta).
-  const hora = await almacen.actividad(conv.id, new Date(Date.now() - 3600_000));
-  const dia = await almacen.actividad(conv.id, new Date(Date.now() - 24 * 3600_000));
+  // Las consultas a la base van todas juntas: cada ida y vuelta suma demora.
+  const [hora, dia, gastoMes, historialCompleto] = await Promise.all([
+    almacen.actividad(conv.id, new Date(Date.now() - 3600_000)),
+    almacen.actividad(conv.id, new Date(Date.now() - 24 * 3600_000)),
+    almacen.gastoDelMes(ficha.id),
+    almacen.historial(conv.id),
+  ]);
   const excedido =
     hora.mensajes > limites.mensajes_por_hora || dia.mensajes > limites.mensajes_por_dia || dia.usd >= limites.usd_por_persona_dia;
   if (excedido) {
-    const ultimaDelAgente = (await almacen.historial(conv.id)).filter((t) => t.rol === "agente").at(-1);
+    const ultimaDelAgente = historialCompleto.filter((t) => t.rol === "agente").at(-1);
     if (ultimaDelAgente?.texto !== MUCHOS_MENSAJES) {
       await evento("limite_persona", `${m.de} · ${hora.mensajes}/h · ${dia.mensajes}/día · US$ ${dia.usd.toFixed(3)}/día`);
       return contestar(MUCHOS_MENSAJES);
@@ -74,14 +79,14 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
     return;
   }
 
-  if ((await almacen.gastoDelMes(ficha.id)) >= ficha.tope_usd_mes) {
+  if (gastoMes >= ficha.tope_usd_mes) {
     await almacen.derivar(conv.id, "otro", "Se alcanzó el tope de gasto mensual del agente.");
     await evento("tope_mes", `Se alcanzó el tope mensual de US$ ${ficha.tope_usd_mes}`);
     return contestar(SIN_SALDO);
   }
 
   // El historial se lee sin el mensaje recién guardado: el cerebro lo recibe aparte.
-  const historial = (await almacen.historial(conv.id)).slice(0, -1);
+  const historial = historialCompleto.slice(0, -1);
   let r: Awaited<ReturnType<typeof responder>>;
   try {
     r = await responder(ficha, historial, m.texto, m.de);
