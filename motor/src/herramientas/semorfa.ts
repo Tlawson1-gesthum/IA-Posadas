@@ -195,3 +195,22 @@ export const confirmarPedidoEfectivo: Herramienta = {
     return JSON.stringify({ ok: false, error: cuerpo?.error ?? `La web respondió ${status}` });
   },
 };
+
+/** Ayuda PENSA: foto del turno (solo lectura), con los permisos de la persona del panel que escribe. */
+export const verTurno: Herramienta = {
+  definicion: {
+    name: "ver_turno",
+    description:
+      "Muestra cómo está el turno ahora, con los permisos de quien te escribe desde el panel: si la tienda está abierta o pausada y la demora, si la caja está abierta, los pedidos en curso (código, estado, minutos, efectivo sin confirmar, cadete), lo hecho hoy y lo agotado. Solo lectura: no cambia nada. Usala cuando pregunten por algo de este momento (¿por qué no entran pedidos?, ¿qué está demorado?, ¿la caja está abierta?).",
+    input_schema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  async ejecutar(_entrada, ctx) {
+    if (!ctx.credencial) return JSON.stringify({ error: "No se pudo ver el turno: la persona no tiene la sesión del panel abierta en este navegador. Pedile que entre al panel con su PIN y vuelva a preguntar." });
+    const auth = autorizacion(ctx);
+    if (!auth.authorization) return JSON.stringify({ error: "Esta consulta no está configurada. Respondé con el manual." });
+    const { status, cuerpo } = await pedirJson(`${baseUrl(ctx)}/api/agente/turno`, { headers: { ...auth, "x-ticket": ctx.credencial } });
+    if (status === 401) return JSON.stringify({ error: "La sesión del panel venció. Pedile que vuelva a entrar con su PIN." });
+    if (status !== 200 || !cuerpo) throw new Error(`La web respondió ${status}`);
+    return JSON.stringify(cuerpo);
+  },
+};

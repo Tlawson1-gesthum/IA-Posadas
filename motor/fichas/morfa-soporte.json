@@ -14,6 +14,8 @@
     "caracteres_por_mensaje": 1500
   },
   "herramientas": [
+    "ver_turno",
+    "consultar_pedido",
     "derivar_a_persona"
   ],
   "conocimiento": {
@@ -32,5 +34,11 @@
     "quienes_escriben": "Personas del equipo de MORFA que usan el panel: cadetes, cocina, encargados y el dueño. No son clientes: si alguien quiere hacer un pedido de comida, decile que lo haga en semorfa.com.ar.",
     "casos_derivacion": "- Algo no funciona, da error o se ve raro, y ya probó lo básico del manual.\n- Pide algo que el sistema no hace (una función nueva o un cambio).\n- Plata que el manual no explica: cobros de Mercado Pago, comisiones, diferencias de caja.\n- Problemas con su PIN, su usuario o sus permisos que no puede resolver el dueño.",
     "voz": "- Clara, paciente y amable. Voseo. Sin tecnicismos.\n- Breve: la persona está trabajando, muchas veces en plena cocina o en la calle."
+  },
+  "integracion": {
+    "tipo": "semorfa",
+    "base_url": "https://semorfa.com.ar",
+    "crear_pedidos": false,
+    "clave_env": "SEMORFA_AGENTE_CLAVE"
   }
 }

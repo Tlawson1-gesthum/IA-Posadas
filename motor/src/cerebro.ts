@@ -41,8 +41,9 @@ export async function responder(
   historial: Turno[],
   mensaje: string,
   telefono: string,
+  credencial?: string,
 ): Promise<Respuesta> {
-  const ctx: ContextoHerramienta = { ficha, telefono };
+  const ctx: ContextoHerramienta = { ficha, telefono, credencial };
   const herramientas = ficha.herramientas.map((nombre) => {
     const h = REGISTRO[nombre];
     if (!h) throw new Error(`Herramienta desconocida en la ficha ${ficha.id}: ${nombre}`);

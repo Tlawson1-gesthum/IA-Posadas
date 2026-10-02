@@ -16,6 +16,8 @@ interface Opciones {
   enviar?: (texto: string) => Promise<void>;
   /** Ficha a usar. Por defecto, la del número que recibió el mensaje. (El chat web la pasa, a veces en borrador.) */
   ficha?: Ficha;
+  /** Ticket de la web del cliente para las herramientas (no se guarda). */
+  credencial?: string;
 }
 
 export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Promise<void> {
@@ -89,7 +91,7 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   const historial = historialCompleto.slice(0, -1);
   let r: Awaited<ReturnType<typeof responder>>;
   try {
-    r = await responder(ficha, historial, m.texto, m.de);
+    r = await responder(ficha, historial, m.texto, m.de, opciones.credencial);
   } catch (e) {
     console.error(`Ficha ${ficha.id}: falló el cerebro`, e);
     const detalle = `Error del agente: ${(e as Error).message}`.slice(0, 300);

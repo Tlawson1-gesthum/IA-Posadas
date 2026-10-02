@@ -47,6 +47,8 @@ export interface ContextoHerramienta {
   ficha: Ficha;
   /** Teléfono de quien escribe (formato 549...). */
   telefono: string;
+  /** Ticket que manda la web del cliente para leer datos con los permisos de quien escribe (ej. el panel de semorfa). Nunca se guarda. */
+  credencial?: string;
 }
 
 export interface Herramienta {

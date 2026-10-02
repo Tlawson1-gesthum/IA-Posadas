@@ -56,7 +56,7 @@ function ipHash(request: Request): string {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  let b: { clave?: string; sesion?: string; texto?: string; ficha?: string; borrador?: boolean; publico?: boolean; contexto?: string };
+  let b: { clave?: string; sesion?: string; texto?: string; ficha?: string; borrador?: boolean; publico?: boolean; contexto?: string; credencial?: string };
   try {
     b = await request.json();
   } catch {
@@ -67,6 +67,8 @@ export async function POST(request: Request): Promise<Response> {
   // Lo escribe el navegador, así que es una pista para responder mejor, nunca un permiso.
   const contexto = String(b.contexto ?? "").replace(/[\[\]\r\n]/g, " ").trim().slice(0, 200);
   const mensaje = String(b.texto ?? "").trim().slice(0, 2000);
+  // Ticket para leer datos del sistema del cliente con los permisos de quien escribe. Solo pasa a las herramientas: no se guarda.
+  const credencial = /^[A-Za-z0-9_.-]{20,600}$/.test(String(b.credencial ?? "")) ? String(b.credencial) : undefined;
   const texto = (contexto ? `[Contexto: ${contexto}] ` : "") + mensaje;
   if (!sesion || !mensaje) return Response.json({ error: "Falta el mensaje" }, { status: 400 });
   const fichaId = String(b.ficha || process.env.FICHA_POR_DEFECTO || "");
@@ -110,6 +112,7 @@ export async function POST(request: Request): Promise<Response> {
     { phoneNumberId: "web", de: `web-${b.borrador ? "borrador-" : b.publico ? "publico-" : ""}${sesion}`, waId: `web-${sesion}-${Date.now()}`, texto },
     {
       ficha,
+      credencial: b.publico ? credencial : undefined,
       enviar: async (t) => {
         respuestas.push(t);
       },

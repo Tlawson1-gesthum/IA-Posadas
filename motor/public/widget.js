@@ -72,8 +72,18 @@
     window.addEventListener("message", function (e) {
       if (e.origin !== origen) return;
       if (e.data === "ba-cerrar:" + ficha) alternar(false);
-      if (e.data === "ba-contexto:" + ficha && e.source) e.source.postMessage({ ba: "contexto", ficha: ficha, contexto: contexto() }, origen);
+      if (e.data === "ba-contexto:" + ficha && e.source) {
+        var fuente = e.source;
+        credencial().then(function (cred) { fuente.postMessage({ ba: "contexto", ficha: ficha, contexto: contexto(), credencial: cred }, origen); });
+      }
     });
+    // Ticket opcional (window.credencialAgente, puede ser async) para que el agente lea datos con los permisos de quien escribe.
+    function credencial() {
+      try {
+        var c = typeof window.credencialAgente === "function" ? window.credencialAgente(ficha) : "";
+        return Promise.resolve(c).then(function (v) { return typeof v === "string" ? v : ""; }, function () { return ""; });
+      } catch (er) { return Promise.resolve(""); }
+    }
     function contexto() {
       try {
         var c = window.contextoAgente;
