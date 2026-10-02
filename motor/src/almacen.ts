@@ -121,6 +121,8 @@ export interface Almacen {
 
   // Consumo y eventos
   gastoDelMes(fichaId: string): Promise<number>;
+  /** Gasto de IA de todos los clientes desde una fecha (para estimar el saldo de Claude). */
+  gastoDesde(desde: Date): Promise<number>;
   resumenDelMes(): Promise<ResumenMes[]>;
   /** Cuántos mensajes mandó la persona y cuánto gastó el agente con ella desde una fecha. */
   actividad(conversacionId: string, desde: Date): Promise<{ mensajes: number; usd: number }>;
@@ -283,6 +285,9 @@ function almacenSupabase(url: string, clave: string): Almacen {
 
     async gastoDelMes(fichaId) {
       return Number(ok(await db.rpc("gasto_mes", { p_ficha: fichaId })));
+    },
+    async gastoDesde(desde) {
+      return Number(ok(await db.rpc("gasto_desde", { p_desde: desde.toISOString() })));
     },
     async resumenDelMes() {
       const filas = ok(await db.rpc("resumen_mes")) as any[];
@@ -463,6 +468,9 @@ function almacenEnMemoria(): Almacen {
       if (c) Object.assign(c, { estado: "agente", reiniciada: Date.now(), derivada_motivo: null, derivada_resumen: null });
     },
 
+    async gastoDesde(desde) {
+      return msgs.filter((m) => m.creado >= desde.getTime()).reduce((s, m) => s + (m.usd ?? 0), 0);
+    },
     async gastoDelMes(fichaId) {
       return msgs.filter((m) => m.fichaId === fichaId && m.creado >= inicioMes()).reduce((s, m) => s + (m.usd ?? 0), 0);
     },

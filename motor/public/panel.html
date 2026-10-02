@@ -171,7 +171,7 @@ const $ = (s, el = document) => el.querySelector(s);
 const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const usd = (n) => "US$ " + Number(n || 0).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fecha = (iso) => iso ? new Date(iso).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—";
-const hace = (min) => min == null ? "" : min < 60 ? `hace ${min} min` : min < 1440 ? `hace ${Math.round(min / 60)} h` : `hace ${Math.round(min / 1440)} d`;
+const hace = (min) => min == null ? "" : min < 1 ? "recién" : min < 60 ? `hace ${min} min` : min < 1440 ? `hace ${Math.round(min / 60)} h` : `hace ${Math.round(min / 1440)} d`;
 const nombreCharla = (t) => t.startsWith("web-publico-") ? "Burbuja en la web (cliente)" : t.startsWith("web-borrador-") ? "Prueba de borrador" : t.startsWith("web-") ? "Chat web de prueba" : "+" + t;
 const SEMAFORO = { verde: "Funcionando", amarillo: "Con charlas derivadas", rojo: "Con errores o sin saldo", gris: "Pausado" };
 
@@ -226,8 +226,24 @@ function mostrarEntrar() {
 async function salir() { await api("salir").catch(() => {}); mostrarEntrar(); }
 
 // ------------------------------------------------------------------ tablero
+// Saldo de Claude: Anthropic no lo da por API. Se carga el que muestra la consola y se le resta lo que gasta el motor.
+function tarjetaCredito(c) {
+  const bajo = c && c.saldo != null && c.saldo < 5;
+  const cuerpo = !c ? `<b>—</b><span class="suave chico">Cargá el saldo que ves en la consola de Claude.</span>`
+    : c.saldo == null ? `<b>${usd(c.cargado)}</b><span class="suave chico">Para descontar el gasto falta correr supabase/006_saldo_claude.sql.</span>`
+    : `<b>≈ ${usd(c.saldo)}</b><span class="suave chico">Cargaste ${usd(c.cargado)} ${hace(Math.round((Date.now() - Date.parse(c.fecha)) / 60000))} · el motor gastó ${usd(c.gastado)} desde entonces.${bajo ? " <b>Queda poco: recargá.</b>" : ""}</span>`;
+  return `<div class="tarjeta kpi ${bajo ? "alerta-on" : ""}"><div class="etiqueta">Saldo de Claude (estimado)</div>${cuerpo}
+    <div class="fila chico" style="margin-top:8px;gap:10px"><button type="button" onclick="cargarCredito()">Actualizar saldo</button>
+    <a href="https://platform.claude.com/settings/billing" target="_blank" rel="noopener">Ver en la consola</a></div></div>`;
+}
+async function cargarCredito() {
+  const v = prompt("¿Cuánto saldo muestra la consola de Claude ahora? (en dólares, ej. 23.50)");
+  if (v == null || !v.trim()) return;
+  try { await api("credito", { usd: v.trim() }); aviso("Saldo guardado"); verTablero(); } catch (e) { aviso(e.message); }
+}
+
 async function verTablero() {
-  const { clientes, alertas } = await api("tablero");
+  const { clientes, alertas, credito } = await api("tablero");
   const derivadas = alertas.filter((a) => a.tipo === "derivada").length;
   $("#cuenta-alertas").innerHTML = alertas.length ? `<span class="punto rojo"></span> ${alertas.length} alerta${alertas.length > 1 ? "s" : ""}` : "";
   const totalGasto = clientes.reduce((s, c) => s + c.gasto_mes, 0), totalAbono = clientes.filter((c) => c.estado === "activo").reduce((s, c) => s + c.abono_mes, 0);
@@ -237,6 +253,7 @@ async function verTablero() {
       <div class="tarjeta kpi"><div class="etiqueta">Abonos del mes</div><b>${usd(totalAbono)}</b></div>
       <div class="tarjeta kpi"><div class="etiqueta">Costo de IA del mes</div><b>${usd(totalGasto)}</b></div>
       <div class="tarjeta kpi ${derivadas ? "alerta-on" : ""}"><div class="etiqueta">Esperando a una persona</div><b>${derivadas}</b></div>
+      ${tarjetaCredito(credito)}
     </div>
     <h2>Alertas</h2>
     <div id="alertas">${alertas.length ? alertas.map((a, i) => `

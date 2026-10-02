@@ -46,6 +46,25 @@ async function fichaOFalla(id: unknown): Promise<FilaFicha> {
 
 const minutosDesde = (iso: string | null) => (iso ? Math.round((Date.now() - Date.parse(iso)) / 60_000) : null);
 
+/**
+ * Saldo de Claude estimado. Anthropic no tiene una API que diga el crédito disponible,
+ * así que se toma el último saldo cargado a mano y se le resta lo que gastó el motor desde entonces.
+ * No incluye gastos de otros usos de la misma cuenta (pruebas, otras apps).
+ */
+async function creditoClaude() {
+  const almacen = obtenerAlmacen();
+  const [ultimo] = await almacen.eventos(new Date(0), ["saldo_claude"]);
+  if (!ultimo) return null;
+  const cargado = Number(ultimo.detalle);
+  try {
+    const gastado = await almacen.gastoDesde(new Date(ultimo.creado));
+    return { cargado, fecha: ultimo.creado, gastado, saldo: cargado - gastado };
+  } catch {
+    // Falta correr supabase/006_saldo_claude.sql
+    return { cargado, fecha: ultimo.creado, gastado: null, saldo: null };
+  }
+}
+
 const ACCIONES: Record<string, (b: Cuerpo) => Promise<Response>> = {
   /** Tablero: todos los clientes con su semáforo, consumo y margen; más las alertas. */
   async tablero() {
@@ -101,7 +120,15 @@ const ACCIONES: Record<string, (b: Cuerpo) => Promise<Response>> = {
         minutos: minutosDesde(e.creado),
       })),
     ].sort((a, b) => (a.minutos ?? 0) - (b.minutos ?? 0));
-    return json({ clientes, alertas });
+    return json({ clientes, alertas, credito: await creditoClaude() });
+  },
+
+  /** Guarda el saldo de Claude que muestra la consola (Billing): desde ahí se descuenta lo que gasta el motor. */
+  async credito(b) {
+    const usd = Number(String(b.usd ?? "").replace(",", "."));
+    if (!(usd >= 0 && usd < 1_000_000)) return falla("Poné el saldo en dólares, por ejemplo 23.50");
+    await obtenerAlmacen().evento(null, null, "saldo_claude", usd.toFixed(2));
+    return json({ ok: true, credito: await creditoClaude() });
   },
 
   async conversaciones(b) {
