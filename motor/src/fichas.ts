@@ -38,6 +38,18 @@ export function plantillasDisponibles(): string[] {
   return existsSync(dir) ? readdirSync(dir).filter((a) => a.endsWith(".md")).map((a) => a.slice(0, -3)) : [];
 }
 
+/** Datos de ejemplo con los que arranca una ficha nueva (plantillas/<plantilla>.json), si la plantilla los trae. */
+export function ejemploDePlantilla(plantilla: string): Record<string, string> {
+  const archivo = path.join(RAIZ, "plantillas", `${plantilla}.json`);
+  if (!existsSync(archivo)) return {};
+  try {
+    const datos = JSON.parse(readFileSync(archivo, "utf8")).datos ?? {};
+    return Object.fromEntries(Object.entries(datos).filter(([, v]) => typeof v === "string")) as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+
 /** Los {{campos}} que pide una plantilla, en orden. */
 export function camposDePlantilla(plantilla: string): string[] {
   const texto = readFileSync(path.join(RAIZ, "plantillas", `${plantilla}.md`), "utf8");

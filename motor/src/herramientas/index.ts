@@ -14,7 +14,7 @@ const derivarAPersona: Herramienta = {
       properties: {
         motivo: {
           type: "string",
-          enum: ["transferencia", "efectivo", "pedido_sin_ubicacion", "reclamo", "plata", "alergia", "pedido_especial", "cancelacion", "enojo", "pidio_persona", "no_entiendo", "otro"],
+          enum: ["transferencia", "efectivo", "pedido_sin_ubicacion", "reclamo", "plata", "alergia", "pedido_especial", "cancelacion", "enojo", "turno", "urgencia", "pidio_persona", "no_entiendo", "otro"],
         },
         resumen: { type: "string", description: "Resumen para que la persona no tenga que leer todo. Si hay un pedido armado, incluí productos, total, nombre, dirección y forma de pago." },
       },

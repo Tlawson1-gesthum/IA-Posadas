@@ -1,7 +1,7 @@
 // Panel de gobierno de la agencia (página en public/panel.html). Todo entra por POST con {accion, ...}.
 // Solo funciona con sesión (PANEL_CLAVE). Pedir JSON + cookie SameSite=Strict evita que otra web actúe en nombre de uno.
 import { obtenerAlmacen, type ConfigFicha, type FilaFicha } from "../src/almacen.js";
-import { camposDePlantilla, fichaDesdeFila, MODELOS, plantillasDisponibles, validarFicha } from "../src/fichas.js";
+import { camposDePlantilla, ejemploDePlantilla, fichaDesdeFila, MODELOS, plantillasDisponibles, validarFicha } from "../src/fichas.js";
 import { REGISTRO } from "../src/herramientas/index.js";
 import { COOKIE_SALIR, entrar, sesionValida } from "../src/sesion.js";
 import { LIMITES_POR_DEFECTO } from "../src/tipos.js";
@@ -241,16 +241,19 @@ const ACCIONES: Record<string, (b: Cuerpo) => Promise<Response>> = {
     if (!nombre) return falla("Falta el nombre del negocio");
     if (!plantillasDisponibles().includes(plantilla)) return falla("Elegí una plantilla");
     if (await obtenerAlmacen().fichaPorId(id)) return falla("Ya existe un cliente con ese id");
+    const ejemplo = ejemploDePlantilla(plantilla);
     const config: ConfigFicha = {
       nombre,
       rubro: plantilla,
       plantilla,
-      modelo: MODELOS[0],
+      // Sonnet: rápido y más barato; se cambia en la ficha.
+      modelo: MODELOS.includes("claude-sonnet-5-5") ? "claude-sonnet-5-5" : MODELOS[0],
       esfuerzo: "low",
       tope_usd_mes: 30,
       limites: { ...LIMITES_POR_DEFECTO },
       herramientas: ["derivar_a_persona"],
-      datos: Object.fromEntries(camposDePlantilla(plantilla).map((c) => [c, ""])),
+      // Arranca con el ejemplo de la plantilla (si trae uno) para completar en vez de escribir de cero.
+      datos: Object.fromEntries(camposDePlantilla(plantilla).map((c) => [c, ejemplo[c] ?? ""])),
     };
     await obtenerAlmacen().crearFicha({
       id,

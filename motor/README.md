@@ -16,6 +16,7 @@ mensaje ─► cerebro (src/cerebro.ts) ─► Claude ─► herramientas ─►
 | `src/fichas.ts` | Carga la ficha y arma el prompt. Falla si falta completar un campo de la plantilla. |
 | `src/herramientas/` | `ver_carta_y_estado` y `consultar_pedido` (leen en vivo la API de MORFA); `cotizar_pedido` y `crear_pedido` (toman pedidos por WhatsApp y los cargan en el sistema); `derivar_a_persona`. |
 | `plantillas/gastronomia.md` | Instrucciones base para cualquier local gastronómico. |
+| `plantillas/salud.md` | Consultorios (odontología, médicos, kinesiología…): dudas, toma de datos para turnos (los confirma una persona), urgencias, sin consejos médicos. `plantillas/salud.json` trae un ejemplo con el que arranca cada ficha nueva. |
 | `plantillas/soporte.md` | **Agente de soporte de PENSA** dentro del sistema de un cliente: resuelve dudas de uso leyendo en vivo el manual que publica el sistema (`conocimiento.url`) y deriva al equipo lo que no está ahí. Ejemplo: `fichas/morfa-soporte.json` (lee `semorfa.com.ar/api/ayuda`). |
 | `fichas/morfa.json` | Semilla de la ficha de MORFA para probar en la compu. **La ficha real vive en Supabase y se edita desde el panel.** |
 | `api/panel.ts` + `public/panel.html` | Panel de gobierno: clientes con semáforo, pausar, costo contra abono, alertas, charlas, responder como persona, editar fichas con borrador, historial y vuelta atrás, alta de clientes. |
