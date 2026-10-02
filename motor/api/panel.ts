@@ -120,7 +120,9 @@ const ACCIONES: Record<string, (b: Cuerpo) => Promise<Response>> = {
         minutos: minutosDesde(e.creado),
       })),
     ].sort((a, b) => (a.minutos ?? 0) - (b.minutos ?? 0));
-    return json({ clientes, alertas, credito: await creditoClaude() });
+    // El gráfico necesita supabase/007_actividad.sql: si todavía no se corrió, el tablero sigue andando sin él.
+    const [credito, actividad] = await Promise.all([creditoClaude(), almacen.actividadPorDia(14).catch(() => null)]);
+    return json({ clientes, alertas, credito, actividad });
   },
 
   /** Guarda el saldo de Claude que muestra la consola (Billing): desde ahí se descuenta lo que gasta el motor. */

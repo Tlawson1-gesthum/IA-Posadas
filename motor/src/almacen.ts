@@ -77,6 +77,13 @@ export interface Evento {
   creado: string;
 }
 
+export interface ActividadDia {
+  dia: string; // AAAA-MM-DD, hora de Argentina
+  mensajes: number;
+  charlas: number;
+  usd: number;
+}
+
 export interface ResumenMes {
   ficha_id: string;
   usd: number;
@@ -124,6 +131,8 @@ export interface Almacen {
   /** Gasto de IA de todos los clientes desde una fecha (para estimar el saldo de Claude). */
   gastoDesde(desde: Date): Promise<number>;
   resumenDelMes(): Promise<ResumenMes[]>;
+  /** Mensajes de clientes, charlas y costo por día de los últimos `dias` días (solo los días con actividad). */
+  actividadPorDia(dias: number): Promise<ActividadDia[]>;
   /** Cuántos mensajes mandó la persona y cuánto gastó el agente con ella desde una fecha. */
   actividad(conversacionId: string, desde: Date): Promise<{ mensajes: number; usd: number }>;
   evento(fichaId: string | null, conversacionId: string | null, tipo: string, detalle: string): Promise<void>;
@@ -288,6 +297,10 @@ function almacenSupabase(url: string, clave: string): Almacen {
     },
     async gastoDesde(desde) {
       return Number(ok(await db.rpc("gasto_desde", { p_desde: desde.toISOString() })));
+    },
+    async actividadPorDia(dias) {
+      const filas = ok(await db.rpc("actividad_dias", { p_dias: dias })) as any[];
+      return filas.map((f) => ({ dia: String(f.dia), mensajes: Number(f.mensajes), charlas: Number(f.charlas), usd: Number(f.usd) }));
     },
     async resumenDelMes() {
       const filas = ok(await db.rpc("resumen_mes")) as any[];
@@ -473,6 +486,21 @@ function almacenEnMemoria(): Almacen {
     },
     async gastoDelMes(fichaId) {
       return msgs.filter((m) => m.fichaId === fichaId && m.creado >= inicioMes()).reduce((s, m) => s + (m.usd ?? 0), 0);
+    },
+    async actividadPorDia(dias) {
+      const diaAR = (t: number) => new Date(t - 3 * 3600_000).toISOString().slice(0, 10);
+      const desde = diaAR(Date.now() - (dias - 1) * 86400_000);
+      const por = new Map<string, { mensajes: number; usd: number; convs: Set<string> }>();
+      for (const m of msgs) {
+        const d = diaAR(m.creado);
+        if (d < desde) continue;
+        const r = por.get(d) ?? { mensajes: 0, usd: 0, convs: new Set<string>() };
+        if (m.rol === "cliente") r.mensajes++;
+        r.usd += m.usd ?? 0;
+        r.convs.add(m.conversacionId);
+        por.set(d, r);
+      }
+      return [...por].sort(([a], [b]) => a.localeCompare(b)).map(([dia, r]) => ({ dia, mensajes: r.mensajes, charlas: r.convs.size, usd: r.usd }));
     },
     async resumenDelMes() {
       const por = new Map<string, ResumenMes & { convs: Set<string> }>();

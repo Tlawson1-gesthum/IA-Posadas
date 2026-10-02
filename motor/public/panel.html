@@ -72,6 +72,55 @@
   :root[data-tema="presentacion"] .kpi b { background: linear-gradient(90deg, #efeafa, #22d3ee); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .kpi.alerta-on { border-color: var(--amarillo); }
 
+  /* ---------- Tablero: motor central alimentando a los agentes ---------- */
+  .tablero-top { display: grid; grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); gap: 14px; }
+  @media (max-width: 860px) { .tablero-top { grid-template-columns: 1fr; } }
+  .lateral { display: grid; gap: 12px; align-content: start; }
+  .motor-tarjeta { padding: 12px 12px 6px; overflow: hidden; position: relative; }
+  .motor-tarjeta .cab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; padding: 2px 4px 0; }
+  .motor { width: 100%; height: auto; display: block; }
+  .motor text { font-family: var(--titulos); fill: var(--texto); }
+  .motor .sub { font: 500 10px var(--numeros); fill: var(--suave); letter-spacing: .06em; }
+  .motor .cable { fill: none; stroke: var(--borde); stroke-width: 1.5; }
+  .motor .flujo { fill: none; stroke: var(--acento); stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 2 16; animation: flujo 1.6s linear infinite; }
+  .motor .flujo.vivo { stroke-width: 3; animation-duration: .7s; filter: drop-shadow(0 0 4px var(--acento)); }
+  .motor .flujo.quieto { animation-duration: 3.2s; opacity: .55; }
+  @keyframes flujo { to { stroke-dashoffset: -18; } }
+  .motor .pulso { fill: var(--acento); filter: drop-shadow(0 0 5px var(--acento)); }
+  .motor .nucleo-glow { fill: var(--acento); opacity: .18; transform-box: fill-box; transform-origin: center; animation: respira 2.6s ease-in-out infinite; }
+  .motor .nucleo { fill: var(--tarjeta); stroke: var(--acento); stroke-width: 2; }
+  .motor .anillo { fill: none; stroke: var(--acento); stroke-width: 1.5; stroke-dasharray: 6 10; transform-box: fill-box; transform-origin: center; animation: gira 14s linear infinite; opacity: .8; }
+  .motor .anillo.dos { stroke-dasharray: 2 6; animation-duration: 9s; animation-direction: reverse; opacity: .5; }
+  .motor .nodo { cursor: pointer; }
+  .motor .nodo circle.fondo { fill: var(--tarjeta); stroke-width: 2.5; transition: transform .15s; transform-box: fill-box; transform-origin: center; }
+  .motor .nodo:hover circle.fondo, .motor .nodo:focus-visible circle.fondo { transform: scale(1.08); }
+  .motor .nodo:focus { outline: none; }
+  .motor .nodo .halo { fill: none; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
+  .motor .nodo.vivo .halo { animation: onda 1.8s ease-out infinite; }
+  .motor .verde-s { stroke: var(--verde); } .motor .amarillo-s { stroke: var(--amarillo); } .motor .rojo-s { stroke: var(--rojo); } .motor .gris-s { stroke: var(--gris); }
+  @keyframes gira { to { transform: rotate(360deg); } }
+  @keyframes respira { 50% { transform: scale(1.18); opacity: .32; } }
+  @keyframes onda { 0% { opacity: .7; transform: scale(1); } 100% { opacity: 0; transform: scale(1.7); } }
+  .leyenda-motor { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--suave); padding: 0 4px 6px; }
+  .leyenda-motor span { display: inline-flex; align-items: center; gap: 6px; }
+  .kpi small { display: block; font-size: 12px; color: var(--suave); margin-top: 2px; }
+  .kpi .aviso-bajo { color: var(--amarillo); font-weight: 600; }
+  .grilla.kpis { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); margin-top: 14px; }
+  .grafico { position: relative; }
+  .grafico svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .grafico .barra-dato { fill: var(--acento); }
+  .grafico .golpe { fill: transparent; cursor: default; }
+  .grafico .golpe:hover + .barra-dato, .grafico g:hover .barra-dato { opacity: .75; }
+  .grafico .eje { stroke: var(--borde); stroke-width: 1; }
+  .grafico text { font: 500 10px var(--numeros); fill: var(--suave); }
+  .tooltip { position: absolute; pointer-events: none; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px; padding: 8px 10px;
+    font-size: 12px; box-shadow: var(--sombra-hover); white-space: nowrap; transform: translate(-50%, -100%); display: none; z-index: 3; }
+  .tooltip b { font-family: var(--numeros); }
+  @media (prefers-reduced-motion: reduce) {
+    .motor .flujo, .motor .anillo, .motor .nucleo-glow, .motor .nodo .halo { animation: none !important; }
+    .motor .flujo { stroke-dasharray: none; opacity: .5; }
+  }
+
   button, .boton { font: inherit; border: 1px solid var(--borde); background: var(--tarjeta); color: var(--texto); border-radius: 10px;
     padding: 7px 13px; cursor: pointer; text-decoration: none; display: inline-block; transition: border-color .15s, box-shadow .15s, transform .1s; }
   button:hover, .boton:hover { border-color: var(--acento); }
@@ -231,7 +280,7 @@ function tarjetaCredito(c) {
   const bajo = c && c.saldo != null && c.saldo < 5;
   const cuerpo = !c ? `<b>—</b><span class="suave chico">Cargá el saldo que ves en la consola de Claude.</span>`
     : c.saldo == null ? `<b>${usd(c.cargado)}</b><span class="suave chico">Para descontar el gasto falta correr supabase/006_saldo_claude.sql.</span>`
-    : `<b>≈ ${usd(c.saldo)}</b><span class="suave chico">Cargaste ${usd(c.cargado)} ${hace(Math.round((Date.now() - Date.parse(c.fecha)) / 60000))} · el motor gastó ${usd(c.gastado)} desde entonces.${bajo ? " <b>Queda poco: recargá.</b>" : ""}</span>`;
+    : `<b>≈ ${usd(c.saldo)}</b><span class="suave chico">Cargaste ${usd(c.cargado)} ${hace(Math.round((Date.now() - Date.parse(c.fecha)) / 60000))} · el motor gastó ${usd(c.gastado)} desde entonces.${bajo ? ` <span class="aviso-bajo">Queda poco: recargá.</span>` : ""}</span>`;
   return `<div class="tarjeta kpi ${bajo ? "alerta-on" : ""}"><div class="etiqueta">Saldo de Claude (estimado)</div>${cuerpo}
     <div class="fila chico" style="margin-top:8px;gap:10px"><button type="button" onclick="cargarCredito()">Actualizar saldo</button>
     <a href="https://platform.claude.com/settings/billing" target="_blank" rel="noopener">Ver en la consola</a></div></div>`;
@@ -242,19 +291,137 @@ async function cargarCredito() {
   try { await api("credito", { usd: v.trim() }); aviso("Saldo guardado"); verTablero(); } catch (e) { aviso(e.message); }
 }
 
+const ICONO_RUBRO = { gastronomia: "🍕", soporte: "🛟", salud: "🦷" };
+
+// El motor en el centro y cada agente alrededor, con un cable por el que "fluye" la energía.
+// Color del agente = semáforo. Flujo rápido = recibió mensajes en los últimos 10 minutos. Pausado = sin flujo.
+function dibujarMotor(clientes) {
+  // En el celular el dibujo es más angosto (y alto) para que se lea.
+  const angosto = innerWidth < 640, n = clientes.length;
+  const W = angosto ? 440 : 760, H = n <= 2 ? (angosto ? 230 : 250) : angosto ? 420 : 370, cx = W / 2, cy = H / 2 - 4;
+  const quieto = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const rx = angosto ? (n <= 2 ? 158 : 160) : n <= 2 ? 250 : 290, ry = n <= 2 ? 0 : angosto ? 150 : 118;
+  const ahora = Date.now();
+  const nodos = clientes.map((c, i) => {
+    // Con 1 o 2 agentes van a los costados; con más, en óvalo empezando arriba a la izquierda.
+    const ang = n === 1 ? 0 : n === 2 ? Math.PI * i : -Math.PI / 2 - Math.PI / n + (2 * Math.PI * i) / n;
+    const x = cx + rx * Math.cos(ang), y = cy + (ry || 0) * Math.sin(ang);
+    const vivo = c.estado === "activo" && c.ultimo_mensaje && ahora - Date.parse(c.ultimo_mensaje) < 10 * 60_000;
+    return { c, x, y, vivo };
+  });
+  const cables = nodos.map(({ c, x, y, vivo }, i) => {
+    const mx = (cx + x) / 2, my = (cy + y) / 2 - 28;
+    const d = `M${cx.toFixed(1)},${cy.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}`;
+    if (c.estado !== "activo") return `<path class="cable" d="${d}" stroke-dasharray="3 5"/>`;
+    // Pulsos de energía que salen del motor hacia el agente (más seguidos si está atendiendo ahora).
+    const dur = vivo ? 1.3 : 3.2;
+    const pulsos = quieto ? "" : [0, 1, 2].map((k) => `<circle class="pulso" r="${vivo ? 3.6 : 2.6}"><animateMotion dur="${dur}s" begin="-${(k * dur / 3 + i * 0.37).toFixed(2)}s" repeatCount="indefinite"><mpath href="#cable-${i}"/></animateMotion></circle>`).join("");
+    return `<path class="cable" id="cable-${i}" d="${d}"/><path class="flujo ${vivo ? "vivo" : "quieto"}" d="${d}"/>${pulsos}`;
+  }).join("");
+  const agentes = nodos.map(({ c, x, y, vivo }) => {
+    const inicial = ICONO_RUBRO[c.rubro] || esc((c.nombre || "?").trim()[0] || "?").toUpperCase();
+    const debajo = y > cy - 20;
+    const ty = debajo ? y + 46 : y - 40;
+    return `<g class="nodo ${vivo ? "vivo" : ""}" data-id="${esc(c.id)}" tabindex="0" role="link" aria-label="${esc(c.nombre)} (${esc(c.rubro)}): ${SEMAFORO[c.semaforo]}">
+      <title>${esc(c.nombre)} · ${esc(c.rubro)} — ${SEMAFORO[c.semaforo]} · ${c.mensajes_mes} mensajes este mes</title>
+      <circle class="halo ${c.semaforo}-s" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="27"/>
+      <circle class="fondo ${c.semaforo}-s" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="27"/>
+      <text x="${x.toFixed(1)}" y="${(y + 6).toFixed(1)}" text-anchor="middle" font-size="18" font-weight="700">${inicial}</text>
+      <text x="${x.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" font-size="13" font-weight="600">${esc(c.nombre)}</text>
+      <text class="sub" x="${x.toFixed(1)}" y="${(ty + 14).toFixed(1)}" text-anchor="middle">${esc(c.rubro.toUpperCase())} · ${c.mensajes_mes} MSJ</text>
+    </g>`;
+  }).join("");
+  return `<svg class="motor" id="motor-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Motor central con ${n} agentes conectados">
+    ${cables}
+    <circle class="nucleo-glow" cx="${cx}" cy="${cy}" r="56"/>
+    <circle class="anillo" cx="${cx}" cy="${cy}" r="62"/>
+    <circle class="anillo dos" cx="${cx}" cy="${cy}" r="72"/>
+    <circle class="nucleo" cx="${cx}" cy="${cy}" r="44"/>
+    ${quieto ? "" : [0, 1, 2, 3].map((k) => `<circle class="pulso" r="2"><animateMotion dur="${5 + k}s" begin="${-k * 1.3}s" repeatCount="indefinite" path="M${cx - 80},${cy} a80,80 0 1,${k % 2} 160,0 a80,80 0 1,${k % 2} -160,0"/></circle>`).join("")}
+    <text x="${cx}" y="${cy + 2}" text-anchor="middle" font-size="20" font-weight="700">PENSA</text>
+    <text class="sub" x="${cx}" y="${cy + 18}" text-anchor="middle">MOTOR</text>
+    ${agentes}
+  </svg>`;
+}
+
+// Barras de mensajes de clientes por día. Un solo dato por barra: color único, sin leyenda; el detalle va en el tooltip.
+function graficoActividad(datos, angosto = innerWidth < 640) {
+  const dias = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.now() - 3 * 3600_000 - i * 86400_000).toISOString().slice(0, 10);
+    dias.push(datos.find((x) => x.dia === d) || { dia: d, mensajes: 0, charlas: 0, usd: 0 });
+  }
+  // En el celular se dibuja más angosto para que el texto no quede diminuto.
+  const W = angosto ? 360 : 760, H = angosto ? 190 : 170, ab = 22, ar = 10, iz = 26, paso = (W - iz) / dias.length, ancho = Math.max(6, paso - (angosto ? 6 : 10));
+  const max = Math.max(5, ...dias.map((d) => d.mensajes));
+  const tope = Math.ceil(max / 5) * 5, alto = H - ab - ar;
+  const y = (v) => ar + alto - (v / tope) * alto;
+  const nombre = (d) => new Date(d + "T12:00:00Z").toLocaleDateString("es-AR", { weekday: "short", day: "numeric", timeZone: "UTC" });
+  const barras = dias.map((d, i) => {
+    const x = iz + i * paso + (paso - ancho) / 2, h = Math.max(0, alto - (y(d.mensajes) - ar));
+    const r = Math.min(4, h, ancho / 2);
+    // Barra con las puntas de arriba redondeadas (4px) y apoyada en la base.
+    const barra = h > 0 ? `<path class="barra-dato" d="M${x},${ar + alto} V${ar + alto - h + r} Q${x},${ar + alto - h} ${x + r},${ar + alto - h} H${x + ancho - r} Q${x + ancho},${ar + alto - h} ${x + ancho},${ar + alto - h + r} V${ar + alto} Z"/>` : "";
+    const etiqueta = (angosto ? i % 4 === 1 : i % 2 === 1) ? `<text x="${x + ancho / 2}" y="${H - 6}" text-anchor="middle">${nombre(d.dia)}</text>` : "";
+    return `<g data-tip="<b>${nombre(d.dia)}</b><br>${d.mensajes} mensajes de clientes<br>${d.charlas} charla${d.charlas === 1 ? "" : "s"} · ${usd(d.usd)}">
+      <rect class="golpe" x="${iz + i * paso}" y="${ar}" width="${paso}" height="${alto}"/>${barra}${etiqueta}</g>`;
+  }).join("");
+  const guias = [0, tope / 2, tope].map((v) => `<line class="eje" x1="${iz}" x2="${W}" y1="${y(v)}" y2="${y(v)}" ${v ? 'stroke-dasharray="2 4"' : ""}/><text x="${iz - 6}" y="${y(v) + 3}" text-anchor="end">${v}</text>`).join("");
+  const total = dias.reduce((s, d) => s + d.mensajes, 0);
+  return `<div class="grafico"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Mensajes de clientes por día: ${total} en 14 días">${guias}${barras}</svg><div class="tooltip" id="tip"></div></div>
+    <details class="chico" style="margin-top:6px"><summary class="suave">Ver como tabla</summary>
+      <table class="tabla"><thead><tr><th>Día</th><th class="num">Mensajes</th><th class="num">Charlas</th><th class="num">Costo IA</th></tr></thead>
+      <tbody>${dias.slice().reverse().map((d) => `<tr><td>${nombre(d.dia)}</td><td class="num">${d.mensajes}</td><td class="num">${d.charlas}</td><td class="num">${usd(d.usd)}</td></tr>`).join("")}</tbody></table></details>`;
+}
+
+function activarTooltip() {
+  const caja = document.querySelector(".grafico"), tip = $("#tip");
+  if (!caja || !tip) return;
+  caja.addEventListener("mousemove", (e) => {
+    const g = e.target.closest("g[data-tip]");
+    if (!g) { tip.style.display = "none"; return; }
+    const r = caja.getBoundingClientRect(), b = g.querySelector(".golpe").getBoundingClientRect();
+    tip.innerHTML = g.dataset.tip;
+    tip.style.display = "block";
+    tip.style.left = Math.min(r.width - 70, Math.max(70, b.left - r.left + b.width / 2)) + "px";
+    tip.style.top = (e.clientY - r.top - 12) + "px";
+  });
+  caja.addEventListener("mouseleave", () => (tip.style.display = "none"));
+}
+
 async function verTablero() {
-  const { clientes, alertas, credito } = await api("tablero");
+  const { clientes, alertas, credito, actividad } = await api("tablero");
   const derivadas = alertas.filter((a) => a.tipo === "derivada").length;
   $("#cuenta-alertas").innerHTML = alertas.length ? `<span class="punto rojo"></span> ${alertas.length} alerta${alertas.length > 1 ? "s" : ""}` : "";
   const totalGasto = clientes.reduce((s, c) => s + c.gasto_mes, 0), totalAbono = clientes.filter((c) => c.estado === "activo").reduce((s, c) => s + c.abono_mes, 0);
+  const activos = clientes.filter((c) => c.estado === "activo");
+  const margen = totalAbono - totalGasto;
+  const charlasMes = clientes.reduce((s, c) => s + c.charlas_mes, 0), mensajesMes = clientes.reduce((s, c) => s + c.mensajes_mes, 0);
+  const hoyAR = new Date(Date.now() - 3 * 3600_000).toISOString().slice(0, 10);
+  const hoy = actividad?.find((d) => d.dia === hoyAR);
   $("#vista").innerHTML = `
-    <div class="grilla">
-      <div class="tarjeta kpi"><div class="etiqueta">Agentes activos</div><b>${clientes.filter((c) => c.estado === "activo").length}<span class="suave" style="font-size:16px"> / ${clientes.length}</span></b></div>
-      <div class="tarjeta kpi"><div class="etiqueta">Abonos del mes</div><b>${usd(totalAbono)}</b></div>
+    <div class="tablero-top">
+      <div class="tarjeta motor-tarjeta">
+        <div class="cab"><div class="etiqueta">Motor PENSA · en vivo</div><span class="suave chico">${activos.length} de ${clientes.length} agentes encendidos</span></div>
+        ${dibujarMotor(clientes)}
+        <div class="leyenda-motor"><span><i class="punto verde"></i>Funcionando</span><span><i class="punto amarillo"></i>Charla esperando a una persona</span>
+          <span><i class="punto rojo"></i>Error o tope</span><span><i class="punto gris"></i>Pausado</span><span>Flujo rápido = mensajes en los últimos 10 min</span></div>
+      </div>
+      <div class="lateral">
+        ${tarjetaCredito(credito)}
+        <div class="tarjeta kpi"><div class="etiqueta">Margen del mes</div><b>${usd(margen)}</b><small>Abonos ${usd(totalAbono)} − IA ${usd(totalGasto)}</small></div>
+      </div>
+    </div>
+    <div class="grilla kpis">
+      <div class="tarjeta kpi"><div class="etiqueta">Agentes activos</div><b>${activos.length}<span class="suave" style="font-size:16px"> / ${clientes.length}</span></b></div>
+      <div class="tarjeta kpi"><div class="etiqueta">Mensajes hoy</div><b>${hoy ? hoy.mensajes : actividad ? 0 : "—"}</b><small>${hoy ? `${hoy.charlas} charla${hoy.charlas === 1 ? "" : "s"} · ${usd(hoy.usd)}` : "de clientes"}</small></div>
+      <div class="tarjeta kpi"><div class="etiqueta">Charlas del mes</div><b>${charlasMes}</b><small>${mensajesMes} mensajes de clientes</small></div>
+      <div class="tarjeta kpi"><div class="etiqueta">Costo por charla</div><b>${usd(charlasMes ? totalGasto / charlasMes : 0)}</b><small>promedio del mes</small></div>
       <div class="tarjeta kpi"><div class="etiqueta">Costo de IA del mes</div><b>${usd(totalGasto)}</b></div>
       <div class="tarjeta kpi ${derivadas ? "alerta-on" : ""}"><div class="etiqueta">Esperando a una persona</div><b>${derivadas}</b></div>
-      ${tarjetaCredito(credito)}
     </div>
+    <h2>Actividad · últimos 14 días</h2>
+    <div class="tarjeta">${actividad ? graficoActividad(actividad) : `<p class="suave chico">Para ver el gráfico, corré <b>supabase/007_actividad.sql</b> en Supabase.</p>`}</div>
     <h2>Alertas</h2>
     <div id="alertas">${alertas.length ? alertas.map((a, i) => `
       <div class="alerta ${esc(a.tipo)}" data-i="${i}">
@@ -281,6 +448,9 @@ async function verTablero() {
         </tr>`;
       }).join("")}</tbody></table></div>
     <p class="suave chico">Margen = abono del mes − costo de IA del mes. No incluye el costo de WhatsApp (Meta) ni el de Vercel o Supabase.</p>`;
+  $("#motor-svg")?.addEventListener("click", (e) => { const n = e.target.closest(".nodo"); if (n) ir("cliente/" + n.dataset.id); });
+  $("#motor-svg")?.addEventListener("keydown", (e) => { const n = e.target.closest(".nodo"); if (n && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); ir("cliente/" + n.dataset.id); } });
+  activarTooltip();
   $("#alertas").onclick = (e) => {
     const a = alertas[e.target.closest(".alerta")?.dataset.i];
     if (!a) return;
