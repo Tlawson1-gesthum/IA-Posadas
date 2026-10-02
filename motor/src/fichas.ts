@@ -88,8 +88,9 @@ export function validarFicha(ficha: Ficha): string[] {
   if (!["low", "medium", "high"].includes(ficha.esfuerzo)) problemas.push("El esfuerzo tiene que ser low, medium o high.");
   if (!(ficha.tope_usd_mes > 0)) problemas.push("El tope de gasto mensual tiene que ser mayor que 0.");
   for (const h of ficha.herramientas ?? []) if (!REGISTRO[h]) problemas.push(`Herramienta desconocida: ${h}.`);
-  const integra = (ficha.herramientas ?? []).some((h) => h !== "derivar_a_persona");
-  if (integra && !ficha.integracion?.base_url) problemas.push("Las herramientas elegidas necesitan integracion.base_url.");
+  const conSistema = (ficha.herramientas ?? []).filter((h) => h !== "derivar_a_persona");
+  if (conSistema.length && !ficha.integracion?.base_url)
+    problemas.push(`Estas herramientas leen o cargan datos en el sistema del cliente y necesitan su dirección (Integración → Dirección base): ${conSistema.join(", ")}. Si este agente no las usa, destildalas.`);
   if (ficha.conocimiento?.url && !/^https:\/\//.test(ficha.conocimiento.url)) problemas.push("La dirección del conocimiento tiene que empezar con https://.");
   if (ficha.herramientas?.includes("crear_pedido") && ficha.integracion?.pagos_agente?.length === 0)
     problemas.push("Elegí al menos una forma de pago para los pedidos que toma el agente.");
