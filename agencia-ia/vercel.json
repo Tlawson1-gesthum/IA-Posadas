@@ -1,0 +1,10 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/agencia", "destination": "/demos/landing-agencia" },
+    { "source": "/turnero", "destination": "/demos/turnero" }
+  ],
+  "functions": {
+    "api/*.js": { "maxDuration": 60 }
+  }
+}
