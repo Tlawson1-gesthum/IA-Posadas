@@ -2,20 +2,12 @@
 // Los precios y el envío los calcula este código con la carta en vivo, nunca el modelo.
 import type { ContextoHerramienta, Herramienta } from "../tipos.js";
 import { autorizacion, baseUrl, esChatWeb, traerCarta } from "./semorfa.js";
+import { distanciaKm, paisDe, tramoDeEnvio } from "./zona.js";
 
 interface LineaEntrada {
   id: string;
   cantidad: number;
   adicionales?: { id: string; cantidad: number }[];
-}
-
-/** Distancia en línea recta en km, igual que la calcula la web. */
-function distanciaKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
-  const rad = (g: number) => (g * Math.PI) / 180;
-  const dLat = rad(b.lat - a.lat);
-  const dLng = rad(b.lng - a.lng);
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
-  return 2 * 6371 * Math.asin(Math.sqrt(h));
 }
 
 interface Cotizacion {
@@ -26,6 +18,7 @@ interface Cotizacion {
   envio: number | null;
   total: number | null;
   fuera_de_zona: boolean;
+  fuera_del_pais: boolean;
   falta_ubicacion: boolean;
   abierto: boolean;
   motivo_cerrado?: string;
@@ -74,10 +67,17 @@ async function cotizar(entrada: Record<string, unknown>, ctx: ContextoHerramient
   const lng = typeof entrada.lng === "number" ? entrada.lng : null;
   let envio: number | null = null;
   let fueraDeZona = false;
+  let fueraDelPais = false;
   if (lat !== null && lng !== null) {
-    const km = distanciaKm(carta.cocina, { lat, lng });
-    const tramo = (carta.envio ?? []).find((t: any) => km <= t.hasta_km);
-    if (tramo) envio = tramo.precio;
+    const tramo = tramoDeEnvio(carta.envio ?? [], distanciaKm(carta.cocina, { lat, lng }));
+    // Encarnación (Paraguay) entra en el radio en línea recta: se mira el país en el mapa.
+    // Si el mapa no responde, se deja pasar (como antes) para no frenar pedidos.
+    const pais = tramo ? await paisDe({ lat, lng }) : null;
+    if (pais && pais !== "ar") {
+      fueraDelPais = true;
+      errores.push("Esa ubicación queda fuera de Argentina: no hacemos envíos a Paraguay ni a otros países.");
+    }
+    if (tramo && !fueraDelPais) envio = tramo.precio;
     else fueraDeZona = true;
   }
 
@@ -89,6 +89,7 @@ async function cotizar(entrada: Record<string, unknown>, ctx: ContextoHerramient
     envio,
     total: envio === null ? null : subtotal + envio,
     fuera_de_zona: fueraDeZona,
+    fuera_del_pais: fueraDelPais,
     falta_ubicacion: lat === null || lng === null,
     abierto: !!carta.estado?.abierto,
     motivo_cerrado: carta.estado?.abierto ? undefined : carta.estado?.motivo,
@@ -123,7 +124,7 @@ export const cotizarPedido: Herramienta = {
   definicion: {
     name: "cotizar_pedido",
     description:
-      "Calcula el pedido con la carta en vivo: valida productos y adicionales, y devuelve cada línea, subtotal, costo de envío según la ubicación, total, si queda fuera de zona y si el local está abierto. No crea nada. Usala antes de mostrarle el resumen al cliente y cada vez que cambie algo.",
+      "Calcula el pedido con la carta en vivo: valida productos y adicionales, y devuelve cada línea, subtotal, costo de envío según la ubicación, total, si queda fuera de zona (o fuera del país: no hay envíos a Paraguay) y si el local está abierto. No crea nada. Usala antes de mostrarle el resumen al cliente y cada vez que cambie algo.",
     input_schema: {
       type: "object",
       properties: {

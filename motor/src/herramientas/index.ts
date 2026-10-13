@@ -2,6 +2,7 @@
 import type { Herramienta } from "../tipos.js";
 import { cotizarPedido, crearPedido } from "./pedidos-semorfa.js";
 import { confirmarPedidoEfectivo, consultarPedido, misPedidos, verCartaYEstado, verTurno } from "./semorfa.js";
+import { consultarZona } from "./zona.js";
 
 /** Pasa la charla a una persona. El motor la marca y el agente queda en silencio. */
 const derivarAPersona: Herramienta = {
@@ -36,6 +37,7 @@ export const REGISTRO: Record<string, Herramienta> = {
   [confirmarPedidoEfectivo.definicion.name]: confirmarPedidoEfectivo,
   [cotizarPedido.definicion.name]: cotizarPedido,
   [crearPedido.definicion.name]: crearPedido,
+  [consultarZona.definicion.name]: consultarZona,
   [verTurno.definicion.name]: verTurno,
   [derivarAPersona.definicion.name]: derivarAPersona,
 };

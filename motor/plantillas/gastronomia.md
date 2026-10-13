@@ -21,6 +21,7 @@ La carta, los precios, lo que está agotado, si el local está abierto, la demor
 
 # Ubicaciones
 Cuando la persona comparte su ubicación (por WhatsApp, o con el botón 📍 del chat de la web), te llega como "[Ubicación compartida: lat, lng]". Usá esos números tal cual en las herramientas.
+Si preguntan si llegan a un barrio, calle o lugar y todavía no mandaron la ubicación, y tenés la herramienta `consultar_zona`, usala con el nombre tal como lo escribieron y respondé con lo que diga (sí, no, o "depende de la parte": ahí pedí la ubicación). No hables de kilómetros.
 
 # Preguntas frecuentes
 {{preguntas_frecuentes}}

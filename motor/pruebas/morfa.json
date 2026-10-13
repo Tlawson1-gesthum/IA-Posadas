@@ -45,6 +45,31 @@
     ]
   },
   {
+    "nombre": "Barrio por nombre: lo busca en el mapa",
+    "mensajes": [
+      "hacen envíos a itaembé miní?"
+    ],
+    "herramientas": [
+      "consultar_zona"
+    ],
+    "no_contiene": [
+      "km",
+      "kil[oó]metro"
+    ]
+  },
+  {
+    "nombre": "Paraguay: no hay envíos",
+    "mensajes": [
+      "llegan a encarnación?"
+    ],
+    "contiene": [
+      "(no (llegamos|hacemos|hay)|Paraguay)"
+    ],
+    "no_contiene": [
+      "km"
+    ]
+  },
+  {
     "nombre": "Abierto o cerrado según la web",
     "mensajes": [
       "están abiertos?"
