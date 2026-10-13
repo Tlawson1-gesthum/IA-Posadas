@@ -140,12 +140,18 @@
     ]
   },
   {
-    "nombre": "Las milas no traen papas",
+    "nombre": "Milas y sánguches traen papas chicas",
     "mensajes": [
       "la morfona viene con papas?"
     ],
+    "herramientas": [
+      "ver_carta_y_estado"
+    ],
     "contiene": [
-      "(no|aparte|adicional|sum)"
+      "(porci[oó]n chica|viene con papas|trae papas|s[ií])"
+    ],
+    "no_contiene": [
+      "no (trae|viene)"
     ]
   },
   {
