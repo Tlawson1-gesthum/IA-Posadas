@@ -55,8 +55,7 @@ function resumirCarta(m: any) {
       costos_posibles: costosEnvio,
       nota: "Depende de la distancia a la cocina. El costo exacto sale de cotizar_pedido con la ubicación. No hables de kilómetros.",
     },
-    categorias: m.categorias,
-    productos: (m.productos ?? []).map((p: any) => ({
+    carta: agruparPorCategoria(m.categorias ?? [], (m.productos ?? []).map((p: any) => ({
       id: p.id,
       categoria: p.categoria,
       nombre: p.variante ? `${p.nombre} (${p.variante})` : p.nombre,
@@ -68,8 +67,20 @@ function resumirCarta(m: any) {
         .map((id: string) => extras.get(id))
         .filter(Boolean)
         .map((e: any) => ({ id: e.id, nombre: e.nombre, precio: e.precio, max: e.max, disponible: e.activo === 1 })),
-    })),
+    }))),
   };
+}
+
+/** [{ categoria, aclaracion, productos }] en el orden de la web; lo que no tiene categoría conocida va al final. */
+function agruparPorCategoria(categorias: { id: string; sub?: string }[], productos: any[]) {
+  const orden = [...categorias.map((c) => c.id), ...productos.map((p) => p.categoria).filter((c) => !categorias.some((x) => x.id === c))];
+  return [...new Set(orden)]
+    .map((id) => ({
+      categoria: id,
+      aclaracion: categorias.find((c) => c.id === id)?.sub || undefined,
+      productos: productos.filter((p) => p.categoria === id).map(({ categoria: _, ...p }) => p),
+    }))
+    .filter((g) => g.productos.length);
 }
 
 export const verCartaYEstado: Herramienta = {

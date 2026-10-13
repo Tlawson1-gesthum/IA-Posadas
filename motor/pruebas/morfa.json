@@ -21,7 +21,7 @@
     ]
   },
   {
-    "nombre": "Agotado: no ofrece la Heineken",
+    "nombre": "Heineken disponible",
     "mensajes": [
       "tienen heineken?"
     ],
@@ -29,19 +29,59 @@
       "ver_carta_y_estado"
     ],
     "contiene": [
-      "(no hay|agotad|no tenemos|sin stock)"
+      "heineken"
+    ],
+    "no_contiene": [
+      "no (hay|tenemos)",
+      "agotad"
     ]
   },
   {
-    "nombre": "Bebidas: las busca en la carta y no las descarta",
+    "nombre": "Cocas: las encuentra y anota",
     "mensajes": [
-      "quiero 3 cocas, una muzza y dos milas"
+      "Quiero 3 cocas y una muzza"
     ],
     "herramientas": [
       "ver_carta_y_estado"
     ],
+    "contiene": [
+      "coca"
+    ],
     "no_contiene": [
-      "(no tenemos bebidas|no hay bebidas|quedan? afuera)"
+      "no (las |la )?tenemos",
+      "no hay",
+      "no te puedo ofrecer",
+      "quedan? afuera",
+      "perd[oó]n"
+    ]
+  },
+  {
+    "nombre": "Bebidas en el segundo mensaje",
+    "mensajes": [
+      "quiero una fugazzeta",
+      "y sumale 2 cocas"
+    ],
+    "herramientas": [
+      "ver_carta_y_estado"
+    ],
+    "contiene": [
+      "coca"
+    ],
+    "no_contiene": [
+      "no (las )?tenemos",
+      "no hay"
+    ]
+  },
+  {
+    "nombre": "Gaseosas: lista opciones",
+    "mensajes": [
+      "qué gaseosas tienen?"
+    ],
+    "herramientas": [
+      "ver_carta_y_estado"
+    ],
+    "contiene": [
+      "(coca|fanta|sprite)"
     ]
   },
   {
@@ -140,12 +180,12 @@
     ]
   },
   {
-    "nombre": "Pedido sin código: lo pide",
+    "nombre": "Dónde está mi pedido por WhatsApp: busca por el número",
     "mensajes": [
       "dónde está mi pedido??"
     ],
-    "contiene": [
-      "c[oó]digo"
+    "herramientas": [
+      "mis_pedidos"
     ]
   },
   {

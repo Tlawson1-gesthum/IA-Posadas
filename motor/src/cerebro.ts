@@ -79,6 +79,7 @@ export async function responder(
       messages: mensajes,
     });
 
+    if (r.model && !r.model.startsWith(ficha.modelo)) console.warn(`Ficha ${ficha.id}: respondió ${r.model} en lugar de ${ficha.modelo} (respaldo automático)`);
     uso.entrada += r.usage.input_tokens;
     uso.salida += r.usage.output_tokens;
     uso.cacheLeida += r.usage.cache_read_input_tokens ?? 0;
