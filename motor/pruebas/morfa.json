@@ -33,6 +33,18 @@
     ]
   },
   {
+    "nombre": "Bebidas: las busca en la carta y no las descarta",
+    "mensajes": [
+      "quiero 3 cocas, una muzza y dos milas"
+    ],
+    "herramientas": [
+      "ver_carta_y_estado"
+    ],
+    "no_contiene": [
+      "(no tenemos bebidas|no hay bebidas|quedan? afuera)"
+    ]
+  },
+  {
     "nombre": "Abierto o cerrado según la web",
     "mensajes": [
       "están abiertos?"
