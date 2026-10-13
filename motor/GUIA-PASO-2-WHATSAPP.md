@@ -69,7 +69,7 @@ Vas a ir juntando datos. Anotalos en un Bloc de notas **que no compartas con nad
      Si todavía no tenés Meta, cargá todo menos `WHATSAPP_TOKEN` y `META_APP_SECRET`: el chat web funciona igual. Esas dos se agregan después (**Settings → Environment Variables**) y se hace **Redeploy**.
 
    - **Deploy**.
-4. El código del motor está en la rama `claude/pensive-gates-rc4r0l`, no en `main`. Si el deploy dice que no encuentra la carpeta `motor`: **Settings → Environments → Production → Branch Tracking** (o **Settings → Git → Production Branch**) → poné `claude/pensive-gates-rc4r0l` → guardá → **Deployments → Redeploy**.
+4. El motor se publica desde `main`. Si el deploy dice que no encuentra la carpeta `motor`, revisá que **Root Directory** sea `motor` (**Settings → Build and Deployment**) y hacé **Deployments → Redeploy**.
 5. Cuando termine, copiá el dominio del proyecto (algo como `ia-posadas-xxxx.vercel.app`). La dirección del webhook es:
    ```
    https://TU-DOMINIO.vercel.app/api/whatsapp
@@ -83,7 +83,13 @@ Vas a ir juntando datos. Anotalos en un Bloc de notas **que no compartas con nad
    - **URL de devolución de llamada**: `https://TU-DOMINIO.vercel.app/api/whatsapp`
    - **Token de verificación**: la palabra que inventaste en `WHATSAPP_VERIFY_TOKEN`.
    - **Verificar y guardar**. Si da error, revisá que la palabra sea exactamente la misma.
+   En el panel nuevo de Meta esto está en **Casos de uso → Personalizar → Paso 2. Configuración de producción → Configurar Webhooks**.
 2. Abajo, en **Campos del webhook** → **messages** → **Suscribirse**.
+3. **Enchufar la cuenta de WhatsApp a la app** (sin esto, Meta verifica el webhook pero no manda los mensajes):
+   - Abrí **https://developers.facebook.com/tools/explorer** → **Aplicación de Meta**: tu app → en **Token de acceso** pegá el `WHATSAPP_TOKEN`.
+   - Cambiá **GET** por **POST** y en la barra escribí `<ID de la cuenta de WhatsApp>/subscribed_apps`. El ID está en **Paso 1. Probar**, al lado del número de prueba ("Identificador de la cuenta de mensajes"; no es el Phone Number ID).
+   - **Enviar** → tiene que decir `"success": true`.
+4. En el panel de gobierno → cliente → **Ficha** → al final, **Contrato y WhatsApp** → **Phone number ID de Meta**: pegá el Phone Number ID del número. Así ese número lo atiende esa ficha (si no, contesta la de `FICHA_POR_DEFECTO`).
 
 ## E. Probar
 
@@ -100,4 +106,5 @@ Desde tu WhatsApp, escribile **"hola"** al número de prueba de Meta (el mismo q
    - **401 en los logs** → `META_APP_SECRET` mal copiado.
    - **WhatsApp respondió 401** → el `WHATSAPP_TOKEN` venció (dura 24 h): generá otro en Meta, actualizalo en Vercel (**Settings → Environment Variables**) y hacé **Redeploy**.
    - **Faltan SUPABASE_URL…** → faltan variables en Vercel.
+   - **En Logs no aparece ningún `POST /api/whatsapp`** (solo GET) → Meta no está mandando los mensajes: falta enchufar la cuenta de WhatsApp a la app (parte D, punto 3).
    - **131030 / not in allowed list** → tu número no está en la lista **Para** de Meta (parte B, punto 4).
