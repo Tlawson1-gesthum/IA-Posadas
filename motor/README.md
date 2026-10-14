@@ -24,6 +24,7 @@ mensaje ─► cerebro (src/cerebro.ts) ─► Claude ─► herramientas ─►
 | `public/widget.js` + `public/widget.html` | Burbuja de chat para la web del cliente: `<script src="https://ia-posadas.vercel.app/widget.js" data-ficha="<id>" defer></script>`. Se prende desde la ficha (`chat_web.activo`). |
 | `pruebas/morfa.json` | 20 conversaciones de ejemplo con lo que se espera de cada respuesta. |
 | `plantillas/obra.md` + `src/obra/` + `src/herramientas/obra.ts` | **Agente de obra** (constructoras): el capataz manda el parte por audio, el código controla piedra, arena, asfalto, cemento, gasoil y fletes contra el presupuesto y los remitos, y el dueño lo ve en `public/obra.html`. Demo: ficha `obra-demo`. Guía: [GUIA-OBRA-DEMO.md](GUIA-OBRA-DEMO.md). |
+| `public/pensa.css` + `public/marca/` | **Marca Pensa** (manual v1.0): colores, tipografías (Schibsted Grotesk y JetBrains Mono) y componentes que comparten la central, el chat de prueba y el tablero de obra. Logos en SVG (horizontal, solo nombre e isotipo; bordó, blanco y negro; trazo estándar y grueso) y avatar. La burbuja de cada cliente (`widget.*`) sigue con los colores del cliente. |
 | `src/transcribir.ts` | Notas de voz → texto (OpenAI o Groq) para las fichas con `audios: true`, por WhatsApp y en el chat de prueba (botón 🎤). |
 
 ## Cómo probarlo (en tu compu)

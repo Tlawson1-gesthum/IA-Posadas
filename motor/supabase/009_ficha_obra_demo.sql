@@ -28,7 +28,7 @@ values ('obra-demo', 'activo', 0, $ficha${
     "descripcion": "Constructora Demo es una empresa de Misiones que hace obras viales y urbanas (base granular, imprimación, carpeta asfáltica y cordón cuneta).",
     "quienes_escriben": "Capataces y jefes de obra que mandan el parte del día, casi siempre por audio desde la obra, y el dueño o la administración que preguntan cómo vienen las obras. No son clientes de la empresa.",
     "casos_derivacion": "- Un accidente con personas lastimadas o un robo: derivá enseguida con motivo urgencia.\n- Piden algo que no es un parte ni una consulta de la obra (compras, sueldos, pagos a proveedores).",
-    "voz": "- Directo y breve, como se habla en obra. Voseo. Sin vueltas ni frases de cortesía largas.\n- Emojis solo los del informe (🔴 🟡 ✅)."
+    "voz": "- Directo y breve, como se habla en obra. Voseo. Sin vueltas ni frases de cortesía largas.\n- Sin emojis ni signos de exclamación."
   },
   "obra": {
     "moneda": "$",
@@ -42,7 +42,7 @@ values ('obra-demo', 'activo', 0, $ficha${
     "obras": [
       {
         "id": "lapachos",
-        "nombre": "Pavimento Av. Los Lapachos – Etapa 2",
+        "nombre": "Pavimento Av. Los Lapachos · Etapa 2",
         "comitente": "Municipio (obra de ejemplo)",
         "alias": [
           "lapachos",

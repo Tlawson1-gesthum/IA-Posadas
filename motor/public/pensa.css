@@ -1,0 +1,120 @@
+/* Pensa · estilos compartidos de las pantallas del motor (tablero de obra, chat de prueba, central de agentes).
+   Sale del manual de marca v1.0 (octubre 2026): un bordó, cuatro neutros y un verde que solo aparece en los datos.
+   Schibsted Grotesk para hablar, JetBrains Mono para datos, cifras y etiquetas. Mayúsculas solo en etiquetas mono.
+   Claro en la computadora, oscuro en el celular del dueño. Espacios en múltiplos de 8. Sin sombras, sin brillos. */
+
+:root {
+  --bordo: #6B1A26;          /* Bordó Cereza: marca y lo que empeora */
+  --bordo-texto: #6B1A26;    /* bordó para letras (en oscuro pasa a bordó claro) */
+  --bordo-fondo: #F4E9EA;    /* superficie suave para lo que hay que revisar */
+  --verde: #2E6A5C;          /* Verde pino: solo en datos, lo que mejora, siempre con signo */
+  --verde-fondo: #E7F0ED;
+  --tinta: #131112;          /* Negro cálido */
+  --papel: #F2F1EE;          /* Blanco cálido */
+  --hoja: #F9F8F6;           /* tarjetas sobre el papel */
+  --gris: #6B6A67;           /* Gris texto */
+  --linea: #CFCDC8;          /* Línea */
+  --texto-sobre-bordo: #F2F1EE;
+  --sans: "Schibsted Grotesk", Arial, sans-serif;
+  --mono: "JetBrains Mono", Consolas, monospace;
+  --radio: 2px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) {
+    --bordo-texto: #D87987; --bordo-fondo: #2A1418; --verde: #7CC1B0; --verde-fondo: #14231F;
+    --tinta: #F2F1EE; --papel: #131112; --hoja: #1A1718; --gris: #8E8884; --linea: #2F2B2C; color-scheme: dark;
+  }
+}
+:root[data-tema="oscuro"] {
+  --bordo-texto: #D87987; --bordo-fondo: #2A1418; --verde: #7CC1B0; --verde-fondo: #14231F;
+  --tinta: #F2F1EE; --papel: #131112; --hoja: #1A1718; --gris: #8E8884; --linea: #2F2B2C; color-scheme: dark;
+}
+
+/* El logo se usa siempre desde el archivo: bordó en claro, blanco cálido en oscuro. */
+.solo-oscuro { display: none !important; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) .solo-claro { display: none !important; }
+  :root:not([data-tema="claro"]) .solo-oscuro { display: inline-block !important; }
+}
+:root[data-tema="oscuro"] .solo-claro { display: none !important; }
+:root[data-tema="oscuro"] .solo-oscuro { display: inline-block !important; }
+
+* { box-sizing: border-box; }
+html { background: var(--papel); }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 16px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: var(--sans); text-wrap: balance; margin: 0; }
+a { color: var(--bordo-texto); }
+:focus-visible { outline: 2px solid var(--bordo-texto); outline-offset: 2px; }
+
+/* Barra superior: logo, nombre de la pantalla y controles. */
+.pensa-barra { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--papel); border-bottom: 1px solid var(--linea); }
+.pensa-barra .interior { max-width: 1200px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; }
+.pensa-marca { display: flex; align-items: center; gap: 16px; min-width: 0; text-decoration: none; color: inherit; }
+.pensa-marca img { height: 28px; width: auto; display: block; }
+.pensa-marca .separador { width: 1px; height: 28px; background: var(--linea); }
+.pensa-marca .pantalla { min-width: 0; }
+.pensa-marca .pantalla b { display: block; font: 600 16px/1.2 var(--sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pensa-marca .pantalla small { display: block; font: 500 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--gris); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pensa-barra .controles { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+@media (max-width: 640px) {
+  .pensa-barra .interior { padding: 12px 16px; gap: 8px 16px; }
+  .pensa-marca img { height: 24px; }
+  /* :root:root le gana a las reglas de tema (.solo-claro / .solo-oscuro). */
+  :root:root .pensa-marca .separador, :root:root .pensa-marca .logo-ancho { display: none !important; }
+}
+@media (min-width: 641px) { :root:root .pensa-marca .logo-angosto { display: none !important; } }
+
+/* Etiquetas: mono, mayúsculas, un poco de aire. */
+.etiqueta { font: 500 12px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--gris); }
+.etiqueta.marca { color: var(--bordo-texto); }
+.etiqueta.unidad { text-transform: none; letter-spacing: 0; }
+
+/* Títulos de sección subrayados con la línea (el recurso 2 del manual). */
+.seccion { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--linea); position: relative; }
+.seccion::after { content: ""; position: absolute; left: 0; bottom: -1px; width: 48px; height: 2px; background: var(--bordo-texto); }
+.seccion h2 { font: 600 24px/1.2 var(--sans); }
+.seccion span { font-size: 14px; color: var(--gris); }
+
+.tarjeta { background: var(--hoja); border: 1px solid var(--linea); border-radius: var(--radio); padding: 16px; min-width: 0; }
+
+/* Cifras grandes: mono, tabulares. */
+.dato { font: 400 15px/1.3 var(--mono); font-variant-numeric: tabular-nums; }
+.cifra { font: 500 28px/1.1 var(--mono); letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sube { color: var(--verde); } .baja { color: var(--bordo-texto); }
+
+/* Botones: bordó lleno para la acción principal, borde fino para el resto. */
+button, .boton { font: 500 14px/1.2 var(--sans); color: var(--tinta); background: transparent; border: 1px solid var(--linea); border-radius: var(--radio); padding: 8px 16px; cursor: pointer; text-decoration: none; display: inline-block; }
+button:hover, .boton:hover { border-color: var(--tinta); }
+button.primario, .boton.primario { background: var(--bordo); border-color: var(--bordo); color: var(--texto-sobre-bordo); }
+button.primario:hover, .boton.primario:hover { background: #561420; }
+button.peligro { color: var(--bordo-texto); }
+button:disabled { opacity: .5; cursor: default; }
+
+/* Selector segmentado (períodos, claro/oscuro). */
+.segmentos { display: inline-flex; border: 1px solid var(--linea); border-radius: var(--radio); }
+.segmentos button { border: 0; border-radius: 0; padding: 6px 12px; font: 500 13px/1.2 var(--sans); color: var(--gris); }
+.segmentos button + button { border-left: 1px solid var(--linea); }
+.segmentos button.on { background: var(--tinta); color: var(--papel); }
+
+input, select, textarea { font: 400 15px/1.4 var(--sans); color: var(--tinta); background: var(--hoja); border: 1px solid var(--linea); border-radius: var(--radio); padding: 8px 12px; width: 100%; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--bordo-texto); }
+
+/* Tablas: separadores finos, encabezado en etiqueta mono. */
+.tabla-caja { overflow-x: auto; }
+table.pensa { width: 100%; border-collapse: collapse; font-size: 15px; }
+table.pensa th { font: 500 12px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--gris); text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--tinta); white-space: nowrap; }
+table.pensa td { padding: 12px 16px; border-bottom: 1px solid var(--linea); white-space: nowrap; }
+table.pensa tr:last-child td { border-bottom: 0; }
+table.pensa .n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* Estado de una diferencia: forma y palabra, no solo color. */
+.estado { display: inline-block; font: 500 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: var(--radio); white-space: nowrap; }
+.estado.urgente { background: var(--bordo); color: var(--texto-sobre-bordo); }
+.estado.revisar { border: 1px solid var(--bordo-texto); color: var(--bordo-texto); }
+.estado.ok { border: 1px solid var(--verde); color: var(--verde); }
+.estado.neutro { border: 1px solid var(--linea); color: var(--gris); }
+
+.aviso-flotante { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--tinta); color: var(--papel); padding: 12px 16px; border-radius: var(--radio); font-size: 14px; max-width: calc(100% - 32px); z-index: 30; }
+
+@media (prefers-reduced-motion: no-preference) { button, .boton { transition: border-color .15s, background-color .15s; } }

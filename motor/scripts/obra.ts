@@ -19,7 +19,7 @@ const verificar = (ok: boolean, que: string) => {
 console.log(`Semana de ejemplo: ${await cargarSemilla(ficha)} partes\n`);
 const obra = ficha.obra!.obras[0];
 const r = resumenObra(ficha.obra!, obra, await almacenObra().partes(ficha.id, obra.id), sumarDias(hoyAR(), -6), hoyAR());
-for (const a of r.alertas) console.log(`  ${a.nivel === "roja" ? "🔴" : "🟡"} ${a.fecha} · ${a.tipo} · ${a.detalle}`);
+for (const a of r.alertas) console.log(`  ${a.nivel === "roja" ? "URGENTE" : "REVISAR"} ${a.fecha} · ${a.tipo} · ${a.detalle}`);
 console.log();
 const hay = (tipo: string, texto: string) => r.alertas.some((a) => a.tipo === tipo && a.detalle.includes(texto));
 verificar(hay("combustible", "Motoniveladora MN-01: cargó 260 l"), "gasoil de más en la motoniveladora");

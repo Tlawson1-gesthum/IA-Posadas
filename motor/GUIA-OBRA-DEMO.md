@@ -65,7 +65,7 @@ npm run local         # chat y tablero en http://localhost:3000
 
    > "Buen día, parte de hoy de Los Lapachos, habla Ramón. Somos catorce. Hicimos ochocientos cincuenta metros de carpeta. Llegaron tres camiones de piedra de Cantera Santa Ana, remitos 4588, 4589 y 4590, treinta toneladas cada uno, pero el último vino flojo, calculo que trajo veinticinco. Gasoil: la motoniveladora cargó ciento cincuenta litros, ocho horas; el rodillo ochenta litros, ocho horas. Hacen falta dos toneladas de cemento para el jueves."
 
-   En segundos llega el informe con 🔴 *faltan 5 tn de piedra* y 🟡 *el rodillo cargó 11% de más*. Respondé "ok".
+   En segundos llega el informe con *Urgente: faltan 5 tn de piedra* y *Revisar: el rodillo cargó 11% de más*. Respondé "ok".
 3. **Volvé al tablero.** El parte de hoy ya está (se actualiza solo cada 30 segundos).
 4. **Cerrá con certificación.** Mostrá la tabla "Avance y certificación": *"Esto mismo, con tus precios y tu cómputo, es el borrador del certificado del mes. Lo próximo es la redeterminación."*
 

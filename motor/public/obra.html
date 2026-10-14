@@ -4,106 +4,94 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>Tablero de obra</title>
+<title>Tablero de obra · Pensa</title>
+<link rel="icon" href="/marca/avatar.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/pensa.css">
 <style>
-  :root {
-    --fondo: #f3f2ef; --tarjeta: #ffffff; --texto: #1c1b19; --suave: #6b6760; --borde: #e3e0da;
-    --acento: #f2a900; --acento-txt: #1c1b19; --rojo: #d92d20; --rojo-fondo: #fef3f2; --amarillo: #b54708; --amarillo-fondo: #fffaeb;
-    --verde: #067647; --verde-fondo: #ecfdf3; --barra-esperado: #c9c4bb; --barra-real: #1c1b19;
-    --titulos: "Space Grotesk", system-ui, sans-serif; --numeros: "JetBrains Mono", ui-monospace, monospace; --radio: 14px;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --fondo: #121212; --tarjeta: #1c1c1b; --texto: #eeece8; --suave: #a19d95; --borde: #2e2d2a;
-      --acento: #ffbf1f; --rojo: #f97066; --rojo-fondo: #2b1614; --amarillo: #fdb022; --amarillo-fondo: #2a2012;
-      --verde: #47cd89; --verde-fondo: #10241a; --barra-esperado: #4a4741; --barra-real: #eeece8; color-scheme: dark;
-    }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--fondo); color: var(--texto); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
-  header { position: sticky; top: 0; z-index: 5; background: var(--tarjeta); border-bottom: 1px solid var(--borde); }
-  .cinta { height: 6px; background: repeating-linear-gradient(-45deg, var(--acento) 0 14px, var(--texto) 14px 28px); }
-  .cab { max-width: 1180px; margin: 0 auto; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
-  .cab h1 { margin: 0; font: 700 18px var(--titulos); letter-spacing: -.01em; }
-  .cab small { display: block; color: var(--suave); font: 500 11px var(--numeros); letter-spacing: .1em; text-transform: uppercase; }
-  .controles { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  select, button { font: inherit; color: var(--texto); background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px; padding: 7px 10px; }
-  button { cursor: pointer; }
-  .chips { display: inline-flex; border: 1px solid var(--borde); border-radius: 999px; padding: 3px; }
-  .chips button { border: 0; border-radius: 999px; padding: 4px 12px; font-size: 13px; color: var(--suave); background: none; }
-  .chips button.on { background: var(--texto); color: var(--fondo); }
-  main { max-width: 1180px; margin: 0 auto; padding: 16px 16px 48px; }
-  h2 { font: 600 17px var(--titulos); margin: 28px 0 10px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-  h2 span { font: 500 13px system-ui, sans-serif; color: var(--suave); }
-  .tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio); padding: 14px 16px; }
-  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 12px; }
-  .kpi .etq { color: var(--suave); font-size: 13px; }
-  .kpi b { display: block; font: 700 24px var(--numeros); letter-spacing: -.02em; margin-top: 4px; word-break: break-word; }
-  .kpi.rojo { border-color: var(--rojo); background: var(--rojo-fondo); } .kpi.rojo b { color: var(--rojo); }
-  @media (max-width: 560px) { .kpi { padding: 12px; } .kpi b { font-size: 16px; white-space: nowrap; } .kpi .etq { font-size: 12px; } }
-  .alertas { display: grid; gap: 8px; }
-  .alerta { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: start; border-left: 5px solid var(--amarillo); background: var(--amarillo-fondo); }
-  .alerta.roja { border-left-color: var(--rojo); background: var(--rojo-fondo); }
-  .alerta .cuando { font: 500 12px var(--numeros); color: var(--suave); padding-top: 2px; white-space: nowrap; }
-  .alerta .monto { font: 700 14px var(--numeros); white-space: nowrap; }
-  .alerta.roja .monto { color: var(--rojo); } .alerta .monto { color: var(--amarillo); }
-  @media (max-width: 560px) { .alerta { grid-template-columns: 1fr auto; } .alerta .cuando { grid-column: 1 / -1; } }
-  .vacio { color: var(--verde); background: var(--verde-fondo); border-color: transparent; }
-  .partidas { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
-  .partida h3 { margin: 0 0 8px; font: 600 15px var(--titulos); display: flex; justify-content: space-between; gap: 8px; }
-  .partida h3 small { font: 500 12px var(--numeros); color: var(--suave); }
-  .fila { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; padding: 3px 0; }
-  .fila span:first-child { color: var(--suave); } .fila b { font: 600 14px var(--numeros); white-space: nowrap; }
-  .fila.mal b { color: var(--rojo); } .fila.ok b { color: var(--verde); }
-  .barras { margin: 8px 0 6px; display: grid; gap: 4px; }
-  .barra { height: 8px; border-radius: 4px; background: var(--borde); overflow: hidden; }
-  .barra i { display: block; height: 100%; border-radius: 4px; }
-  .barra.esp i { background: var(--barra-esperado); } .barra.real i { background: var(--barra-real); }
-  .leyenda { display: flex; gap: 12px; font-size: 12px; color: var(--suave); }
-  .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
-  .tabla { overflow-x: auto; padding: 0; }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--borde); white-space: nowrap; }
-  th { font: 500 12px var(--numeros); letter-spacing: .06em; text-transform: uppercase; color: var(--suave); }
-  td.n { font-family: var(--numeros); text-align: right; } th.n { text-align: right; }
-  tr:last-child td { border-bottom: 0; }
-  .pct-mal { color: var(--rojo); font-weight: 700; } .pct-ok { color: var(--verde); }
-  .progreso { width: 110px; height: 8px; background: var(--borde); border-radius: 4px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 8px; }
-  .progreso i { display: block; height: 100%; background: var(--acento); }
-  details.parte { border-top: 1px solid var(--borde); padding: 10px 0; }
+  /* Tablero del dueño: resumen arriba (plata en juego y alertas), detalle abajo (partidas, gasoil, avance, partes). */
+  main { max-width: 1200px; margin: 0 auto; padding: 32px 24px 64px; }
+  @media (max-width: 640px) { main { padding: 24px 16px 48px; } }
+  .obra h1 { font: 600 32px/1.1 var(--sans); letter-spacing: -.01em; margin-top: 8px; }
+  .obra p { margin: 8px 0 0; color: var(--gris); font-size: 14px; }
+  @media (max-width: 640px) { .obra h1 { font-size: 26px; } }
+
+  .resumen { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 32px; }
+  @media (max-width: 900px) { .resumen { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .resumen .tarjeta { display: grid; gap: 8px; align-content: start; }
+  .resumen .cifra.baja { color: var(--bordo-texto); }
+  .resumen small { font-size: 13px; color: var(--gris); }
+  @media (max-width: 640px) { .resumen { gap: 8px; } .resumen .tarjeta { padding: 12px; } .resumen .cifra { font-size: 18px; } }
+
+  .alertas { display: grid; border: 1px solid var(--linea); border-radius: var(--radio); background: var(--hoja); }
+  .alerta { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 4px 16px; padding: 16px; border-top: 1px solid var(--linea); border-left: 2px solid transparent; align-items: start; }
+  .alerta:first-child { border-top: 0; }
+  .alerta.urgente { border-left-color: var(--bordo); }
+  .alerta svg { width: 24px; height: 24px; color: var(--bordo-texto); }
+  .alerta .que { display: grid; gap: 4px; }
+  .alerta .cuando { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .alerta .monto { font: 500 15px/1.4 var(--mono); color: var(--bordo-texto); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  @media (max-width: 640px) { .alerta { grid-template-columns: minmax(0, 1fr) auto; } .alerta svg { display: none; } }
+  .sin-alertas { display: flex; gap: 12px; align-items: center; color: var(--verde); }
+
+  .partidas { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .partida { display: grid; gap: 4px; align-content: start; }
+  .partida header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+  .partida h3 { font: 600 18px/1.2 var(--sans); }
+  .fila { display: flex; justify-content: space-between; gap: 16px; font-size: 14px; padding: 4px 0; border-top: 1px solid var(--linea); }
+  .leyenda + .fila { border-top: 0; }
+  .fila span { color: var(--gris); }
+  .fila b { font: 400 14px/1.4 var(--mono); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .fila.mal b { color: var(--bordo-texto); font-weight: 500; }
+  .fila.bien b { color: var(--verde); }
+  .lineas { display: grid; gap: 4px; margin: 0 0 8px; }
+  .lineas div { height: 2px; background: var(--linea); }
+  .lineas i { display: block; height: 100%; }
+  .lineas .real i { background: var(--tinta); } .lineas .esperado i { background: var(--bordo-texto); }
+  .leyenda { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-bottom: 8px; }
+  .leyenda span::before { content: ""; display: inline-block; width: 16px; height: 2px; vertical-align: middle; margin-right: 8px; background: var(--tinta); }
+  .leyenda span.esperado::before { background: var(--bordo-texto); }
+  td.baja { color: var(--bordo-texto); font-weight: 500; }
+
+  .progreso { display: inline-block; width: 120px; height: 2px; background: var(--linea); vertical-align: middle; margin-right: 12px; }
+  .progreso i { display: block; height: 100%; background: var(--bordo-texto); }
+
+  .partes { border: 1px solid var(--linea); border-radius: var(--radio); background: var(--hoja); }
+  details.parte { border-top: 1px solid var(--linea); }
   details.parte:first-child { border-top: 0; }
-  details.parte summary { cursor: pointer; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; list-style: none; }
+  details.parte summary { cursor: pointer; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 16px; list-style: none; }
   details.parte summary::-webkit-details-marker { display: none; }
-  details.parte summary::before { content: "▸"; color: var(--suave); }
-  details.parte[open] summary::before { content: "▾"; }
-  .pill { font: 600 12px var(--numeros); border-radius: 999px; padding: 1px 8px; }
-  .pill.r { background: var(--rojo-fondo); color: var(--rojo); } .pill.a { background: var(--amarillo-fondo); color: var(--amarillo); }
-  .pill.p { background: var(--borde); color: var(--suave); } .pill.ok { background: var(--verde-fondo); color: var(--verde); }
-  .informe { white-space: pre-wrap; font-size: 14px; background: var(--fondo); border-radius: 10px; padding: 12px; margin: 10px 0 0; overflow-x: auto; }
-  .pie { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; color: var(--suave); font-size: 13px; }
-  .aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--texto); color: var(--fondo); padding: 10px 16px; border-radius: 10px; font-size: 14px; display: none; max-width: calc(100% - 32px); }
+  details.parte summary::after { content: "Ver informe"; margin-left: auto; font: 500 12px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--bordo-texto); }
+  details.parte[open] summary::after { content: "Cerrar"; }
+  details.parte .fecha { font: 500 15px/1.2 var(--mono); }
+  .informe { white-space: pre-wrap; font-size: 14px; line-height: 1.55; margin: 0 16px 16px; padding: 16px; background: var(--papel); border-left: 2px solid var(--bordo-texto); overflow-x: auto; }
+
+  .pie { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--linea); display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; color: var(--gris); font-size: 13px; }
 </style>
 </head>
 <body>
-<header>
-  <div class="cinta"></div>
-  <div class="cab">
-    <div><small id="empresa">Tablero de obra</small><h1 id="titulo">Cargando…</h1></div>
+<header class="pensa-barra">
+  <div class="interior">
+    <a class="pensa-marca" href="#" aria-label="Pensa · Tablero de obra">
+      <img class="logo-ancho solo-claro" src="/marca/logo-bordo-grueso.svg" alt="Pensa">
+      <img class="logo-ancho solo-oscuro" src="/marca/logo-blanco-grueso.svg" alt="Pensa">
+      <img class="logo-angosto solo-claro" src="/marca/isotipo-bordo-grueso.svg" alt="Pensa">
+      <img class="logo-angosto solo-oscuro" src="/marca/isotipo-blanco-grueso.svg" alt="Pensa">
+      <span class="separador"></span>
+      <span class="pantalla"><b>Tablero de obra</b><small id="empresa">Cargando</small></span>
+    </a>
     <div class="controles">
       <select id="obra" aria-label="Obra" hidden></select>
-      <div class="chips" role="group" aria-label="Período">
-        <button data-p="hoy">Hoy</button><button data-p="semana" class="on">7 días</button><button data-p="mes">Mes</button>
+      <div class="segmentos" role="group" aria-label="Período">
+        <button type="button" data-p="hoy">Hoy</button><button type="button" data-p="semana" class="on">7 días</button><button type="button" data-p="mes">Mes</button>
       </div>
-      <button id="actualizar" title="Actualizar">↻</button>
     </div>
   </div>
 </header>
 <main id="contenido"></main>
-<div class="aviso" id="aviso"></div>
+<div class="aviso-flotante" id="aviso" hidden></div>
 <script>
   const $ = (id) => document.getElementById(id);
   const leer = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
@@ -113,6 +101,11 @@
   const num = (n) => NUM.format(n);
   const u = (x) => x === "m2" ? "m²" : x === "m3" ? "m³" : x;
   const fecha = (f) => `${f.slice(8, 10)}/${f.slice(5, 7)}`;
+  const negrita = (t) => esc(t).replace(/\*([^*\n]+)\*/g, "<b>$1</b>");
+  const ALERTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M12 3 L22 20 H2 Z"/><path d="M12 10 V14"/><path d="M12 17 V17.5"/></svg>';
+
+  // Claro en la computadora, oscuro en el celular del dueño (manual de marca, aplicaciones).
+  if (innerWidth <= 640) document.documentElement.dataset.tema = "oscuro";
 
   const params = new URLSearchParams(location.search);
   const ficha = (params.get("ficha") || "").replace(/[^a-z0-9-]/g, "");
@@ -120,7 +113,7 @@
   let periodo = "semana", obraId = "", moneda = "$";
   const plata = (n) => `${moneda} ${Math.round(n).toLocaleString("es-AR")}`;
 
-  function aviso(t) { const a = $("aviso"); a.textContent = t; a.style.display = "block"; clearTimeout(aviso.t); aviso.t = setTimeout(() => (a.style.display = "none"), 3500); }
+  function aviso(t) { const a = $("aviso"); a.textContent = t; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(() => (a.hidden = true), 3500); }
   function rango() {
     const hoy = new Date(Date.now() - 3 * 3600_000).toISOString().slice(0, 10);
     if (periodo === "hoy") return { desde: hoy, hasta: hoy };
@@ -133,133 +126,126 @@
     const url = metodo === "GET" ? `/api/obra?ficha=${encodeURIComponent(ficha)}&obra=${encodeURIComponent(obraId)}&desde=${r.desde}&hasta=${r.hasta}` : "/api/obra";
     const res = await fetch(url, { method: metodo, headers: { "x-clave": clave, "content-type": "application/json" }, body: cuerpo ? JSON.stringify(cuerpo) : undefined });
     if (res.status === 403) {
-      clave = prompt("Clave del tablero (la misma del chat de prueba). Si entraste al panel, dejalo vacío:") || "";
+      clave = prompt("Clave del tablero (la misma del chat de prueba). Si entraste a la central, dejala vacía:") || "";
       guardar("chat-clave", clave);
       if (clave) return pedir(metodo, cuerpo);
     }
     const j = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(j.error || `Error ${res.status}`);
+    if (!res.ok) throw new Error(j.error || `El servidor respondió ${res.status}`);
     return j;
   }
 
   function partida(p) {
-    const tope = Math.max(p.recibido, p.esperado, p.informado, 1e-9);
     const real = p.es_combustible ? p.informado : p.recibido;
+    const tope = Math.max(real, p.esperado, 1e-9);
     const etiquetaReal = p.es_combustible ? "Cargado a equipos" : "Entró a obra";
     const etiquetaEsp = p.es_combustible ? "Esperado por horas" : "Esperado por avance";
-    const medido = p.stock_medido;
-    const faltaMedido = medido ? medido.teorico - medido.cantidad : 0;
-    const filas = [
-      `<div class="fila"><span>Remitos</span><b>${num(p.remitos)} ${u(p.unidad)}</b></div>`,
-      p.recibido !== p.remitos ? `<div class="fila mal"><span>Llegó de verdad</span><b>${num(p.recibido)} ${u(p.unidad)}</b></div>` : "",
-      `<div class="fila"><span>${etiquetaEsp}</span><b>${num(p.esperado)} ${u(p.unidad)}</b></div>`,
-      p.es_combustible || p.informado ? `<div class="fila"><span>${p.es_combustible ? "Cargado a equipos" : "Informado por obra"}</span><b>${num(p.informado)} ${u(p.unidad)}</b></div>` : "",
-      `<div class="fila"><span>Debería haber hoy</span><b>${num(p.stock_teorico)} ${u(p.unidad)}</b></div>`,
-      medido ? `<div class="fila ${faltaMedido > Math.abs(medido.teorico) * 0.05 ? "mal" : "ok"}"><span>Medido el ${fecha(medido.fecha)} (debía ${num(medido.teorico)})</span><b>${num(medido.cantidad)} ${u(p.unidad)}</b></div>` : "",
-      `<div class="fila"><span>Compras del período</span><b>${plata(p.compra)}</b></div>`,
-    ].join("");
-    return `<div class="tarjeta partida"><h3>${esc(p.nombre)} <small>${u(p.unidad)}</small></h3>
-      <div class="barras" aria-hidden="true">
-        <div class="barra real"><i style="width:${(real / tope) * 100}%"></i></div>
-        <div class="barra esp"><i style="width:${(p.esperado / tope) * 100}%"></i></div>
-      </div>
-      <div class="leyenda"><span><i style="background:var(--barra-real)"></i>${etiquetaReal}</span><span><i style="background:var(--barra-esperado)"></i>${etiquetaEsp}</span></div>
-      ${filas}</div>`;
+    const m = p.stock_medido;
+    const falta = m ? m.teorico - m.cantidad : 0;
+    return `<article class="tarjeta partida">
+      <header><h3>${esc(p.nombre)}</h3><span class="etiqueta unidad">${u(p.unidad)}</span></header>
+      <div class="lineas" aria-hidden="true"><div class="real"><i style="width:${(real / tope) * 100}%"></i></div><div class="esperado"><i style="width:${(p.esperado / tope) * 100}%"></i></div></div>
+      <div class="leyenda etiqueta"><span>${etiquetaReal}</span><span class="esperado">${etiquetaEsp}</span></div>
+      <div class="fila"><span>Remitos</span><b>${num(p.remitos)} ${u(p.unidad)}</b></div>
+      ${p.recibido !== p.remitos ? `<div class="fila mal"><span>Llegó de verdad</span><b>${num(p.recibido)} ${u(p.unidad)}</b></div>` : ""}
+      <div class="fila"><span>${etiquetaEsp}</span><b>${num(p.esperado)} ${u(p.unidad)}</b></div>
+      ${p.es_combustible || p.informado ? `<div class="fila"><span>${p.es_combustible ? "Cargado a equipos" : "Informado por obra"}</span><b>${num(p.informado)} ${u(p.unidad)}</b></div>` : ""}
+      <div class="fila"><span>Debería haber hoy</span><b>${num(p.stock_teorico)} ${u(p.unidad)}</b></div>
+      ${m ? `<div class="fila ${falta > Math.abs(m.teorico) * 0.05 ? "mal" : "bien"}"><span>Contado el ${fecha(m.fecha)} (debía haber ${num(m.teorico)})</span><b>${num(m.cantidad)} ${u(p.unidad)}</b></div>` : ""}
+      <div class="fila"><span>Compras del período</span><b>${plata(p.compra)}</b></div>
+    </article>`;
   }
 
   function dibujar(d) {
     const r = d.resumen;
     moneda = r.moneda;
-    $("empresa").textContent = `${d.ficha.nombre} · ${r.obra.comitente}`;
-    $("titulo").textContent = r.obra.nombre;
-    document.title = `Tablero · ${r.obra.nombre}`;
+    $("empresa").textContent = d.ficha.nombre;
+    document.title = `${r.obra.nombre} · Pensa`;
     if (d.obras.length > 1) {
       $("obra").hidden = false;
       $("obra").innerHTML = d.obras.map((o) => `<option value="${esc(o.id)}" ${o.id === r.obra.id ? "selected" : ""}>${esc(o.nombre)}</option>`).join("");
     }
-    const rojas = r.alertas.filter((a) => a.nivel === "roja").length;
+    const urgentes = r.alertas.filter((a) => a.nivel === "roja").length;
     const compras = r.partidas.reduce((s, p) => s + p.compra, 0) + r.transporte.costo;
-    const html = [];
-    html.push(`<div class="kpis">
-      <div class="tarjeta kpi ${r.en_juego > 0 ? "rojo" : ""}"><div class="etq">Plata en juego por diferencias</div><b>${plata(r.en_juego)}</b></div>
-      <div class="tarjeta kpi"><div class="etq">Alertas</div><b>${rojas} 🔴 · ${r.alertas.length - rojas} 🟡</b></div>
-      <div class="tarjeta kpi"><div class="etq">Compras y fletes del período</div><b>${plata(compras)}</b></div>
-      <div class="tarjeta kpi"><div class="etq">Certificable (avance × precio)</div><b>${plata(r.certificable)}</b></div>
-    </div>`);
+    const periodoTxt = r.desde === r.hasta ? `hoy, ${fecha(r.hasta)}` : `del ${fecha(r.desde)} al ${fecha(r.hasta)}`;
+    const h = [];
+    h.push(`<section class="obra"><span class="etiqueta marca">Obra · ${esc(r.obra.comitente)}</span><h1>${esc(r.obra.nombre)}</h1>
+      <p>${r.partes.length} parte${r.partes.length === 1 ? "" : "s"} ${periodoTxt}. Los montos usan los precios de referencia cargados para esta obra.</p></section>`);
+    h.push(`<section class="resumen" aria-label="Resumen del período">
+      <div class="tarjeta"><span class="etiqueta">Plata en juego</span><span class="cifra ${r.en_juego > 0 ? "baja" : ""}">${plata(r.en_juego)}</span><small>Suma de las diferencias a revisar</small></div>
+      <div class="tarjeta"><span class="etiqueta">Alertas</span><span class="cifra">${urgentes} · ${r.alertas.length - urgentes}</span><small>${urgentes} urgente${urgentes === 1 ? "" : "s"}, ${r.alertas.length - urgentes} a revisar</small></div>
+      <div class="tarjeta"><span class="etiqueta">Compras y fletes</span><span class="cifra">${plata(compras)}</span><small>Según remitos del período</small></div>
+      <div class="tarjeta"><span class="etiqueta">Certificable</span><span class="cifra">${plata(r.certificable)}</span><small>Avance del período por precio unitario</small></div>
+    </section>`);
 
-    html.push(`<h2>Para revisar <span>del ${fecha(r.desde)} al ${fecha(r.hasta)} · ${r.partes.length} partes</span></h2>`);
-    html.push(r.alertas.length
-      ? `<div class="alertas">${r.alertas.map((a) => `<div class="tarjeta alerta ${a.nivel}"><span class="cuando">${fecha(a.fecha)}</span><span>${esc(a.detalle)}</span><span class="monto">${a.monto > 0 ? "≈ " + plata(a.monto) : ""}</span></div>`).join("")}</div>`
-      : `<div class="tarjeta vacio">✅ Sin diferencias contra el presupuesto ni los remitos en este período.</div>`);
+    h.push(`<div class="seccion"><h2>Qué revisar</h2><span>Ordenado por urgencia y por plata en juego</span></div>`);
+    h.push(r.alertas.length
+      ? `<div class="alertas">${r.alertas.map((a) => `<div class="alerta ${a.nivel === "roja" ? "urgente" : ""}">${ALERTA}
+          <div class="que"><div class="cuando"><span class="estado ${a.nivel === "roja" ? "urgente" : "revisar"}">${a.nivel === "roja" ? "Urgente" : "Revisar"}</span><span class="etiqueta">${fecha(a.fecha)}</span></div><span>${esc(a.detalle)}</span></div>
+          <span class="monto">${a.monto > 0 ? plata(a.monto) : ""}</span></div>`).join("")}</div>`
+      : `<div class="tarjeta sin-alertas"><span class="estado ok">Sin diferencias</span><span>Los remitos, el gasoil y el stock cierran con el presupuesto en este período.</span></div>`);
 
-    html.push(`<h2>Partidas <span>lo que entró contra lo que el avance dice que se usó</span></h2><div class="partidas">${r.partidas.map(partida).join("")}
-      <div class="tarjeta partida"><h3>Fletes <small>viajes</small></h3>
-        <div class="fila"><span>Viajes</span><b>${r.transporte.viajes}</b></div>
-        <div class="fila ${r.transporte.con_problemas ? "mal" : "ok"}"><span>Con problemas</span><b>${r.transporte.con_problemas}</b></div>
+    h.push(`<div class="seccion"><h2>Partidas</h2><span>Lo que entró contra lo que el avance dice que se usó</span></div><div class="partidas">${r.partidas.map(partida).join("")}
+      <article class="tarjeta partida"><header><h3>Fletes</h3><span class="etiqueta unidad">viajes</span></header>
+        <div class="fila" style="border-top:0"><span>Viajes con camión identificado</span><b>${r.transporte.viajes}</b></div>
+        <div class="fila ${r.transporte.con_problemas ? "mal" : "bien"}"><span>Con problemas</span><b>${r.transporte.con_problemas}</b></div>
         <div class="fila"><span>Costo del período</span><b>${plata(r.transporte.costo)}</b></div>
         ${r.transporte.por_transportista.map((t) => `<div class="fila"><span>${esc(t.nombre)}</span><b>${t.viajes} · ${plata(t.costo)}</b></div>`).join("")}
-      </div></div>`);
+      </article></div>`);
 
-    if (r.combustible.length) {
-      html.push(`<h2>Gasoil por equipo <span>cargado contra horas × consumo del equipo</span></h2><div class="tarjeta tabla"><table>
-        <tr><th>Equipo</th><th class="n">Horas</th><th class="n">Cargado</th><th class="n">Esperado</th><th class="n">Diferencia</th></tr>
-        ${r.combustible.map((e) => {
-          const dif = e.esperado ? e.litros / e.esperado - 1 : 0;
-          return `<tr><td>${esc(e.nombre)}</td><td class="n">${num(e.horas)} h</td><td class="n">${num(e.litros)} l</td><td class="n">${num(e.esperado)} l</td>
-            <td class="n ${dif > 0.1 ? "pct-mal" : "pct-ok"}">${dif >= 0 ? "+" : ""}${Math.round(dif * 100)}%</td></tr>`;
-        }).join("")}</table></div>`);
-    }
+    if (r.combustible.length) h.push(`<div class="seccion"><h2>Gasoil por equipo</h2><span>Cargado contra horas por consumo de cada equipo</span></div>
+      <div class="tarjeta tabla-caja" style="padding:0"><table class="pensa">
+      <thead><tr><th>Equipo</th><th class="n">Horas</th><th class="n">Cargado</th><th class="n">Esperado</th><th class="n">Diferencia</th></tr></thead><tbody>
+      ${r.combustible.map((e) => { const dif = e.esperado ? e.litros / e.esperado - 1 : 0;
+        return `<tr><td>${esc(e.nombre)}</td><td class="n">${num(e.horas)} h</td><td class="n">${num(e.litros)} l</td><td class="n">${num(e.esperado)} l</td>
+          <td class="n ${dif > 0.1 ? "baja" : ""}">${dif >= 0 ? "+" : "−"}${Math.abs(Math.round(dif * 100))}%</td></tr>`; }).join("")}</tbody></table></div>`);
 
-    html.push(`<h2>Avance y certificación <span>${plata(r.certificable)} certificables en el período</span></h2><div class="tarjeta tabla"><table>
-      <tr><th>Tarea</th><th class="n">Período</th><th>Acumulado del contrato</th><th class="n">A certificar</th></tr>
-      ${r.avance.map((a) => {
-        const p = a.contrato ? Math.min(1, a.acumulado / a.contrato) : 0;
+    h.push(`<div class="seccion"><h2>Avance y certificación</h2><span>${plata(r.certificable)} certificables en el período</span></div>
+      <div class="tarjeta tabla-caja" style="padding:0"><table class="pensa">
+      <thead><tr><th>Tarea</th><th class="n">Período</th><th>Acumulado del contrato</th><th class="n">A certificar</th></tr></thead><tbody>
+      ${r.avance.map((a) => { const p = a.contrato ? Math.min(1, a.acumulado / a.contrato) : 0;
         return `<tr><td>${esc(a.nombre)}</td><td class="n">${num(a.periodo)} ${u(a.unidad)}</td>
-          <td><span class="progreso"><i style="width:${p * 100}%"></i></span>${Math.round(p * 100)}% · ${num(a.acumulado)} de ${num(a.contrato)} ${u(a.unidad)}</td>
-          <td class="n">${plata(a.periodo * a.precio_unitario)}</td></tr>`;
-      }).join("")}</table></div>`);
+          <td><span class="progreso"><i style="width:${p * 100}%"></i></span><span class="dato">${Math.round(p * 100)}%</span> <span style="color:var(--gris)">· ${num(a.acumulado)} de ${num(a.contrato)} ${u(a.unidad)}</span></td>
+          <td class="n">${plata(a.periodo * a.precio_unitario)}</td></tr>`; }).join("")}</tbody></table></div>`);
 
-    html.push(`<h2>Partes del período <span>como los recibió el capataz por WhatsApp</span></h2><div class="tarjeta">${r.partes.length
-      ? r.partes.map((p) => `<details class="parte"><summary><b>${fecha(p.fecha)}</b> ${esc(p.responsable || "—")}
-          ${p.estado === "pendiente" ? '<span class="pill p">sin confirmar</span>' : ""}
-          ${p.rojas ? `<span class="pill r">${p.rojas} roja${p.rojas > 1 ? "s" : ""}</span>` : ""}
-          ${p.amarillas ? `<span class="pill a">${p.amarillas} amarilla${p.amarillas > 1 ? "s" : ""}</span>` : ""}
-          ${!p.rojas && !p.amarillas ? '<span class="pill ok">sin diferencias</span>' : ""}
-          ${p.pedidos.length ? `<span class="pill p">${p.pedidos.length} pedido${p.pedidos.length > 1 ? "s" : ""}</span>` : ""}
-        </summary><div class="informe">${esc(d.informes[p.id] || "").replace(/\*([^*\n]+)\*/g, "<b>$1</b>")}</div></details>`).join("")
-      : '<p style="margin:0;color:var(--suave)">Todavía no hay partes en este período.</p>'}</div>`);
+    h.push(`<div class="seccion"><h2>Partes del período</h2><span>Como los recibió el capataz por WhatsApp</span></div><div class="partes">${r.partes.length
+      ? r.partes.map((p) => `<details class="parte" data-id="${esc(p.id)}"><summary><span class="fecha">${fecha(p.fecha)}</span><span>${esc(p.responsable || "Sin nombre")}</span>
+          ${p.estado === "pendiente" ? '<span class="estado neutro">Sin confirmar</span>' : ""}
+          ${p.rojas ? `<span class="estado urgente">${p.rojas} urgente${p.rojas > 1 ? "s" : ""}</span>` : ""}
+          ${p.amarillas ? `<span class="estado revisar">${p.amarillas} a revisar</span>` : ""}
+          ${!p.rojas && !p.amarillas ? '<span class="estado ok">Sin diferencias</span>' : ""}
+          ${p.pedidos.length ? `<span class="estado neutro">${p.pedidos.length} pedido${p.pedidos.length > 1 ? "s" : ""}</span>` : ""}
+        </summary><div class="informe">${negrita(d.informes[p.id] || "")}</div></details>`).join("")
+      : '<p style="margin:0;padding:16px;color:var(--gris)">Todavía no hay partes en este período.</p>'}</div>`);
 
-    html.push(`<div class="pie"><span>Se actualiza solo cada 30 segundos. Los montos usan los precios de referencia de la ficha.</span>
-      ${d.semilla ? '<button id="semilla">Cargar semana de ejemplo</button>' : ""}</div>`);
-    $("contenido").innerHTML = html.join("");
+    h.push(`<footer class="pie"><span class="etiqueta">Sistemas que entienden de negocio.</span><span>Se actualiza solo cada 30 segundos.</span>
+      ${d.semilla ? '<button type="button" id="semilla">Cargar semana de ejemplo</button>' : ""}</footer>`);
+    $("contenido").innerHTML = h.join("");
     $("semilla")?.addEventListener("click", async () => {
       if (!confirm("Esto borra los partes de esta ficha y carga una semana de ejemplo. ¿Seguir?")) return;
-      try { const j = await pedir("POST", { accion: "semilla", ficha }); aviso(`Semana de ejemplo cargada (${j.partes} partes)`); cargar(); }
+      try { const j = await pedir("POST", { accion: "semilla", ficha }); aviso(`Semana de ejemplo cargada: ${j.partes} partes.`); cargar(); }
       catch (e) { aviso(e.message); }
     });
   }
 
-  let abiertos = new Set();
   async function cargar() {
-    // Mantiene abiertos los partes que la persona estaba leyendo.
-    abiertos = new Set([...document.querySelectorAll("details.parte[open] summary b")].map((b) => b.textContent));
+    // Mantiene abiertos los informes que la persona estaba leyendo.
+    const abiertos = new Set([...document.querySelectorAll("details.parte[open]")].map((x) => x.dataset.id));
     try {
       const d = await pedir("GET");
       obraId = d.resumen.obra.id;
       dibujar(d);
-      document.querySelectorAll("details.parte").forEach((x) => { if (abiertos.has(x.querySelector("summary b").textContent)) x.open = true; });
+      document.querySelectorAll("details.parte").forEach((x) => { if (abiertos.has(x.dataset.id)) x.open = true; });
     } catch (e) {
-      $("titulo").textContent = "Tablero de obra";
       $("contenido").innerHTML = `<div class="tarjeta">${esc(e.message)}</div>`;
     }
   }
 
-  document.querySelectorAll(".chips button").forEach((b) => b.addEventListener("click", () => {
-    document.querySelectorAll(".chips button").forEach((x) => x.classList.toggle("on", x === b));
+  document.querySelectorAll(".segmentos button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(".segmentos button").forEach((x) => x.classList.toggle("on", x === b));
     periodo = b.dataset.p; cargar();
   }));
   $("obra").addEventListener("change", (e) => { obraId = e.target.value; cargar(); });
-  $("actualizar").addEventListener("click", cargar);
   setInterval(() => { if (!document.hidden) cargar(); }, 30_000);
   cargar();
 </script>

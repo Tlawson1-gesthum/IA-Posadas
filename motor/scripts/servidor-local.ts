@@ -13,7 +13,7 @@ const rutas: Record<string, { GET?: (r: Request) => Response | Promise<Response>
   "/api/whatsapp": await import("../api/whatsapp.js"),
   "/api/obra": await import("../api/obra.js"),
 };
-const TIPOS: Record<string, string> = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css" };
+const TIPOS: Record<string, string> = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml" };
 const puerto = Number(process.env.PUERTO ?? 3000);
 
 http

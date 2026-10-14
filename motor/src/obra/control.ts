@@ -270,6 +270,9 @@ export function controlarParte(c: ConfigObra, obra: Obra, p: Parte, anteriores: 
 
 // ---------- Informe del parte (lo que recibe el capataz para confirmar) ----------
 
+/** Cómo se marca cada alerta en WhatsApp. La marca Pensa no usa emojis: va la palabra. */
+const marca = (a: Alerta) => (a.nivel === "roja" ? "*Urgente:*" : "*Revisar:*");
+
 export function informeParte(c: ConfigObra, obra: Obra, p: Parte, partesObra: Parte[]): string {
   const $ = (n: number) => plata(n, c.moneda);
   const m = (id: string) => material(c, id);
@@ -329,8 +332,8 @@ export function informeParte(c: ConfigObra, obra: Obra, p: Parte, partesObra: Pa
   if (p.observaciones) lineas.push("", `*Observaciones:* ${p.observaciones}`);
 
   lineas.push("", "*Para revisar*");
-  if (!p.alertas.length) lineas.push("✅ Sin diferencias contra el presupuesto ni los remitos.");
-  for (const a of p.alertas) lineas.push(`${a.nivel === "roja" ? "🔴" : "🟡"} ${a.detalle}${a.monto > 0 ? ` (≈ ${$(a.monto)})` : ""}`);
+  if (!p.alertas.length) lineas.push("Sin diferencias contra el presupuesto ni los remitos.");
+  for (const a of p.alertas) lineas.push(`${marca(a)} ${a.detalle}${a.monto > 0 ? ` (≈ ${$(a.monto)})` : ""}`);
   return lineas.join("\n");
 }
 
@@ -473,10 +476,10 @@ export function resumenObra(c: ConfigObra, obra: Obra, partesObra: Parte[], desd
 export function informeResumen(r: ResumenObra): string {
   const $ = (n: number) => plata(n, r.moneda);
   const l: string[] = [`*${r.obra.nombre}* · del ${fechaCorta(r.desde)} al ${fechaCorta(r.hasta)}`];
-  l.push(`Partes: ${r.partes.length} · Alertas: ${r.alertas.filter((a) => a.nivel === "roja").length} rojas, ${r.alertas.filter((a) => a.nivel === "amarilla").length} amarillas · En juego: ${$(r.en_juego)}`);
+  l.push(`Partes: ${r.partes.length} · Alertas: ${r.alertas.filter((a) => a.nivel === "roja").length} urgentes, ${r.alertas.filter((a) => a.nivel === "amarilla").length} a revisar · En juego: ${$(r.en_juego)}`);
   if (r.alertas.length) {
     l.push("", "*Para revisar*");
-    for (const a of r.alertas.slice(0, 8)) l.push(`${a.nivel === "roja" ? "🔴" : "🟡"} ${fechaCorta(a.fecha)} · ${a.detalle}${a.monto > 0 ? ` (≈ ${$(a.monto)})` : ""}`);
+    for (const a of r.alertas.slice(0, 8)) l.push(`${marca(a)} ${fechaCorta(a.fecha)} · ${a.detalle}${a.monto > 0 ? ` (≈ ${$(a.monto)})` : ""}`);
     if (r.alertas.length > 8) l.push(`… y ${r.alertas.length - 8} más en el tablero.`);
   }
   l.push("", "*Partidas* (remitos · esperado por avance · stock)");
