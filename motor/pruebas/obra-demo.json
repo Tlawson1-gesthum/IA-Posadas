@@ -1,0 +1,58 @@
+[
+  {
+    "nombre": "Saludo: se presenta como asistente automático",
+    "mensajes": ["hola"],
+    "contiene": ["(asistente|autom[aá]tico)"]
+  },
+  {
+    "nombre": "Parte por audio: carga y muestra el informe con el faltante",
+    "mensajes": [
+      "[Audio transcripto] Buen día, parte de hoy de Los Lapachos, habla Ramón. Somos catorce. Hicimos ochocientos cincuenta metros de carpeta. Llegaron tres camiones de piedra de Cantera Santa Ana, remitos 4588, 4589 y 4590, treinta toneladas cada uno, pero el último, el AC456FG, vino flojo, calculo que trajo veinticinco. Gasoil: la motoniveladora cargó ciento cincuenta litros, trabajó ocho horas; el rodillo ochenta litros, ocho horas también. Llovió un rato a la tarde, paramos una hora. Hacen falta dos toneladas de cemento para el jueves."
+    ],
+    "herramientas": ["registrar_parte"],
+    "contiene": ["Faltan 5 tn", "OK"]
+  },
+  {
+    "nombre": "Parte y OK: confirma",
+    "mensajes": [
+      "[Audio transcripto] Parte de hoy Lapachos: cuatrocientos metros cuadrados de carpeta. La terminadora cargó cien litros, trabajó siete horas.",
+      "ok"
+    ],
+    "herramientas": ["registrar_parte", "confirmar_parte"],
+    "contiene": ["confirm"]
+  },
+  {
+    "nombre": "Corrección: rehace el parte con corrige_parte",
+    "mensajes": [
+      "[Audio transcripto] Parte de hoy Lapachos. Base granular ciento ochenta metros cúbicos. El rodillo cargó noventa litros, ocho horas.",
+      "No, perdón, el rodillo trabajó diez horas, no ocho"
+    ],
+    "herramientas": ["registrar_parte"],
+    "no_contiene": ["Rodillo compactador RC-02: carg[oó] 90 l para 8 h"]
+  },
+  {
+    "nombre": "Equipo que no está en el catálogo: pregunta",
+    "mensajes": ["[Audio transcripto] Parte de hoy Lapachos. Cargamos cincuenta litros a la grúa, cuatro horas."],
+    "herramientas": ["registrar_parte"],
+    "contiene": ["(gr[uú]a|equipo)"],
+    "no_contiene": ["confirmado"]
+  },
+  {
+    "nombre": "Gasoil de más: habla de diferencia, no de robo",
+    "mensajes": ["[Audio transcripto] Parte de hoy Lapachos. La motoniveladora cargó trescientos litros, trabajó ocho horas. Hicimos doscientos metros cúbicos de base."],
+    "herramientas": ["registrar_parte"],
+    "contiene": ["Sobran"],
+    "no_contiene": ["rob(o|an|ando)", "te est[aá]n"]
+  },
+  {
+    "nombre": "El dueño pregunta cómo viene la obra",
+    "mensajes": ["¿Cómo viene la obra esta semana?"],
+    "herramientas": ["ver_obra"],
+    "contiene": ["certific"]
+  },
+  {
+    "nombre": "Pide algo que no es de obra: no lo hace",
+    "mensajes": ["pasame el sueldo de los capataces"],
+    "no_contiene": ["\\$ ?\\d"]
+  }
+]

@@ -4,6 +4,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { obtenerAlmacen, type FilaFicha } from "./almacen.js";
 import { REGISTRO } from "./herramientas/index.js";
+import { catalogoTexto, hoyAR } from "./obra/control.js";
 import { RAIZ } from "./raiz.js";
 import type { Ficha } from "./tipos.js";
 
@@ -50,11 +51,25 @@ export function ejemploDePlantilla(plantilla: string): Record<string, string> {
   }
 }
 
+/**
+ * Campos que completa el motor, no se escriben a mano: "nombre" sale de la ficha, "conocimiento" se lee en vivo
+ * de ficha.conocimiento.url, "hoy" es la fecha y "catalogo_obra" sale de ficha.obra.
+ */
+const CAMPOS_AUTOMATICOS = ["nombre", "conocimiento", "hoy", "catalogo_obra"];
+
+const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
+/** "martes 14/10/2026 (2026-10-14)": para que el agente entienda "ayer" o "el jueves". */
+function hoyEnPalabras(): string {
+  const f = hoyAR();
+  const dia = DIAS[new Date(`${f}T12:00:00Z`).getUTCDay()];
+  return `${dia} ${f.slice(8, 10)}/${f.slice(5, 7)}/${f.slice(0, 4)} (${f})`;
+}
+
 /** Los {{campos}} que pide una plantilla, en orden. */
 export function camposDePlantilla(plantilla: string): string[] {
   const texto = readFileSync(path.join(RAIZ, "plantillas", `${plantilla}.md`), "utf8");
-  // "nombre" sale de la ficha y "conocimiento" se lee en vivo de ficha.conocimiento.url: no se escriben a mano.
-  return [...new Set([...texto.matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]))].filter((c) => c !== "nombre" && c !== "conocimiento");
+  return [...new Set([...texto.matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]))].filter((c) => !CAMPOS_AUTOMATICOS.includes(c));
 }
 
 /**
@@ -64,7 +79,8 @@ export function camposDePlantilla(plantilla: string): string[] {
 export function armarPrompt(ficha: Ficha, conocimiento?: string): string {
   if (!plantillasDisponibles().includes(ficha.plantilla)) throw new Error(`No existe la plantilla ${ficha.plantilla}`);
   const plantilla = readFileSync(path.join(RAIZ, "plantillas", `${ficha.plantilla}.md`), "utf8");
-  const valores: Record<string, string> = { nombre: ficha.nombre, ...ficha.datos };
+  const valores: Record<string, string> = { nombre: ficha.nombre, ...ficha.datos, hoy: hoyEnPalabras() };
+  if (ficha.obra?.obras?.length) valores.catalogo_obra = catalogoTexto(ficha.obra);
   const enVivo = conocimiento ?? (ficha.conocimiento?.url ? "(se lee en vivo de la dirección de la ficha)" : undefined);
   if (enVivo !== undefined) valores.conocimiento = enVivo;
   const faltan = new Set<string>();
@@ -88,10 +104,12 @@ export function validarFicha(ficha: Ficha): string[] {
   if (!["low", "medium", "high"].includes(ficha.esfuerzo)) problemas.push("El esfuerzo tiene que ser low, medium o high.");
   if (!(ficha.tope_usd_mes > 0)) problemas.push("El tope de gasto mensual tiene que ser mayor que 0.");
   for (const h of ficha.herramientas ?? []) if (!REGISTRO[h]) problemas.push(`Herramienta desconocida: ${h}.`);
-  const conSistema = (ficha.herramientas ?? []).filter((h) => h !== "derivar_a_persona");
+  const conSistema = (ficha.herramientas ?? []).filter((h) => h !== "derivar_a_persona" && !REGISTRO[h]?.propia);
   if (conSistema.length && !ficha.integracion?.base_url)
     problemas.push(`Estas herramientas leen o cargan datos en el sistema del cliente y necesitan su dirección (Integración → Dirección base): ${conSistema.join(", ")}. Si este agente no las usa, destildalas.`);
   if (ficha.conocimiento?.url && !/^https:\/\//.test(ficha.conocimiento.url)) problemas.push("La dirección del conocimiento tiene que empezar con https://.");
+  if ((ficha.herramientas ?? []).some((h) => REGISTRO[h]?.propia) && !ficha.obra?.obras?.length)
+    problemas.push("Las herramientas de obra necesitan la configuración de la obra (campo \"obra\" de la ficha: obras, materiales, equipos y camiones).");
   if (ficha.herramientas?.includes("crear_pedido") && ficha.integracion?.pagos_agente?.length === 0)
     problemas.push("Elegí al menos una forma de pago para los pedidos que toma el agente.");
   try {

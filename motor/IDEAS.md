@@ -33,5 +33,5 @@ Un agente "despachante" en el motor:
 ## Otras ideas pendientes
 - **Portal del cliente y roles:** que el dueño de cada negocio vea solo lo suyo y usuarios del equipo con permisos (fundador, ingeniero, closer).
 - **Segunda plantilla de rubro** (odontología o estética), con ficha de demo.
-- **Audios:** transcribir notas de voz de WhatsApp para que el agente las entienda (hoy pide que escriban).
+- **Audios:** ✅ hecho para las fichas con `audios: true` (`src/transcribir.ts`). Falta decidir si MORFA los activa.
 - **Avisos al cliente** cuando cambia el estado del pedido ("salió tu pedido"), con plantillas de Meta.

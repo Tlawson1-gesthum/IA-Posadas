@@ -10,8 +10,10 @@ export interface MensajeEntrante {
   waId: string;
   /** Texto para el agente. Las ubicaciones llegan como "[Ubicación compartida: lat, lng]". */
   texto: string;
-  /** El mensaje es de un tipo que el agente no lee (audio, foto, sticker...). */
+  /** El mensaje es de un tipo que el agente no lee (foto, sticker...). */
   noSoportado?: string;
+  /** Nota de voz: se transcribe si la ficha tiene audios activados. */
+  audio?: { id: string; tipo: string };
 }
 
 /** Verifica que el aviso venga de Meta: firma HMAC-SHA256 del cuerpo con el secreto de la app. */
@@ -41,11 +43,29 @@ export function leerAviso(aviso: any): MensajeEntrante[] {
         else if (m.type === "interactive") {
           const r = m.interactive?.button_reply ?? m.interactive?.list_reply;
           salida.push({ ...base, texto: r?.title ?? "" });
-        } else salida.push({ ...base, texto: "", noSoportado: m.type });
+        } else if (m.type === "audio" && m.audio?.id)
+          salida.push({ ...base, texto: "", audio: { id: String(m.audio.id), tipo: String(m.audio.mime_type ?? "audio/ogg") } });
+        else salida.push({ ...base, texto: "", noSoportado: m.type });
       }
     }
   }
   return salida;
+}
+
+/** Baja un archivo que mandaron por WhatsApp (audio, foto): Meta da una dirección temporal que pide el token. */
+export async function descargarMedia(mediaId: string, maxBytes: number): Promise<Blob> {
+  const token = process.env.WHATSAPP_TOKEN;
+  if (!token) throw new Error("Falta WHATSAPP_TOKEN");
+  const version = process.env.META_GRAPH_VERSION ?? "v23.0";
+  const auth = { authorization: `Bearer ${token}` };
+  const info = await fetch(`https://graph.facebook.com/${version}/${encodeURIComponent(mediaId)}`, { headers: auth, signal: AbortSignal.timeout(15000) });
+  if (!info.ok) throw new Error(`Meta respondió ${info.status} al pedir el archivo`);
+  const { url, mime_type, file_size } = (await info.json()) as { url?: string; mime_type?: string; file_size?: number };
+  if (!url) throw new Error("Meta no devolvió la dirección del archivo");
+  if (file_size && file_size > maxBytes) throw new Error(`Archivo demasiado grande (${Math.round(file_size / 1024)} KB)`);
+  const r = await fetch(url, { headers: auth, signal: AbortSignal.timeout(30000) });
+  if (!r.ok) throw new Error(`Meta respondió ${r.status} al bajar el archivo`);
+  return new Blob([await r.arrayBuffer()], { type: mime_type ?? "audio/ogg" });
 }
 
 /** Manda un texto. Si Meta no reconoce el número argentino con 9 (pasa con números de prueba), reintenta sin el 9. */

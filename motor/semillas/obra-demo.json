@@ -1,0 +1,180 @@
+{
+  "_nota": "Semana de ejemplo para el demo del agente de obra (ficha obra-demo). `dia` es relativo a hoy (-1 = ayer). Las alertas no están escritas acá: las calcula el motor al cargar, igual que con un parte real. Trae a propósito: gasoil de más en la motoniveladora (día -4), un remito repetido (día -3), un camión que llegó con menos piedra (día -2), cemento que falta en el conteo y un viaje de arena sin remito (día -1).",
+  "obra": "lapachos",
+  "partes": [
+    {
+      "dia": -6,
+      "responsable": "Ramón Benítez (capataz)",
+      "clima": "Soleado",
+      "personal": 16,
+      "avances": [{ "tarea_id": "base", "cantidad": 180 }, { "tarea_id": "cordon", "cantidad": 60 }],
+      "recepciones": [
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004511", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004512", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004513", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004514", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004515", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004516", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004517", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004518", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004519", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004520", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-881", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-882", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-883", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-884", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "cemento", "cantidad_remito": 7, "remito": "0002-00012001", "proveedor": "Corralón San Roque", "patente": "" },
+        { "material_id": "gasoil", "cantidad_remito": 3000, "remito": "G-5501", "proveedor": "Distribuidora Gasoil Norte", "patente": "" }
+      ],
+      "combustible": [
+        { "equipo_id": "mn01", "litros": 145, "horas": 8 },
+        { "equipo_id": "rc02", "litros": 70, "horas": 8 },
+        { "equipo_id": "re03", "litros": 85, "horas": 8 },
+        { "equipo_id": "cv05", "litros": 95, "horas": 8 }
+      ]
+    },
+    {
+      "dia": -5,
+      "responsable": "Ramón Benítez (capataz)",
+      "clima": "Soleado",
+      "personal": 17,
+      "avances": [{ "tarea_id": "base", "cantidad": 200 }, { "tarea_id": "cordon", "cantidad": 70 }],
+      "recepciones": [
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004521", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004522", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004523", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004524", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004525", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004526", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004527", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004528", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004529", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004530", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004531", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-885", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-886", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-887", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-888", "proveedor": "Arenera El Puerto", "patente": "AE321KL" }
+      ],
+      "combustible": [
+        { "equipo_id": "mn01", "litros": 150, "horas": 8.5 },
+        { "equipo_id": "rc02", "litros": 75, "horas": 8.5 },
+        { "equipo_id": "re03", "litros": 90, "horas": 8 },
+        { "equipo_id": "cv05", "litros": 100, "horas": 8.5 }
+      ]
+    },
+    {
+      "dia": -4,
+      "responsable": "Ramón Benítez (capataz)",
+      "clima": "Nublado",
+      "personal": 16,
+      "avances": [{ "tarea_id": "base", "cantidad": 190 }, { "tarea_id": "cordon", "cantidad": 65 }],
+      "recepciones": [
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004532", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004533", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004534", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004535", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004536", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004537", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004538", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004539", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004540", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004541", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-889", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-890", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-891", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "asfalto", "cantidad_remito": 30, "remito": "0003-00000712", "proveedor": "Asfaltos del Litoral", "patente": "AG111PQ" },
+        { "material_id": "cemento", "cantidad_remito": 6, "remito": "0002-00012044", "proveedor": "Corralón San Roque", "patente": "" }
+      ],
+      "combustible": [
+        { "equipo_id": "mn01", "litros": 260, "horas": 8 },
+        { "equipo_id": "rc02", "litros": 72, "horas": 8 },
+        { "equipo_id": "re03", "litros": 86, "horas": 8 },
+        { "equipo_id": "cv05", "litros": 94, "horas": 8 }
+      ]
+    },
+    {
+      "dia": -3,
+      "responsable": "Ramón Benítez (capataz)",
+      "clima": "Soleado",
+      "personal": 18,
+      "avances": [{ "tarea_id": "imprimacion", "cantidad": 3000 }, { "tarea_id": "base", "cantidad": 150 }, { "tarea_id": "cordon", "cantidad": 60 }],
+      "recepciones": [
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004542", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004543", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004544", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004521", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004545", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004546", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004547", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004548", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004549", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-892", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-893", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-894", "proveedor": "Arenera El Puerto", "patente": "AE321KL" }
+      ],
+      "combustible": [
+        { "equipo_id": "mn01", "litros": 140, "horas": 8 },
+        { "equipo_id": "rc02", "litros": 70, "horas": 8 },
+        { "equipo_id": "re03", "litros": 84, "horas": 8 },
+        { "equipo_id": "cv05", "litros": 92, "horas": 8 }
+      ]
+    },
+    {
+      "dia": -2,
+      "responsable": "Ing. Laura Sosa (jefa de obra)",
+      "clima": "Lluvia de 15 a 16 h, se paró la carpeta una hora",
+      "personal": 18,
+      "avances": [{ "tarea_id": "carpeta", "cantidad": 1100 }, { "tarea_id": "imprimacion", "cantidad": 2500 }, { "tarea_id": "base", "cantidad": 120 }],
+      "recepciones": [
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004550", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004551", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004552", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004553", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004554", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004555", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "cantidad_recibida": 26, "remito": "0001-00004556", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004557", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004558", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004559", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-895", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-896", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "A-897", "proveedor": "Arenera El Puerto", "patente": "AE321KL" },
+        { "material_id": "cemento", "cantidad_remito": 6, "remito": "0002-00012101", "proveedor": "Corralón San Roque", "patente": "" },
+        { "material_id": "gasoil", "cantidad_remito": 3000, "remito": "G-5502", "proveedor": "Distribuidora Gasoil Norte", "patente": "" }
+      ],
+      "combustible": [
+        { "equipo_id": "mn01", "litros": 146, "horas": 8 },
+        { "equipo_id": "rc02", "litros": 74, "horas": 8 },
+        { "equipo_id": "ta01", "litros": 98, "horas": 7 },
+        { "equipo_id": "rn06", "litros": 60, "horas": 7 },
+        { "equipo_id": "re03", "litros": 60, "horas": 5.5 },
+        { "equipo_id": "cv05", "litros": 95, "horas": 8 }
+      ],
+      "incidentes": ["Lluvia de 15 a 16 h: se paró la carpeta una hora."]
+    },
+    {
+      "dia": -1,
+      "responsable": "Ing. Laura Sosa (jefa de obra)",
+      "clima": "Soleado",
+      "personal": 17,
+      "avances": [{ "tarea_id": "carpeta", "cantidad": 1300 }, { "tarea_id": "cordon", "cantidad": 70 }],
+      "recepciones": [
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004560", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004561", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004562", "proveedor": "Cantera Santa Ana", "patente": "AB123CD" },
+        { "material_id": "piedra", "cantidad_remito": 30, "remito": "0001-00004563", "proveedor": "Cantera Santa Ana", "patente": "AC456FG" },
+        { "material_id": "arena", "cantidad_remito": 15, "remito": "", "proveedor": "Arenera El Puerto", "patente": "AE321KL" }
+      ],
+      "combustible": [
+        { "equipo_id": "mn01", "litros": 140, "horas": 8 },
+        { "equipo_id": "rc02", "litros": 72, "horas": 8 },
+        { "equipo_id": "ta01", "litros": 112, "horas": 8 },
+        { "equipo_id": "rn06", "litros": 64, "horas": 8 },
+        { "equipo_id": "cv05", "litros": 96, "horas": 8 }
+      ],
+      "stock_medido": [{ "material_id": "cemento", "cantidad": 3.2 }, { "material_id": "gasoil", "cantidad": 5700 }],
+      "pedidos": ["Cemento: 6 tn para el jueves", "Asfalto: confirmar entrega de 30 tn para la semana que viene"]
+    }
+  ]
+}

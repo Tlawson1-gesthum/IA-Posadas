@@ -4,10 +4,11 @@
 //   GET ?config=<id> → lo que la burbuja necesita para dibujarse (nombre, color, saludo), o {activo:false}.
 import { createHash } from "node:crypto";
 import { obtenerAlmacen } from "../src/almacen.js";
-import { atender } from "../src/atender.js";
+import { atender, comoAudio, vocabulario } from "../src/atender.js";
 import { cargarFicha } from "../src/fichas.js";
 import { sesionValida } from "../src/sesion.js";
 import { CHAT_WEB_POR_DEFECTO, type Ficha } from "../src/tipos.js";
+import { MAX_BYTES_AUDIO, transcribir, transcripcionConfigurada } from "../src/transcribir.js";
 
 const MUCHOS = "Recibimos muchos mensajes desde tu conexión. Probá de nuevo en un rato.";
 const CORS = { "access-control-allow-origin": "*", "cache-control": "public, max-age=30" };
@@ -56,7 +57,11 @@ function ipHash(request: Request): string {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  let b: { clave?: string; sesion?: string; texto?: string; ficha?: string; borrador?: boolean; publico?: boolean; contexto?: string; credencial?: string };
+  let b: {
+    clave?: string; sesion?: string; texto?: string; ficha?: string; borrador?: boolean; publico?: boolean; contexto?: string; credencial?: string;
+    /** Nota de voz grabada en el chat de prueba, en base64 (solo con clave o panel, y si la ficha tiene audios). */
+    audio?: string; audio_tipo?: string;
+  };
   try {
     b = await request.json();
   } catch {
@@ -69,8 +74,10 @@ export async function POST(request: Request): Promise<Response> {
   const mensaje = String(b.texto ?? "").trim().slice(0, 2000);
   // Ticket para leer datos del sistema del cliente con los permisos de quien escribe. Solo pasa a las herramientas: no se guarda.
   const credencial = /^[A-Za-z0-9_.-]{20,600}$/.test(String(b.credencial ?? "")) ? String(b.credencial) : undefined;
-  const texto = (contexto ? `[Contexto: ${contexto}] ` : "") + mensaje;
-  if (!sesion || !mensaje) return Response.json({ error: "Falta el mensaje" }, { status: 400 });
+  let texto = (contexto ? `[Contexto: ${contexto}] ` : "") + mensaje;
+  const audio = typeof b.audio === "string" && b.audio ? b.audio : "";
+  if (!sesion || (!mensaje && !audio)) return Response.json({ error: "Falta el mensaje" }, { status: 400 });
+  if (audio && b.publico) return Response.json({ error: "La burbuja todavía no recibe audios" }, { status: 400 });
   const fichaId = String(b.ficha || process.env.FICHA_POR_DEFECTO || "");
 
   const delPanel = sesionValida(request);
@@ -106,6 +113,22 @@ export async function POST(request: Request): Promise<Response> {
     if (b.borrador) ficha = { ...ficha, estado: "activo" };
   }
 
+  // Nota de voz del chat de prueba: se transcribe acá y el agente la recibe como texto, igual que en WhatsApp.
+  let transcripcion: string | undefined;
+  if (audio) {
+    if (!ficha.audios) return Response.json({ error: "Este agente no tiene los audios activados (campo audios de la ficha)" }, { status: 400 });
+    if (!transcripcionConfigurada()) return Response.json({ error: "Falta configurar la transcripción de audios (TRANSCRIPCION_CLAVE)" }, { status: 400 });
+    const datos = Buffer.from(audio, "base64");
+    if (datos.length > MAX_BYTES_AUDIO) return Response.json({ error: "El audio es demasiado largo" }, { status: 400 });
+    try {
+      transcripcion = await transcribir(new Blob([datos], { type: String(b.audio_tipo ?? "audio/webm").slice(0, 60) }), vocabulario(ficha));
+    } catch (e) {
+      console.error("No se pudo transcribir el audio del chat", e);
+      return Response.json({ error: "No se pudo transcribir el audio. Probá de nuevo." }, { status: 502 });
+    }
+    texto = comoAudio(transcripcion);
+  }
+
   const respuestas: string[] = [];
   await atender(
     // En el chat web el "teléfono" es la sesión del navegador. "web-" la distingue de un número real.
@@ -118,5 +141,5 @@ export async function POST(request: Request): Promise<Response> {
       },
     },
   );
-  return Response.json({ respuestas, ficha: { id: ficha.id, nombre: ficha.nombre, agente: ficha.datos?.nombre_agente } });
+  return Response.json({ respuestas, transcripcion, ficha: { id: ficha.id, nombre: ficha.nombre, agente: ficha.datos?.nombre_agente } });
 }

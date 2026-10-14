@@ -1,0 +1,279 @@
+-- Motor de agentes · demo del agente de obra (constructora de ejemplo). Correr después de 008_obra.sql.
+-- Se corre una vez en Supabase → SQL Editor → New query → pegar → Run.
+-- Crea la ficha "obra-demo" (copia de fichas/obra-demo.json): una obra vial de ejemplo con sus tareas, materiales,
+-- equipos y fletes. Para un cliente real se crea otra ficha con su cómputo, su análisis de precios y sus equipos.
+insert into fichas (id, estado, abono_usd_mes, config, version)
+values ('obra-demo', 'activo', 0, $ficha${
+  "nombre": "Constructora Demo",
+  "rubro": "construcción",
+  "plantilla": "obra",
+  "modelo": "claude-opus-5-5",
+  "esfuerzo": "medium",
+  "tope_usd_mes": 30,
+  "limites": {
+    "mensajes_por_hora": 40,
+    "mensajes_por_dia": 150,
+    "usd_por_persona_dia": 1,
+    "caracteres_por_mensaje": 4000
+  },
+  "audios": true,
+  "herramientas": [
+    "registrar_parte",
+    "confirmar_parte",
+    "ver_obra",
+    "derivar_a_persona"
+  ],
+  "datos": {
+    "nombre_agente": "Parte de Obra",
+    "descripcion": "Constructora Demo es una empresa de Misiones que hace obras viales y urbanas (base granular, imprimación, carpeta asfáltica y cordón cuneta).",
+    "quienes_escriben": "Capataces y jefes de obra que mandan el parte del día, casi siempre por audio desde la obra, y el dueño o la administración que preguntan cómo vienen las obras. No son clientes de la empresa.",
+    "casos_derivacion": "- Un accidente con personas lastimadas o un robo: derivá enseguida con motivo urgencia.\n- Piden algo que no es un parte ni una consulta de la obra (compras, sueldos, pagos a proveedores).",
+    "voz": "- Directo y breve, como se habla en obra. Voseo. Sin vueltas ni frases de cortesía largas.\n- Emojis solo los del informe (🔴 🟡 ✅)."
+  },
+  "obra": {
+    "moneda": "$",
+    "combustible": "gasoil",
+    "tolerancias": {
+      "consumo_pct": 0.1,
+      "combustible_pct": 0.1,
+      "carga_pct": 0.03,
+      "stock_pct": 0.05
+    },
+    "obras": [
+      {
+        "id": "lapachos",
+        "nombre": "Pavimento Av. Los Lapachos – Etapa 2",
+        "comitente": "Municipio (obra de ejemplo)",
+        "alias": [
+          "lapachos",
+          "los lapachos",
+          "avenida",
+          "etapa 2"
+        ],
+        "stock_inicial": {
+          "piedra": 40,
+          "arena": 20,
+          "asfalto": 8,
+          "cemento": 3,
+          "gasoil": 2500
+        },
+        "tareas": [
+          {
+            "id": "base",
+            "nombre": "Base granular e=20 cm",
+            "unidad": "m3",
+            "cantidad_contrato": 3600,
+            "precio_unitario": 95000,
+            "consumos": {
+              "piedra": 1.55,
+              "arena": 0.25
+            },
+            "alias": [
+              "base",
+              "enripiado",
+              "base de piedra"
+            ]
+          },
+          {
+            "id": "imprimacion",
+            "nombre": "Riego de imprimación",
+            "unidad": "m2",
+            "cantidad_contrato": 18000,
+            "precio_unitario": 2200,
+            "consumos": {
+              "asfalto": 0.0011
+            },
+            "alias": [
+              "imprimación",
+              "imprimado",
+              "riego"
+            ]
+          },
+          {
+            "id": "carpeta",
+            "nombre": "Carpeta asfáltica e=5 cm",
+            "unidad": "m2",
+            "cantidad_contrato": 18000,
+            "precio_unitario": 24000,
+            "consumos": {
+              "piedra": 0.105,
+              "arena": 0.012,
+              "asfalto": 0.0066
+            },
+            "alias": [
+              "carpeta",
+              "concreto asfáltico",
+              "asfalto en caliente",
+              "carpeta de rodamiento"
+            ]
+          },
+          {
+            "id": "cordon",
+            "nombre": "Cordón cuneta de hormigón",
+            "unidad": "ml",
+            "cantidad_contrato": 3000,
+            "precio_unitario": 68000,
+            "consumos": {
+              "cemento": 0.052,
+              "piedra": 0.17,
+              "arena": 0.075
+            },
+            "alias": [
+              "cordón",
+              "cordón cuneta",
+              "cordones",
+              "cuneta"
+            ]
+          }
+        ]
+      }
+    ],
+    "materiales": [
+      {
+        "id": "piedra",
+        "nombre": "Piedra partida",
+        "unidad": "tn",
+        "precio": 52000,
+        "alias": [
+          "piedra",
+          "piedra 6-20",
+          "piedra 10-30",
+          "triturado",
+          "basalto",
+          "agregado grueso"
+        ]
+      },
+      {
+        "id": "arena",
+        "nombre": "Arena",
+        "unidad": "m3",
+        "precio": 38000,
+        "alias": [
+          "arena gruesa",
+          "arena mediana",
+          "arena de río"
+        ]
+      },
+      {
+        "id": "asfalto",
+        "nombre": "Asfalto CA-30",
+        "unidad": "tn",
+        "precio": 1150000,
+        "alias": [
+          "asfalto",
+          "cemento asfáltico",
+          "CA 30",
+          "betún",
+          "emulsión"
+        ]
+      },
+      {
+        "id": "cemento",
+        "nombre": "Cemento",
+        "unidad": "tn",
+        "precio": 260000,
+        "alias": [
+          "cemento portland",
+          "bolsas de cemento",
+          "CPC 40"
+        ],
+        "nota": "1 bolsa = 25 kg (40 bolsas = 1 tn)"
+      },
+      {
+        "id": "gasoil",
+        "nombre": "Gasoil",
+        "unidad": "l",
+        "precio": 1650,
+        "alias": [
+          "diésel",
+          "combustible",
+          "gasoil del tanque"
+        ]
+      }
+    ],
+    "equipos": [
+      {
+        "id": "mn01",
+        "nombre": "Motoniveladora MN-01",
+        "litros_hora": 18,
+        "alias": [
+          "motoniveladora",
+          "moto",
+          "niveladora"
+        ]
+      },
+      {
+        "id": "rc02",
+        "nombre": "Rodillo compactador RC-02",
+        "litros_hora": 9,
+        "alias": [
+          "rodillo",
+          "compactador",
+          "rodillo liso"
+        ]
+      },
+      {
+        "id": "rn06",
+        "nombre": "Rodillo neumático RN-06",
+        "litros_hora": 8,
+        "alias": [
+          "neumático",
+          "rodillo neumático"
+        ]
+      },
+      {
+        "id": "ta01",
+        "nombre": "Terminadora de asfalto TA-01",
+        "litros_hora": 14,
+        "alias": [
+          "terminadora",
+          "finisher"
+        ]
+      },
+      {
+        "id": "re03",
+        "nombre": "Retroexcavadora RE-03",
+        "litros_hora": 11,
+        "alias": [
+          "retro",
+          "retroexcavadora"
+        ]
+      },
+      {
+        "id": "cv05",
+        "nombre": "Camión volcador CV-05",
+        "litros_hora": 12,
+        "alias": [
+          "volcador",
+          "camión propio",
+          "el volcador"
+        ]
+      }
+    ],
+    "camiones": [
+      {
+        "patente": "AB123CD",
+        "transportista": "Fletes Ñu Porá",
+        "capacidad": 30,
+        "precio_viaje": 180000
+      },
+      {
+        "patente": "AC456FG",
+        "transportista": "Transporte Garupá",
+        "capacidad": 30,
+        "precio_viaje": 180000
+      },
+      {
+        "patente": "AE321KL",
+        "transportista": "Arenera El Puerto",
+        "capacidad": 15,
+        "precio_viaje": 140000
+      }
+    ]
+  }
+}$ficha$::jsonb, 1)
+on conflict (id) do nothing;
+
+insert into fichas_historial (ficha_id, version, config, autor, nota)
+select id, 1, config, 'instalacion', 'Versión inicial del demo de obra' from fichas where id = 'obra-demo'
+on conflict do nothing;

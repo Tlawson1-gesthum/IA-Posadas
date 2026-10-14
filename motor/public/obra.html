@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Tablero de obra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fondo: #f3f2ef; --tarjeta: #ffffff; --texto: #1c1b19; --suave: #6b6760; --borde: #e3e0da;
+    --acento: #f2a900; --acento-txt: #1c1b19; --rojo: #d92d20; --rojo-fondo: #fef3f2; --amarillo: #b54708; --amarillo-fondo: #fffaeb;
+    --verde: #067647; --verde-fondo: #ecfdf3; --barra-esperado: #c9c4bb; --barra-real: #1c1b19;
+    --titulos: "Space Grotesk", system-ui, sans-serif; --numeros: "JetBrains Mono", ui-monospace, monospace; --radio: 14px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo: #121212; --tarjeta: #1c1c1b; --texto: #eeece8; --suave: #a19d95; --borde: #2e2d2a;
+      --acento: #ffbf1f; --rojo: #f97066; --rojo-fondo: #2b1614; --amarillo: #fdb022; --amarillo-fondo: #2a2012;
+      --verde: #47cd89; --verde-fondo: #10241a; --barra-esperado: #4a4741; --barra-real: #eeece8; color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--tarjeta); border-bottom: 1px solid var(--borde); }
+  .cinta { height: 6px; background: repeating-linear-gradient(-45deg, var(--acento) 0 14px, var(--texto) 14px 28px); }
+  .cab { max-width: 1180px; margin: 0 auto; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+  .cab h1 { margin: 0; font: 700 18px var(--titulos); letter-spacing: -.01em; }
+  .cab small { display: block; color: var(--suave); font: 500 11px var(--numeros); letter-spacing: .1em; text-transform: uppercase; }
+  .controles { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  select, button { font: inherit; color: var(--texto); background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px; padding: 7px 10px; }
+  button { cursor: pointer; }
+  .chips { display: inline-flex; border: 1px solid var(--borde); border-radius: 999px; padding: 3px; }
+  .chips button { border: 0; border-radius: 999px; padding: 4px 12px; font-size: 13px; color: var(--suave); background: none; }
+  .chips button.on { background: var(--texto); color: var(--fondo); }
+  main { max-width: 1180px; margin: 0 auto; padding: 16px 16px 48px; }
+  h2 { font: 600 17px var(--titulos); margin: 28px 0 10px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  h2 span { font: 500 13px system-ui, sans-serif; color: var(--suave); }
+  .tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio); padding: 14px 16px; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 12px; }
+  .kpi .etq { color: var(--suave); font-size: 13px; }
+  .kpi b { display: block; font: 700 24px var(--numeros); letter-spacing: -.02em; margin-top: 4px; word-break: break-word; }
+  .kpi.rojo { border-color: var(--rojo); background: var(--rojo-fondo); } .kpi.rojo b { color: var(--rojo); }
+  @media (max-width: 560px) { .kpi { padding: 12px; } .kpi b { font-size: 16px; white-space: nowrap; } .kpi .etq { font-size: 12px; } }
+  .alertas { display: grid; gap: 8px; }
+  .alerta { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: start; border-left: 5px solid var(--amarillo); background: var(--amarillo-fondo); }
+  .alerta.roja { border-left-color: var(--rojo); background: var(--rojo-fondo); }
+  .alerta .cuando { font: 500 12px var(--numeros); color: var(--suave); padding-top: 2px; white-space: nowrap; }
+  .alerta .monto { font: 700 14px var(--numeros); white-space: nowrap; }
+  .alerta.roja .monto { color: var(--rojo); } .alerta .monto { color: var(--amarillo); }
+  @media (max-width: 560px) { .alerta { grid-template-columns: 1fr auto; } .alerta .cuando { grid-column: 1 / -1; } }
+  .vacio { color: var(--verde); background: var(--verde-fondo); border-color: transparent; }
+  .partidas { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+  .partida h3 { margin: 0 0 8px; font: 600 15px var(--titulos); display: flex; justify-content: space-between; gap: 8px; }
+  .partida h3 small { font: 500 12px var(--numeros); color: var(--suave); }
+  .fila { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; padding: 3px 0; }
+  .fila span:first-child { color: var(--suave); } .fila b { font: 600 14px var(--numeros); white-space: nowrap; }
+  .fila.mal b { color: var(--rojo); } .fila.ok b { color: var(--verde); }
+  .barras { margin: 8px 0 6px; display: grid; gap: 4px; }
+  .barra { height: 8px; border-radius: 4px; background: var(--borde); overflow: hidden; }
+  .barra i { display: block; height: 100%; border-radius: 4px; }
+  .barra.esp i { background: var(--barra-esperado); } .barra.real i { background: var(--barra-real); }
+  .leyenda { display: flex; gap: 12px; font-size: 12px; color: var(--suave); }
+  .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+  .tabla { overflow-x: auto; padding: 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--borde); white-space: nowrap; }
+  th { font: 500 12px var(--numeros); letter-spacing: .06em; text-transform: uppercase; color: var(--suave); }
+  td.n { font-family: var(--numeros); text-align: right; } th.n { text-align: right; }
+  tr:last-child td { border-bottom: 0; }
+  .pct-mal { color: var(--rojo); font-weight: 700; } .pct-ok { color: var(--verde); }
+  .progreso { width: 110px; height: 8px; background: var(--borde); border-radius: 4px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 8px; }
+  .progreso i { display: block; height: 100%; background: var(--acento); }
+  details.parte { border-top: 1px solid var(--borde); padding: 10px 0; }
+  details.parte:first-child { border-top: 0; }
+  details.parte summary { cursor: pointer; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; list-style: none; }
+  details.parte summary::-webkit-details-marker { display: none; }
+  details.parte summary::before { content: "▸"; color: var(--suave); }
+  details.parte[open] summary::before { content: "▾"; }
+  .pill { font: 600 12px var(--numeros); border-radius: 999px; padding: 1px 8px; }
+  .pill.r { background: var(--rojo-fondo); color: var(--rojo); } .pill.a { background: var(--amarillo-fondo); color: var(--amarillo); }
+  .pill.p { background: var(--borde); color: var(--suave); } .pill.ok { background: var(--verde-fondo); color: var(--verde); }
+  .informe { white-space: pre-wrap; font-size: 14px; background: var(--fondo); border-radius: 10px; padding: 12px; margin: 10px 0 0; overflow-x: auto; }
+  .pie { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; color: var(--suave); font-size: 13px; }
+  .aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--texto); color: var(--fondo); padding: 10px 16px; border-radius: 10px; font-size: 14px; display: none; max-width: calc(100% - 32px); }
+</style>
+</head>
+<body>
+<header>
+  <div class="cinta"></div>
+  <div class="cab">
+    <div><small id="empresa">Tablero de obra</small><h1 id="titulo">Cargando…</h1></div>
+    <div class="controles">
+      <select id="obra" aria-label="Obra" hidden></select>
+      <div class="chips" role="group" aria-label="Período">
+        <button data-p="hoy">Hoy</button><button data-p="semana" class="on">7 días</button><button data-p="mes">Mes</button>
+      </div>
+      <button id="actualizar" title="Actualizar">↻</button>
+    </div>
+  </div>
+</header>
+<main id="contenido"></main>
+<div class="aviso" id="aviso"></div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const leer = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+  const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+  const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const NUM = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 1 });
+  const num = (n) => NUM.format(n);
+  const u = (x) => x === "m2" ? "m²" : x === "m3" ? "m³" : x;
+  const fecha = (f) => `${f.slice(8, 10)}/${f.slice(5, 7)}`;
+
+  const params = new URLSearchParams(location.search);
+  const ficha = (params.get("ficha") || "").replace(/[^a-z0-9-]/g, "");
+  let clave = leer("chat-clave") || "";
+  let periodo = "semana", obraId = "", moneda = "$";
+  const plata = (n) => `${moneda} ${Math.round(n).toLocaleString("es-AR")}`;
+
+  function aviso(t) { const a = $("aviso"); a.textContent = t; a.style.display = "block"; clearTimeout(aviso.t); aviso.t = setTimeout(() => (a.style.display = "none"), 3500); }
+  function rango() {
+    const hoy = new Date(Date.now() - 3 * 3600_000).toISOString().slice(0, 10);
+    if (periodo === "hoy") return { desde: hoy, hasta: hoy };
+    if (periodo === "mes") return { desde: hoy.slice(0, 8) + "01", hasta: hoy };
+    return { desde: new Date(Date.parse(hoy + "T12:00:00Z") - 6 * 86400_000).toISOString().slice(0, 10), hasta: hoy };
+  }
+
+  async function pedir(metodo, cuerpo) {
+    const r = rango();
+    const url = metodo === "GET" ? `/api/obra?ficha=${encodeURIComponent(ficha)}&obra=${encodeURIComponent(obraId)}&desde=${r.desde}&hasta=${r.hasta}` : "/api/obra";
+    const res = await fetch(url, { method: metodo, headers: { "x-clave": clave, "content-type": "application/json" }, body: cuerpo ? JSON.stringify(cuerpo) : undefined });
+    if (res.status === 403) {
+      clave = prompt("Clave del tablero (la misma del chat de prueba). Si entraste al panel, dejalo vacío:") || "";
+      guardar("chat-clave", clave);
+      if (clave) return pedir(metodo, cuerpo);
+    }
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(j.error || `Error ${res.status}`);
+    return j;
+  }
+
+  function partida(p) {
+    const tope = Math.max(p.recibido, p.esperado, p.informado, 1e-9);
+    const real = p.es_combustible ? p.informado : p.recibido;
+    const etiquetaReal = p.es_combustible ? "Cargado a equipos" : "Entró a obra";
+    const etiquetaEsp = p.es_combustible ? "Esperado por horas" : "Esperado por avance";
+    const medido = p.stock_medido;
+    const faltaMedido = medido ? medido.teorico - medido.cantidad : 0;
+    const filas = [
+      `<div class="fila"><span>Remitos</span><b>${num(p.remitos)} ${u(p.unidad)}</b></div>`,
+      p.recibido !== p.remitos ? `<div class="fila mal"><span>Llegó de verdad</span><b>${num(p.recibido)} ${u(p.unidad)}</b></div>` : "",
+      `<div class="fila"><span>${etiquetaEsp}</span><b>${num(p.esperado)} ${u(p.unidad)}</b></div>`,
+      p.es_combustible || p.informado ? `<div class="fila"><span>${p.es_combustible ? "Cargado a equipos" : "Informado por obra"}</span><b>${num(p.informado)} ${u(p.unidad)}</b></div>` : "",
+      `<div class="fila"><span>Debería haber hoy</span><b>${num(p.stock_teorico)} ${u(p.unidad)}</b></div>`,
+      medido ? `<div class="fila ${faltaMedido > Math.abs(medido.teorico) * 0.05 ? "mal" : "ok"}"><span>Medido el ${fecha(medido.fecha)} (debía ${num(medido.teorico)})</span><b>${num(medido.cantidad)} ${u(p.unidad)}</b></div>` : "",
+      `<div class="fila"><span>Compras del período</span><b>${plata(p.compra)}</b></div>`,
+    ].join("");
+    return `<div class="tarjeta partida"><h3>${esc(p.nombre)} <small>${u(p.unidad)}</small></h3>
+      <div class="barras" aria-hidden="true">
+        <div class="barra real"><i style="width:${(real / tope) * 100}%"></i></div>
+        <div class="barra esp"><i style="width:${(p.esperado / tope) * 100}%"></i></div>
+      </div>
+      <div class="leyenda"><span><i style="background:var(--barra-real)"></i>${etiquetaReal}</span><span><i style="background:var(--barra-esperado)"></i>${etiquetaEsp}</span></div>
+      ${filas}</div>`;
+  }
+
+  function dibujar(d) {
+    const r = d.resumen;
+    moneda = r.moneda;
+    $("empresa").textContent = `${d.ficha.nombre} · ${r.obra.comitente}`;
+    $("titulo").textContent = r.obra.nombre;
+    document.title = `Tablero · ${r.obra.nombre}`;
+    if (d.obras.length > 1) {
+      $("obra").hidden = false;
+      $("obra").innerHTML = d.obras.map((o) => `<option value="${esc(o.id)}" ${o.id === r.obra.id ? "selected" : ""}>${esc(o.nombre)}</option>`).join("");
+    }
+    const rojas = r.alertas.filter((a) => a.nivel === "roja").length;
+    const compras = r.partidas.reduce((s, p) => s + p.compra, 0) + r.transporte.costo;
+    const html = [];
+    html.push(`<div class="kpis">
+      <div class="tarjeta kpi ${r.en_juego > 0 ? "rojo" : ""}"><div class="etq">Plata en juego por diferencias</div><b>${plata(r.en_juego)}</b></div>
+      <div class="tarjeta kpi"><div class="etq">Alertas</div><b>${rojas} 🔴 · ${r.alertas.length - rojas} 🟡</b></div>
+      <div class="tarjeta kpi"><div class="etq">Compras y fletes del período</div><b>${plata(compras)}</b></div>
+      <div class="tarjeta kpi"><div class="etq">Certificable (avance × precio)</div><b>${plata(r.certificable)}</b></div>
+    </div>`);
+
+    html.push(`<h2>Para revisar <span>del ${fecha(r.desde)} al ${fecha(r.hasta)} · ${r.partes.length} partes</span></h2>`);
+    html.push(r.alertas.length
+      ? `<div class="alertas">${r.alertas.map((a) => `<div class="tarjeta alerta ${a.nivel}"><span class="cuando">${fecha(a.fecha)}</span><span>${esc(a.detalle)}</span><span class="monto">${a.monto > 0 ? "≈ " + plata(a.monto) : ""}</span></div>`).join("")}</div>`
+      : `<div class="tarjeta vacio">✅ Sin diferencias contra el presupuesto ni los remitos en este período.</div>`);
+
+    html.push(`<h2>Partidas <span>lo que entró contra lo que el avance dice que se usó</span></h2><div class="partidas">${r.partidas.map(partida).join("")}
+      <div class="tarjeta partida"><h3>Fletes <small>viajes</small></h3>
+        <div class="fila"><span>Viajes</span><b>${r.transporte.viajes}</b></div>
+        <div class="fila ${r.transporte.con_problemas ? "mal" : "ok"}"><span>Con problemas</span><b>${r.transporte.con_problemas}</b></div>
+        <div class="fila"><span>Costo del período</span><b>${plata(r.transporte.costo)}</b></div>
+        ${r.transporte.por_transportista.map((t) => `<div class="fila"><span>${esc(t.nombre)}</span><b>${t.viajes} · ${plata(t.costo)}</b></div>`).join("")}
+      </div></div>`);
+
+    if (r.combustible.length) {
+      html.push(`<h2>Gasoil por equipo <span>cargado contra horas × consumo del equipo</span></h2><div class="tarjeta tabla"><table>
+        <tr><th>Equipo</th><th class="n">Horas</th><th class="n">Cargado</th><th class="n">Esperado</th><th class="n">Diferencia</th></tr>
+        ${r.combustible.map((e) => {
+          const dif = e.esperado ? e.litros / e.esperado - 1 : 0;
+          return `<tr><td>${esc(e.nombre)}</td><td class="n">${num(e.horas)} h</td><td class="n">${num(e.litros)} l</td><td class="n">${num(e.esperado)} l</td>
+            <td class="n ${dif > 0.1 ? "pct-mal" : "pct-ok"}">${dif >= 0 ? "+" : ""}${Math.round(dif * 100)}%</td></tr>`;
+        }).join("")}</table></div>`);
+    }
+
+    html.push(`<h2>Avance y certificación <span>${plata(r.certificable)} certificables en el período</span></h2><div class="tarjeta tabla"><table>
+      <tr><th>Tarea</th><th class="n">Período</th><th>Acumulado del contrato</th><th class="n">A certificar</th></tr>
+      ${r.avance.map((a) => {
+        const p = a.contrato ? Math.min(1, a.acumulado / a.contrato) : 0;
+        return `<tr><td>${esc(a.nombre)}</td><td class="n">${num(a.periodo)} ${u(a.unidad)}</td>
+          <td><span class="progreso"><i style="width:${p * 100}%"></i></span>${Math.round(p * 100)}% · ${num(a.acumulado)} de ${num(a.contrato)} ${u(a.unidad)}</td>
+          <td class="n">${plata(a.periodo * a.precio_unitario)}</td></tr>`;
+      }).join("")}</table></div>`);
+
+    html.push(`<h2>Partes del período <span>como los recibió el capataz por WhatsApp</span></h2><div class="tarjeta">${r.partes.length
+      ? r.partes.map((p) => `<details class="parte"><summary><b>${fecha(p.fecha)}</b> ${esc(p.responsable || "—")}
+          ${p.estado === "pendiente" ? '<span class="pill p">sin confirmar</span>' : ""}
+          ${p.rojas ? `<span class="pill r">${p.rojas} roja${p.rojas > 1 ? "s" : ""}</span>` : ""}
+          ${p.amarillas ? `<span class="pill a">${p.amarillas} amarilla${p.amarillas > 1 ? "s" : ""}</span>` : ""}
+          ${!p.rojas && !p.amarillas ? '<span class="pill ok">sin diferencias</span>' : ""}
+          ${p.pedidos.length ? `<span class="pill p">${p.pedidos.length} pedido${p.pedidos.length > 1 ? "s" : ""}</span>` : ""}
+        </summary><div class="informe">${esc(d.informes[p.id] || "").replace(/\*([^*\n]+)\*/g, "<b>$1</b>")}</div></details>`).join("")
+      : '<p style="margin:0;color:var(--suave)">Todavía no hay partes en este período.</p>'}</div>`);
+
+    html.push(`<div class="pie"><span>Se actualiza solo cada 30 segundos. Los montos usan los precios de referencia de la ficha.</span>
+      ${d.semilla ? '<button id="semilla">Cargar semana de ejemplo</button>' : ""}</div>`);
+    $("contenido").innerHTML = html.join("");
+    $("semilla")?.addEventListener("click", async () => {
+      if (!confirm("Esto borra los partes de esta ficha y carga una semana de ejemplo. ¿Seguir?")) return;
+      try { const j = await pedir("POST", { accion: "semilla", ficha }); aviso(`Semana de ejemplo cargada (${j.partes} partes)`); cargar(); }
+      catch (e) { aviso(e.message); }
+    });
+  }
+
+  let abiertos = new Set();
+  async function cargar() {
+    // Mantiene abiertos los partes que la persona estaba leyendo.
+    abiertos = new Set([...document.querySelectorAll("details.parte[open] summary b")].map((b) => b.textContent));
+    try {
+      const d = await pedir("GET");
+      obraId = d.resumen.obra.id;
+      dibujar(d);
+      document.querySelectorAll("details.parte").forEach((x) => { if (abiertos.has(x.querySelector("summary b").textContent)) x.open = true; });
+    } catch (e) {
+      $("titulo").textContent = "Tablero de obra";
+      $("contenido").innerHTML = `<div class="tarjeta">${esc(e.message)}</div>`;
+    }
+  }
+
+  document.querySelectorAll(".chips button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(".chips button").forEach((x) => x.classList.toggle("on", x === b));
+    periodo = b.dataset.p; cargar();
+  }));
+  $("obra").addEventListener("change", (e) => { obraId = e.target.value; cargar(); });
+  $("actualizar").addEventListener("click", cargar);
+  setInterval(() => { if (!document.hidden) cargar(); }, 30_000);
+  cargar();
+</script>
+</body>
+</html>

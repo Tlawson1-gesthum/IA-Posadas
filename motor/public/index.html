@@ -32,6 +32,7 @@
   form button { border: 0; border-radius: 20px; padding: 0 14px; font: inherit; cursor: pointer; background: var(--acento); color: #fff; }
   form button.secundario { background: transparent; color: #fff; border: 1px solid #ffffff55; padding: 0 10px; }
   form button:disabled { opacity: .5; }
+  form button.grabando { background: var(--acento); border-color: var(--acento); font-variant-numeric: tabular-nums; }
 </style>
 </head>
 <body>
@@ -43,6 +44,7 @@
 <main id="charla" aria-live="polite"></main>
 <form id="form">
   <button class="secundario" id="ubic" type="button" title="Mandar mi ubicación">📍</button>
+  <button class="secundario" id="mic" type="button" title="Grabar una nota de voz (tocá de nuevo para mandarla)">🎤</button>
   <input id="texto" autocomplete="off" placeholder="Escribí un mensaje" aria-label="Mensaje">
   <button id="enviar" type="submit">Enviar</button>
 </form>
@@ -72,6 +74,7 @@
       .replace(/\*([^*\n]+)\*/g, "<b>$1</b>");
     $("charla").append(d);
     $("charla").scrollTop = $("charla").scrollHeight;
+    return d;
   }
   function aviso(texto) {
     const d = document.createElement("div");
@@ -79,17 +82,19 @@
     $("charla").append(d);
   }
 
-  async function mandar(texto) {
+  async function mandar(texto, audio) {
     if (!clave && !borrador) {
       clave = prompt("Clave del chat de prueba (CHAT_CLAVE en Vercel). Si entraste al panel, dejalo vacío:") || "";
       guardar("chat-clave", clave);
     }
-    burbuja(texto.startsWith("[Ubicación") ? "📍 Ubicación compartida" : texto, "cliente");
-    $("enviar").disabled = true; $("estado").textContent = "escribiendo…";
+    if (!audio) burbuja(texto.startsWith("[Ubicación") ? "📍 Ubicación compartida" : texto, "cliente");
+    const deAudio = audio ? burbuja(`🎤 Nota de voz (${audio.duracion}) · transcribiendo…`, "cliente") : null;
+    $("enviar").disabled = true; $("estado").textContent = audio ? "escuchando el audio…" : "escribiendo…";
     try {
       const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ clave, sesion, texto, ficha, borrador }) });
+        body: JSON.stringify({ clave, sesion, texto, ficha, borrador, audio: audio?.datos, audio_tipo: audio?.tipo }) });
       const j = await r.json().catch(() => ({}));
+      if (deAudio) deAudio.textContent = j.transcripcion ? `🎤 ${j.transcripcion}` : `🎤 Nota de voz (${audio.duracion})`;
       if (j.ficha) {
         $("titulo").textContent = (j.ficha.agente ? j.ficha.agente + " · " : "") + j.ficha.nombre;
         $("avatar").textContent = (j.ficha.agente || j.ficha.nombre)[0];
@@ -122,6 +127,43 @@
       { enableHighAccuracy: true, timeout: 10000 },
     );
   });
+  // Nota de voz: tocar 🎤 empieza a grabar, tocar de nuevo la manda. Como en WhatsApp, el agente recibe la transcripción.
+  let grabadora = null, partes = [], inicio = 0, reloj = null;
+  const MAX_SEG = 180;
+  const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+  async function empezarGrabacion() {
+    if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) return aviso("Este navegador no graba audio.");
+    let stream;
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+    catch { return aviso("No hay permiso para usar el micrófono."); }
+    const tipo = ["audio/webm;codecs=opus", "audio/mp4", "audio/ogg;codecs=opus"].find((t) => MediaRecorder.isTypeSupported(t)) || "";
+    grabadora = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined);
+    partes = [];
+    grabadora.ondataavailable = (e) => e.data.size && partes.push(e.data);
+    grabadora.onstop = () => {
+      stream.getTracks().forEach((t) => t.stop());
+      clearInterval(reloj);
+      $("mic").classList.remove("grabando"); $("mic").textContent = "🎤";
+      const duracion = mmss((Date.now() - inicio) / 1000);
+      const blob = new Blob(partes, { type: grabadora.mimeType || tipo || "audio/webm" });
+      grabadora = null;
+      if (blob.size < 2000) return aviso("El audio quedó vacío. Grabá un poco más antes de mandarlo.");
+      const lector = new FileReader();
+      lector.onload = () => mandar("", { datos: String(lector.result).split(",")[1], tipo: blob.type, duracion });
+      lector.readAsDataURL(blob);
+    };
+    grabadora.start();
+    inicio = Date.now();
+    $("mic").classList.add("grabando");
+    $("mic").textContent = "■ 0:00";
+    reloj = setInterval(() => {
+      const s = (Date.now() - inicio) / 1000;
+      $("mic").textContent = "■ " + mmss(s);
+      if (s >= MAX_SEG) grabadora?.stop();
+    }, 250);
+  }
+  $("mic").addEventListener("click", () => (grabadora ? grabadora.stop() : empezarGrabacion()));
+
   $("nueva").addEventListener("click", () => {
     sesion = nuevaSesion(); guardar(claveSesion, sesion);
     $("charla").innerHTML = ""; aviso("Charla nueva. El agente no recuerda lo anterior.");

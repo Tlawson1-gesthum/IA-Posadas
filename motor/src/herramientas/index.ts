@@ -1,5 +1,6 @@
 // Registro de herramientas. Cada ficha elige cuáles habilita por nombre.
 import type { Herramienta } from "../tipos.js";
+import { confirmarParte, registrarParte, verObra } from "./obra.js";
 import { cotizarPedido, crearPedido } from "./pedidos-semorfa.js";
 import { confirmarPedidoEfectivo, consultarPedido, misPedidos, verCartaYEstado, verTurno } from "./semorfa.js";
 import { consultarZona } from "./zona.js";
@@ -39,5 +40,8 @@ export const REGISTRO: Record<string, Herramienta> = {
   [crearPedido.definicion.name]: crearPedido,
   [consultarZona.definicion.name]: consultarZona,
   [verTurno.definicion.name]: verTurno,
+  [registrarParte.definicion.name]: registrarParte,
+  [confirmarParte.definicion.name]: confirmarParte,
+  [verObra.definicion.name]: verObra,
   [derivarAPersona.definicion.name]: derivarAPersona,
 };

@@ -23,6 +23,8 @@ mensaje ─► cerebro (src/cerebro.ts) ─► Claude ─► herramientas ─►
 | `api/chat.ts` + `public/index.html` | Chat web de prueba: `/?ficha=<id>` prueba lo publicado; `/?ficha=<id>&borrador=1` prueba los cambios sin publicar. |
 | `public/widget.js` + `public/widget.html` | Burbuja de chat para la web del cliente: `<script src="https://ia-posadas.vercel.app/widget.js" data-ficha="<id>" defer></script>`. Se prende desde la ficha (`chat_web.activo`). |
 | `pruebas/morfa.json` | 20 conversaciones de ejemplo con lo que se espera de cada respuesta. |
+| `plantillas/obra.md` + `src/obra/` + `src/herramientas/obra.ts` | **Agente de obra** (constructoras): el capataz manda el parte por audio, el código controla piedra, arena, asfalto, cemento, gasoil y fletes contra el presupuesto y los remitos, y el dueño lo ve en `public/obra.html`. Demo: ficha `obra-demo`. Guía: [GUIA-OBRA-DEMO.md](GUIA-OBRA-DEMO.md). |
+| `src/transcribir.ts` | Notas de voz → texto (OpenAI o Groq) para las fichas con `audios: true`, por WhatsApp y en el chat de prueba (botón 🎤). |
 
 ## Cómo probarlo (en tu compu)
 
@@ -39,6 +41,7 @@ npm run chat-abierto         # igual, pero haciendo de cuenta que el local está
 npm run probar               # correr la batería de pruebas (cuesta centavos de dólar)
 npm run probar -- morfa celí # correr solo los casos que contienen "celí"
 npm run local                # chat y panel en http://localhost:3000 (sin Supabase usa memoria y las fichas de fichas/)
+npm run obra                 # sin Claude: controles del agente de obra con la semana de ejemplo
 ```
 
 En el chat: `ubicacion -27.37 -55.90` simula mandar el pin de ubicación; `liberar` devuelve la charla al agente después de una derivación; `salir` termina.

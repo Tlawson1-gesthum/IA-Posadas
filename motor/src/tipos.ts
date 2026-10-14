@@ -1,4 +1,5 @@
 import type Anthropic from "@anthropic-ai/sdk";
+import type { ConfigObra } from "./obra/modelo.js";
 
 /**
  * La ficha de un cliente: quién es, qué sabe y qué puede hacer su agente.
@@ -38,6 +39,10 @@ export interface Ficha {
   conocimiento?: { url: string };
   /** Burbuja de chat en la web del cliente. Apagada si falta o activo = false. */
   chat_web?: ChatWeb;
+  /** Transcribir las notas de voz (WhatsApp y chat de prueba). Cuesta aparte del modelo: ver src/transcribir.ts. */
+  audios?: boolean;
+  /** Constructoras: obras, materiales, equipos y fletes que controla el agente de obra (plantilla obra). */
+  obra?: ConfigObra;
   /** Valores que reemplazan los {{campos}} de la plantilla. */
   datos: Record<string, string>;
 }
@@ -53,6 +58,8 @@ export interface ContextoHerramienta {
 
 export interface Herramienta {
   definicion: Anthropic.Tool;
+  /** No usa el sistema del cliente: trabaja con datos que guarda el motor (ej. los partes de obra). */
+  propia?: boolean;
   ejecutar(entrada: Record<string, unknown>, ctx: ContextoHerramienta): Promise<string>;
 }
 

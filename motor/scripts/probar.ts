@@ -24,14 +24,17 @@ const casos: Caso[] = JSON.parse(readFileSync(new URL(`../pruebas/${id}.json`, i
 
 let fallas = 0;
 let usd = 0;
+let numero = 0;
 for (const caso of casos.filter((c) => !filtro || c.nombre.toLowerCase().includes(filtro))) {
   process.env.FORZAR_ABIERTO = caso.abierto ? "1" : "";
+  // Un teléfono por caso: lo que guarda una herramienta (ej. un parte de obra pendiente) no se mezcla con el caso siguiente.
+  const telefono = `549376${String(++numero).padStart(7, "0")}`;
   const historial: Turno[] = [];
   const usadas = new Set<string>();
   let derivada = false;
   let texto = "";
   for (const m of caso.mensajes) {
-    const r = await responder(ficha, historial, m, "5493760000000");
+    const r = await responder(ficha, historial, m, telefono);
     historial.push({ rol: "cliente", texto: m }, { rol: "agente", texto: r.texto });
     r.herramientasUsadas.forEach((h) => usadas.add(h));
     derivada ||= !!r.derivada;

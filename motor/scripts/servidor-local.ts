@@ -11,6 +11,7 @@ const rutas: Record<string, { GET?: (r: Request) => Response | Promise<Response>
   "/api/chat": await import("../api/chat.js"),
   "/api/panel": await import("../api/panel.js"),
   "/api/whatsapp": await import("../api/whatsapp.js"),
+  "/api/obra": await import("../api/obra.js"),
 };
 const TIPOS: Record<string, string> = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css" };
 const puerto = Number(process.env.PUERTO ?? 3000);
@@ -46,4 +47,5 @@ http
   .listen(puerto, () => {
     console.log(`Chat de prueba: http://localhost:${puerto}`);
     console.log(`Panel:          http://localhost:${puerto}/panel.html  (clave: ${process.env.PANEL_CLAVE})`);
+    console.log(`Obra (demo):    http://localhost:${puerto}/obra.html?ficha=obra-demo  ·  chat: /?ficha=obra-demo`);
   });

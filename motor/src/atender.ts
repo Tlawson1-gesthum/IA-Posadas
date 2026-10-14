@@ -4,9 +4,20 @@ import { obtenerAlmacen } from "./almacen.js";
 import { responder } from "./cerebro.js";
 import { fichaPorNumero } from "./fichas.js";
 import { LIMITES_POR_DEFECTO, type Ficha } from "./tipos.js";
-import { enviarTexto, type MensajeEntrante } from "./whatsapp.js";
+import { vocabularioObra } from "./obra/control.js";
+import { MAX_BYTES_AUDIO, transcribir, transcripcionConfigurada } from "./transcribir.js";
+import { descargarMedia, enviarTexto, type MensajeEntrante } from "./whatsapp.js";
 
 const NO_LEO = "Por ahora solo leo mensajes de texto y ubicaciones. ¿Me lo escribís?";
+const NO_ESCUCHE = "No pude escuchar el audio. ¿Me lo mandás de nuevo o escrito?";
+
+/** Palabras del negocio para que la transcripción las escriba bien. */
+export function vocabulario(ficha: Ficha): string {
+  return ficha.obra?.obras?.length ? vocabularioObra(ficha.obra) : ficha.nombre;
+}
+
+/** Texto que recibe el agente cuando el mensaje fue un audio. */
+export const comoAudio = (texto: string) => `[Audio transcripto] ${texto}`;
 const ERROR = "Uh, se me trabó algo. Ya le aviso a alguien del equipo para que te responda.";
 const MUCHOS_MENSAJES = "Recibimos muchos mensajes seguidos. Para seguir, escribinos más tarde.";
 const SIN_SALDO = "Ahora no puedo responderte por acá. Ya le aviso a alguien del equipo.";
@@ -29,6 +40,21 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   }
   // Agente pausado (falta de pago o pedido del cliente): no responde ni gasta.
   if (ficha.estado !== "activo") return;
+
+  // Notas de voz: se transcriben solo si la ficha las tiene activadas (cuestan aparte del modelo).
+  let audioFallido = false;
+  if (m.audio) {
+    if (!ficha.audios || !transcripcionConfigurada()) m = { ...m, noSoportado: "audio" };
+    else {
+      try {
+        m = { ...m, texto: comoAudio(await transcribir(await descargarMedia(m.audio.id, MAX_BYTES_AUDIO), vocabulario(ficha))) };
+      } catch (e) {
+        console.error(`Ficha ${ficha.id}: no se pudo transcribir un audio`, e);
+        m = { ...m, noSoportado: "audio" };
+        audioFallido = true;
+      }
+    }
+  }
 
   const limites = { ...LIMITES_POR_DEFECTO, ...ficha.limites };
   // Un mensaje larguísimo cuesta más y no lo manda un cliente real: se corta.
@@ -59,7 +85,7 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
     await almacen.guardar({ conversacionId: conv.id, fichaId: ficha.id, rol: "agente", texto, ...extra });
   };
 
-  if (m.noSoportado) return contestar(NO_LEO);
+  if (m.noSoportado) return contestar(audioFallido ? NO_ESCUCHE : NO_LEO);
   if (!m.texto.trim()) return;
 
   // Límites por persona: cuando se pasa, se avisa una sola vez y después el agente no responde (ni gasta).
