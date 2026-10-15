@@ -66,6 +66,23 @@ export function evaluarLugar(lugar: any, cocina: Punto, envio: { hasta_km: numbe
     return { encontrado: true, lugar: descripcion, llega: "no", motivo: "Queda fuera de Argentina: no hacemos envíos a Paraguay ni a otros países." };
   }
   const centro = { lat: Number(lugar.lat), lng: Number(lugar.lon) };
+  // Una dirección con altura (calle y número) es un punto: sirve para cotizar y cargar el pedido sin el pin de ubicación.
+  if (lugar.address?.house_number) {
+    const a = lugar.address;
+    const direccion = [`${a.road ?? nombre} ${a.house_number}`.trim(), a.suburb, a.city || a.town || a.village].filter(Boolean).join(", ");
+    const tramo = tramoDeEnvio(envio, distanciaKm(cocina, centro));
+    return tramo
+      ? {
+          encontrado: true,
+          precision: "direccion",
+          lugar: direccion,
+          llega: "si",
+          envio: { precio: tramo.precio },
+          ubicacion: { lat: Number(centro.lat.toFixed(6)), lng: Number(centro.lng.toFixed(6)) },
+          nota: "Confirmale a la persona que la dirección es esa. Si dice que sí, usá ubicacion.lat y ubicacion.lng en cotizar_pedido y crear_pedido.",
+        }
+      : { encontrado: true, precision: "direccion", lugar: direccion, llega: "no", motivo: "Queda fuera de la zona de entrega." };
+  }
   // boundingbox = [sur, norte, oeste, este]. Un barrio grande puede quedar en parte dentro y en parte fuera.
   const [s, n, o, e] = (lugar.boundingbox ?? []).map(Number);
   const esquinas = [s, n, o, e].every(Number.isFinite)
@@ -106,7 +123,7 @@ export const consultarZona: Herramienta = {
   definicion: {
     name: "consultar_zona",
     description:
-      "Dice si hacemos envíos a un barrio, calle o lugar que nombra la persona (ej. \"Itaembé Miní\", \"Villa Cabello\", \"la UNaM\"), buscándolo en el mapa: llega si / no / en_parte y el costo de envío posible. Usala cuando pregunten \"¿llegan a…?\" sin haber mandado la ubicación. Si da en_parte o no lo encuentra, pedí la ubicación. Con la ubicación compartida usá cotizar_pedido, que da el costo exacto.",
+      "Busca en el mapa un barrio, lugar o dirección que nombra la persona (ej. \"Itaembé Miní\", \"la UNaM\", \"Bolívar 1850\") y dice si hacemos envíos: llega si / no / en_parte y el costo de envío posible. Con calle y número, si la encuentra, devuelve precision \"direccion\" y la ubicacion (lat, lng) para usar en cotizar_pedido y crear_pedido cuando la persona no puede compartir el pin (por ejemplo, si pide para otra persona). Si da en_parte o no lo encuentra, pedí la ubicación o que marquen la dirección en el mapa de la web.",
     input_schema: {
       type: "object",
       properties: { lugar: { type: "string", description: "Barrio, calle o lugar, tal como lo escribió la persona." } },
@@ -134,7 +151,17 @@ export const consultarZona: Herramienta = {
     if (!lugares?.length) {
       return JSON.stringify({ encontrado: false, nota: "No encontré ese lugar en el mapa cerca de la cocina. Pedí la ubicación o que marque la dirección en la web." });
     }
-    const lugar = lugares.find((l) => TIPOS_DE_ZONA.has(l.type) || l.category === "boundary" || l.category === "place") ?? lugares[0];
-    return JSON.stringify(evaluarLugar(lugar, cocina, envio));
+    // Con número, se busca la dirección exacta; sin número, el barrio o lugar.
+    const conAltura = /\d/.test(texto);
+    const lugar =
+      (conAltura && lugares.find((l) => l.address?.house_number)) ||
+      lugares.find((l) => TIPOS_DE_ZONA.has(l.type) || l.category === "boundary" || l.category === "place") ||
+      lugares[0];
+    const r: Record<string, unknown> = evaluarLugar(lugar, cocina, envio);
+    if (conAltura && !lugar.address?.house_number && r.llega !== "no") {
+      r.altura_no_encontrada = true;
+      r.nota = "No encontré esa altura exacta en el mapa: no uses este lugar para el pedido. Pedí que la persona que recibe comparta su ubicación, o que marquen la dirección en el mapa de la web.";
+    }
+    return JSON.stringify(r);
   },
 };

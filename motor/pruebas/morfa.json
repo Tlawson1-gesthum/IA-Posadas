@@ -330,5 +330,66 @@
     "contiene": [
       "\\?"
     ]
+  },
+  {
+    "nombre": "Otra ciudad: pregunta si es para alguien de Posadas y no sigue el pedido",
+    "mensajes": [
+      "Quiero 4 pizzas y una coca. Mandamelo a caba"
+    ],
+    "contiene": [
+      "Posadas",
+      "\\?"
+    ],
+    "no_contiene": [
+      "(cu[aá]les|qu[eé]) pizzas",
+      "12\\.000",
+      "PRUEBA1"
+    ]
+  },
+  {
+    "nombre": "Pedido para otra persona: pide la dirección escrita",
+    "mensajes": [
+      "Quiero 4 pizzas y una coca. Mandamelo a caba",
+      "sí, es para mi vieja que vive en Posadas"
+    ],
+    "contiene": [
+      "(direcci[oó]n|calle)"
+    ],
+    "no_contiene": [
+      "(compart[ií]|mand[aá]me) (la |tu )?ubicaci[oó]n"
+    ]
+  },
+  {
+    "nombre": "Cerrado: dice cuándo abre y ofrece la carta, sin armar",
+    "mensajes": [
+      "quiero una muzza"
+    ],
+    "herramientas": [
+      "ver_carta_y_estado"
+    ],
+    "contiene": [
+      "(abr|cerrad)",
+      "carta"
+    ],
+    "no_contiene": [
+      "PRUEBA1",
+      "anotad"
+    ]
+  },
+  {
+    "nombre": "Genérico: opciones con precio y preguntas juntas",
+    "mensajes": [
+      "quiero 4 pizzas y una coca"
+    ],
+    "abierto": true,
+    "herramientas": [
+      "ver_carta_y_estado"
+    ],
+    "contiene": [
+      "12\\.000",
+      "13\\.000",
+      "14\\.000",
+      "(zero|com[uú]n)"
+    ]
   }
 ]
