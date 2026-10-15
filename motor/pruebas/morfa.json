@@ -993,7 +993,7 @@
     "nombre": "Mapa caído: no cotiza ni dice que llega, ofrece web o persona",
     "mensajes": [
       "quiero una fugazzeta",
-      "[Ubicación compartida: -27.3700, -55.9000]"
+      "[Ubicación compartida: -27.4012, -55.9123]"
     ],
     "abierto": true,
     "mapa_caido": true,
@@ -1015,7 +1015,7 @@
     "nombre": "Mapa caído mientras pide en Paraguay: tampoco cotiza",
     "mensajes": [
       "quiero una muzza",
-      "[Ubicación compartida: -27.3300, -55.8700]"
+      "[Ubicación compartida: -27.3305, -55.8705]"
     ],
     "abierto": true,
     "mapa_caido": true,
