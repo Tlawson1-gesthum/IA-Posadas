@@ -45,7 +45,7 @@ const mensajes = [
 for (const m of mensajes) {
   console.log(`\nCliente → ${JSON.stringify((m.entry[0].changes[0].value.messages[0] as any).text ?? (m.entry[0].changes[0].value.messages[0] as any).type)}`);
   console.log("Respuesta HTTP a Meta:", await mandar(m));
-  await new Promise((r) => setTimeout(r, 4000 + (process.env.ANTHROPIC_API_KEY ? 20000 : 0)));
+  await new Promise((r) => setTimeout(r, 4000 + ((process.env.MORFI_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY) ? 20000 : 0)));
 }
 console.log("\nReenvío del mismo aviso (no debe contestar dos veces):", await mandar(mensajes[0]));
 await new Promise((r) => setTimeout(r, 2000));

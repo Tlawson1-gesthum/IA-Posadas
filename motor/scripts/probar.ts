@@ -31,7 +31,11 @@ for (const caso of casos.filter((c) => !filtro || c.nombre.toLowerCase().include
   let derivada = false;
   let texto = "";
   for (const m of caso.mensajes) {
-    const r = await responder(ficha, historial, m, "5493760000000");
+    const r = await responder(ficha, historial, m, "5493760000000").catch((e: Error) => {
+      console.log(`\n✗ ${caso.nombre}\n    La API falló: ${e.message.slice(0, 300)}`);
+      console.log(`\nCorrida cortada · ${fallas} falla(s) antes del corte · costo: US$ ${usd.toFixed(4)}`);
+      process.exit(2);
+    });
     historial.push({ rol: "cliente", texto: m }, { rol: "agente", texto: r.texto });
     r.herramientasUsadas.forEach((h) => usadas.add(h));
     derivada ||= !!r.derivada;
