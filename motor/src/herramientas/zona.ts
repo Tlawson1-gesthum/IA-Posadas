@@ -42,16 +42,18 @@ async function nominatim(ruta: string, params: Record<string, string>): Promise<
   return valor;
 }
 
-/** Código de país (ar, py, br...) de una ubicación, o null si el mapa no responde. */
+/** Código de país (ar, py, br...) de una ubicación, o null si el mapa no responde (se reintenta una vez). */
 export async function paisDe(p: Punto): Promise<string | null> {
-  try {
-    // Se redondea a ~100 m para aprovechar la caché.
-    const r = await nominatim("reverse", { lat: p.lat.toFixed(3), lon: p.lng.toFixed(3), zoom: "10", addressdetails: "1" });
-    return r?.address?.country_code ?? null;
-  } catch (e) {
-    console.warn("No se pudo ver el país de la ubicación", (e as Error).message);
-    return null;
+  for (let intento = 0; intento < 2; intento++) {
+    try {
+      // Se redondea a ~100 m para aprovechar la caché.
+      const r = await nominatim("reverse", { lat: p.lat.toFixed(3), lon: p.lng.toFixed(3), zoom: "10", addressdetails: "1" });
+      return r?.address?.country_code ?? null;
+    } catch (e) {
+      if (intento === 1) console.warn("No se pudo ver el país de la ubicación", (e as Error).message);
+    }
   }
+  return null;
 }
 
 const TIPOS_DE_ZONA = new Set(["suburb", "neighbourhood", "quarter", "city_district", "administrative", "residential", "village", "town", "hamlet", "city", "locality"]);

@@ -19,6 +19,7 @@ interface Cotizacion {
   total: number | null;
   fuera_de_zona: boolean;
   fuera_del_pais: boolean;
+  pais_sin_verificar: boolean;
   falta_ubicacion: boolean;
   abierto: boolean;
   motivo_cerrado?: string;
@@ -68,17 +69,23 @@ async function cotizar(entrada: Record<string, unknown>, ctx: ContextoHerramient
   let envio: number | null = null;
   let fueraDeZona = false;
   let fueraDelPais = false;
+  let paisSinVerificar = false;
   if (lat !== null && lng !== null) {
     const tramo = tramoDeEnvio(carta.envio ?? [], distanciaKm(carta.cocina, { lat, lng }));
     // Encarnación (Paraguay) entra en el radio en línea recta: se mira el país en el mapa.
-    // Si el mapa no responde, se deja pasar (como antes) para no frenar pedidos.
+    // Si el mapa no responde no se puede descartar Paraguay: no se cotiza ni se crea hasta poder verificarlo.
     const pais = tramo ? await paisDe({ lat, lng }) : null;
     if (pais && pais !== "ar") {
       fueraDelPais = true;
       errores.push("Esa ubicación queda fuera de Argentina: no hacemos envíos a Paraguay ni a otros países.");
+    } else if (tramo && !pais) {
+      paisSinVerificar = true;
+      errores.push(
+        "No pude verificar el país de esa ubicación porque el mapa no responde, así que no cotizo el envío. No le des un total ni digas que llegamos. Decile que ahora no podés confirmarlo y ofrecé pedir en la web (marca la dirección en el mapa) o pasarlo con alguien del equipo (derivá con motivo pedido_sin_ubicacion y el pedido armado en el resumen).",
+      );
     }
-    if (tramo && !fueraDelPais) envio = tramo.precio;
-    else fueraDeZona = true;
+    if (tramo && !fueraDelPais && !paisSinVerificar) envio = tramo.precio;
+    else fueraDeZona = !tramo || fueraDelPais;
   }
 
   return {
@@ -90,6 +97,7 @@ async function cotizar(entrada: Record<string, unknown>, ctx: ContextoHerramient
     total: envio === null ? null : subtotal + envio,
     fuera_de_zona: fueraDeZona,
     fuera_del_pais: fueraDelPais,
+    pais_sin_verificar: paisSinVerificar,
     falta_ubicacion: lat === null || lng === null,
     abierto: !!carta.estado?.abierto,
     motivo_cerrado: carta.estado?.abierto ? undefined : carta.estado?.motivo,
@@ -124,7 +132,7 @@ export const cotizarPedido: Herramienta = {
   definicion: {
     name: "cotizar_pedido",
     description:
-      "Calcula el pedido con la carta en vivo: valida productos y adicionales, y devuelve cada línea, subtotal, costo de envío según la ubicación, total, si queda fuera de zona (o fuera del país: no hay envíos a Paraguay) y si el local está abierto. No crea nada. Usala antes de mostrarle el resumen al cliente y cada vez que cambie algo.",
+      "Calcula el pedido con la carta en vivo: valida productos y adicionales, y devuelve cada línea, subtotal, costo de envío según la ubicación, total, si queda fuera de zona (o fuera del país: no hay envíos a Paraguay; si el mapa no responde y no se puede verificar el país, no cotiza) y si el local está abierto. No crea nada. Usala antes de mostrarle el resumen al cliente y cada vez que cambie algo.",
     input_schema: {
       type: "object",
       properties: {

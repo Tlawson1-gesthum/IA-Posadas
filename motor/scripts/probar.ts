@@ -15,7 +15,23 @@ interface Caso {
   no_contiene?: string[];
   /** Hace de cuenta que el local está abierto (para probar pedidos fuera de horario). */
   abierto?: boolean;
+  /** Hace de cuenta que el mapa (OpenStreetMap) no responde. */
+  mapa_caido?: boolean;
 }
+
+// El país de una ubicación se consulta en OpenStreetMap: en las pruebas se simula para que no dependan de la red.
+// Al norte de -27.35 (Encarnación) es Paraguay; el resto, Argentina. Lo demás pasa a la red real.
+let mapaCaido = false;
+const fetchReal = globalThis.fetch;
+globalThis.fetch = (async (entrada: any, init?: any) => {
+  const url = new URL(typeof entrada === "string" ? entrada : entrada.url ?? String(entrada));
+  if (url.hostname === "nominatim.openstreetmap.org" && url.pathname === "/reverse") {
+    if (mapaCaido) throw new Error("mapa simulado caído");
+    const pais = Number(url.searchParams.get("lat")) > -27.35 ? "py" : "ar";
+    return new Response(JSON.stringify({ address: { country_code: pais } }), { headers: { "content-type": "application/json" } });
+  }
+  return fetchReal(entrada, init);
+}) as typeof fetch;
 
 const id = process.argv[2] ?? "morfa";
 const filtro = process.argv[3]?.toLowerCase();
@@ -26,6 +42,7 @@ let fallas = 0;
 let usd = 0;
 for (const caso of casos.filter((c) => !filtro || c.nombre.toLowerCase().includes(filtro))) {
   process.env.FORZAR_ABIERTO = caso.abierto ? "1" : "";
+  mapaCaido = !!caso.mapa_caido;
   const historial: Turno[] = [];
   const usadas = new Set<string>();
   let derivada = false;

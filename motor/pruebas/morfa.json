@@ -476,19 +476,6 @@
     ]
   },
   {
-    "nombre": "Paraguay: ubicación compartida del otro lado del río",
-    "mensajes": [
-      "quiero una fugazzeta",
-      "[Ubicación compartida: -27.3300, -55.8700]"
-    ],
-    "no_contiene": [
-      "\\bkm\\b",
-      "kil[oó]metro",
-      "PRUEBA1"
-    ],
-    "abierto": true
-  },
-  {
     "nombre": "Otra ciudad: Oberá",
     "mensajes": [
       "quiero 2 empanadas de jamón y queso, mandalas a Oberá"
@@ -980,6 +967,63 @@
     ],
     "no_contiene": [
       "^\\s*sí, soy (chatgpt|claude)"
+    ]
+  },
+  {
+    "nombre": "Paraguay: ubicación de Encarnación (el mapa dice Paraguay)",
+    "mensajes": [
+      "quiero una fugazzeta",
+      "[Ubicación compartida: -27.3300, -55.8700]"
+    ],
+    "abierto": true,
+    "herramientas": [
+      "cotizar_pedido"
+    ],
+    "contiene": [
+      "Paraguay"
+    ],
+    "no_contiene": [
+      "\\bkm\\b",
+      "PRUEBA1",
+      "[Ll]legamos sin",
+      "Total:? *\\*?\\$"
+    ]
+  },
+  {
+    "nombre": "Mapa caído: no cotiza ni dice que llega, ofrece web o persona",
+    "mensajes": [
+      "quiero una fugazzeta",
+      "[Ubicación compartida: -27.3700, -55.9000]"
+    ],
+    "abierto": true,
+    "mapa_caido": true,
+    "herramientas": [
+      "cotizar_pedido"
+    ],
+    "contiene": [
+      "(semorfa\\.com\\.ar|equipo|alguien)"
+    ],
+    "no_contiene": [
+      "PRUEBA1",
+      "[Ll]legamos sin",
+      "Total:? *\\*?\\$",
+      "\\$15\\.000",
+      "\\bkm\\b"
+    ]
+  },
+  {
+    "nombre": "Mapa caído mientras pide en Paraguay: tampoco cotiza",
+    "mensajes": [
+      "quiero una muzza",
+      "[Ubicación compartida: -27.3300, -55.8700]"
+    ],
+    "abierto": true,
+    "mapa_caido": true,
+    "no_contiene": [
+      "PRUEBA1",
+      "[Ll]legamos sin",
+      "Total:? *\\*?\\$",
+      "\\$14\\.000"
     ]
   }
 ]
