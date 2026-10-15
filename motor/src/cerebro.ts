@@ -6,7 +6,8 @@ import { armarPrompt } from "./fichas.js";
 import { REGISTRO } from "./herramientas/index.js";
 import type { ContextoHerramienta, Ficha, Respuesta, Turno } from "./tipos.js";
 
-const client = new Anthropic();
+// La clave de Morfi tiene prioridad; ANTHROPIC_API_KEY queda de respaldo.
+const client = new Anthropic({ apiKey: process.env.MORFI_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY });
 
 /** USD por millón de tokens: [entrada, salida, lectura de caché, escritura de caché]. */
 const PRECIOS: Record<string, [number, number, number, number]> = {
