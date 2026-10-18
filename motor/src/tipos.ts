@@ -52,6 +52,11 @@ export interface Ficha {
     audio?: boolean;
     /** Leer fotos de listas de pedido (src/vision.ts). */
     fotos?: boolean;
+    /**
+     * Avisos de cobranza (api/cron-avisos.ts): nombres de las plantillas aprobadas en Meta. Si faltan, las de la guía de cuentas (A.7):
+     * aviso_vencimiento (antes y el día del vencimiento) y aviso_vencida (después).
+     */
+    plantillas?: { vencimiento?: string; vencida?: string; idioma?: string };
   };
 }
 

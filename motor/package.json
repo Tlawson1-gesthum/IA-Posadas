@@ -14,7 +14,8 @@
     "local": "tsx scripts/servidor-local.ts",
     "unidad": "tsx --test \"pruebas/unidad/*.test.ts\"",
     "aislamiento": "tsx scripts/aislamiento.ts",
-    "clave-local": "tsx scripts/clave-local.ts"
+    "clave-local": "tsx scripts/clave-local.ts",
+    "cron-avisos": "tsx scripts/cron-avisos.ts"
   },
   "engines": {
     "node": ">=20"

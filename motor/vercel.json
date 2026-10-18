@@ -14,6 +14,10 @@
     "api/panel.ts": {
       "maxDuration": 30,
       "includeFiles": "{fichas,plantillas}/**"
+    },
+    "api/cron-avisos.ts": {
+      "maxDuration": 60,
+      "includeFiles": "{fichas,plantillas}/**"
     }
   },
   "headers": [
@@ -29,6 +33,12 @@
           "value": "*"
         }
       ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron-avisos",
+      "schedule": "0 12-21 * * *"
     }
   ]
 }

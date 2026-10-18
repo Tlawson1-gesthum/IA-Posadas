@@ -112,3 +112,20 @@ test("FICHA_POR_DEFECTO solo si hay una sola ficha con número", async () => {
   assert.equal((await fichaPorNumero("PNID-DISTRI"))?.id, "distri-demo");
   delete process.env.FICHA_POR_DEFECTO;
 });
+
+test("BAJA (paso 22): respuesta fija sin pasar por Claude; otro texto con 'baja' sigue al agente", async () => {
+  const { AVISO_BAJA } = await import("../../src/atender.js");
+  const { llamadas, cerebro } = cerebroDePrueba();
+  const enviados: string[] = [];
+  // ficha de prueba sin sistema real (crear_pedidos false): la baja se hace de cuenta, sin red
+  const ficha = { ...distri, integracion: { ...distri.integracion!, crear_pedidos: false } };
+  const op = { ficha, cerebro, enviar: async (t: string) => { enviados.push(t); }, esperaMs: 0 };
+  await atender(msj("5493761110099", "BAJA"), op);
+  assert.deepEqual(enviados, [AVISO_BAJA]);
+  assert.equal(llamadas.length, 0, "no llama a Claude");
+  await atender(msj("5493761110099", "la lavandina está en baja?"), op);
+  assert.equal(llamadas.length, 1, "un mensaje que solo menciona 'baja' lo responde el agente");
+  const morfaOp = { ficha: morfa, cerebro, enviar: async () => {}, esperaMs: 0 };
+  await atender(msj("5493761110098", "BAJA"), morfaOp);
+  assert.equal(llamadas.length, 2, "en MORFA (no es distribuidora) BAJA lo atiende el agente como siempre");
+});

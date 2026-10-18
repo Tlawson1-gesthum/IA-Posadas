@@ -3,6 +3,7 @@
 import { obtenerAlmacen, type MensajeArmado } from "./almacen.js";
 import { responder } from "./cerebro.js";
 import { fichaPorNumero } from "./fichas.js";
+import { autorizacion, baseUrl } from "./herramientas/semorfa.js";
 import { LIMITES_POR_DEFECTO, type ContextoHerramienta, type Ficha } from "./tipos.js";
 import { enviarTexto, type MensajeEntrante } from "./whatsapp.js";
 
@@ -22,6 +23,23 @@ const NO_LEO = "Por ahora solo leo mensajes de texto y ubicaciones. ¿Me lo escr
 const ERROR = "Uh, se me trabó algo. Ya le aviso a alguien del equipo para que te responda.";
 const MUCHOS_MENSAJES = "Recibimos muchos mensajes seguidos. Para seguir, escribinos más tarde.";
 const SIN_SALDO = "Ahora no puedo responderte por acá. Ya le aviso a alguien del equipo.";
+const ES_BAJA = /^s*baja[s.!]*$/i;
+export const AVISO_BAJA = "Listo, no te vamos a mandar más avisos de cobranza por acá. Podés seguir haciendo tus pedidos cuando quieras. Gracias.";
+const AVISO_BAJA_A_MANO = "Recibimos tu pedido de BAJA: una persona del equipo la anota para que no te lleguen más avisos de cobranza. Podés seguir haciendo tus pedidos por acá. Gracias.";
+
+/** Avisa al sistema de la distribuidora que ese número no quiere más avisos. */
+async function anotarBaja(ficha: Ficha, telefono: string): Promise<boolean> {
+  if (!ficha.integracion?.crear_pedidos) return true; // ficha de prueba sin sistema real: se hace de cuenta
+  try {
+    const ctx = { ficha, telefono };
+    const r = await fetch(`${baseUrl(ctx)}/api/agente/distri/avisos`, {
+      method: "POST", headers: { "content-type": "application/json", ...autorizacion(ctx) }, body: JSON.stringify({ accion: "baja", telefono }), signal: AbortSignal.timeout(10000),
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
 export const AVISO_PAUSA = "Hola, gracias por escribir. Ahora te responde una persona del equipo por acá.";
 /** Motivo de derivación de las charlas que llegaron con el agente en pausa: al sacar la pausa vuelven solas al agente. */
 export const MOTIVO_PAUSA = "pausa";
@@ -61,6 +79,15 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   const distri = esDistribuidora(ficha);
   const dias = (ficha as Ficha & { retencion_conversaciones_dias?: number }).retencion_conversaciones_dias ?? (distri ? DIAS_RETENCION_DISTRIBUIDORA : undefined);
   if (dias) await almacen.retener(conv.id, new Date(Date.now() + dias * 86400_000));
+
+  // Distribuidora: "BAJA" corta los avisos de cobranza de ese número (C13), sin pasar por Claude. Sigue pudiendo pedir.
+  if (distri && ES_BAJA.test(m.texto)) {
+    const anotada = await anotarBaja(ficha, m.de);
+    if (!anotada) await almacen.derivar(conv.id, "plata", "Pidió BAJA de los avisos de cobranza y no se pudo anotar sola: marcala en Cobranzas.");
+    await mandar(anotada ? AVISO_BAJA : AVISO_BAJA_A_MANO);
+    await almacen.guardar({ conversacionId: conv.id, fichaId: ficha.id, rol: "agente", texto: anotada ? AVISO_BAJA : AVISO_BAJA_A_MANO });
+    return;
+  }
 
   // Solo para pruebas: un administrador escribe /reiniciar y la charla vuelve al agente, de cero.
   const admins = (process.env.ADMIN_TELEFONOS ?? "").split(",").map((t) => t.trim()).filter(Boolean);
