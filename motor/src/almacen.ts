@@ -100,6 +100,15 @@ export interface VersionFicha {
   config: ConfigFicha;
 }
 
+/** Un mensaje de un pedido en armado (distribuidoras): el texto que se le pasó al agente y el id de WhatsApp. */
+export interface MensajeArmado {
+  waId: string | null;
+  texto: string;
+  ts: string;
+}
+
+/** Texto con el que quedan los mensajes de una charla vencida (retención). */
+export const TEXTO_PODADO = "[borrado: venció el plazo de guardado]";
 export interface Almacen {
   // Fichas
   fichaPorId(id: string): Promise<FilaFicha | null>;
@@ -140,7 +149,16 @@ export interface Almacen {
   /** Chat público de la web: registra un mensaje de una conexión (IP anonimizada) y cuenta los recientes. */
   registrarAccesoWeb(fichaId: string, ipHash: string): Promise<void>;
   contarAccesosWeb(fichaId: string, ipHash: string | null, desde: Date): Promise<number>;
-}
+  // Distribuidoras (paso 16): mensajes seguidos, pedido en armado y retención
+  /** Mensajes del cliente que todavía no tienen respuesta (después del último del agente o de una persona), los más viejos primero. */
+  sinResponder(conversacionId: string): Promise<{ waId: string | null; texto: string; creado: string }[]>;
+  /** El pedido en armado de ese teléfono con esa ficha (abierto o no), si hay. */
+  armado(fichaId: string, telefono: string): Promise<{ mensajes: MensajeArmado[]; abiertoHasta: string } | null>;
+  guardarArmado(fichaId: string, telefono: string, mensajes: MensajeArmado[], abiertoHasta: Date): Promise<void>;
+  /** Hasta cuándo se guarda el texto de la charla. Solo escribe si la fecha nueva corre el plazo más de un día. */
+  retener(conversacionId: string, hasta: Date): Promise<void>;
+  /** Borra el texto y el teléfono de las charlas con la retención vencida. Devuelve cuántas. */
+  podar(ahora: Date): Promise<number>;}
 
 function desde(): string {
   return new Date(Date.now() - HORAS_DE_CHARLA * 3600_000).toISOString();
@@ -332,7 +350,51 @@ function almacenSupabase(url: string, clave: string): Almacen {
       if (r.error) throw new Error(`Supabase: ${r.error.message}`);
       return r.count ?? 0;
     },
-    async eventos(desdeFecha, tipos) {
+    async sinResponder(conversacionId) {
+      const filas = ok(
+        await db.from("mensajes").select("rol, texto, wa_id, creado").eq("conversacion_id", conversacionId).order("creado", { ascending: false }).limit(20),
+      ) as { rol: string; texto: string; wa_id: string | null; creado: string }[];
+      const corte = filas.findIndex((f) => f.rol !== "cliente");
+      return (corte < 0 ? filas : filas.slice(0, corte)).reverse().map((f) => ({ waId: f.wa_id, texto: f.texto, creado: new Date(f.creado).toISOString() }));
+    },
+    async armado(fichaId, telefono) {
+      const f = ok(await db.from("pedidos_en_armado").select("mensajes, abierto_hasta").eq("ficha_id", fichaId).eq("telefono", telefono).maybeSingle()) as any;
+      return f ? { mensajes: Array.isArray(f.mensajes) ? f.mensajes : [], abiertoHasta: new Date(f.abierto_hasta).toISOString() } : null;
+    },
+    async guardarArmado(fichaId, telefono, mensajes, abiertoHasta) {
+      ok(
+        await db
+          .from("pedidos_en_armado")
+          .upsert({ ficha_id: fichaId, telefono, mensajes, abierto_hasta: abiertoHasta.toISOString(), actualizado: new Date().toISOString() }, { onConflict: "ficha_id,telefono" }),
+      );
+    },
+    async retener(conversacionId, hasta) {
+      // solo si no tenía fecha o la nueva la corre más de un día (no se escribe en cada mensaje)
+      const tope = new Date(hasta.getTime() - 24 * 3600_000).toISOString();
+      ok(
+        await db
+          .from("conversaciones")
+          .update({ retencion_hasta: hasta.toISOString() })
+          .eq("id", conversacionId)
+          .or(`retencion_hasta.is.null,retencion_hasta.lt.${tope}`),
+      );
+    },
+    async podar(ahora) {
+      const vencidas = ok(
+        await db.from("conversaciones").select("id, ficha_id, telefono").lt("retencion_hasta", ahora.toISOString()).limit(200),
+      ) as { id: string; ficha_id: string; telefono: string }[];
+      for (const c of vencidas) {
+        ok(await db.from("mensajes").update({ texto: TEXTO_PODADO }).eq("conversacion_id", c.id).neq("texto", TEXTO_PODADO));
+        ok(await db.from("pedidos_en_armado").update({ mensajes: [] }).eq("ficha_id", c.ficha_id).eq("telefono", c.telefono));
+        ok(
+          await db
+            .from("conversaciones")
+            .update({ telefono: `borrado-${c.id}`, derivada_resumen: null, retencion_hasta: null })
+            .eq("id", c.id),
+        );
+      }
+      return vencidas.length;
+    },    async eventos(desdeFecha, tipos) {
       let q = db.from("eventos").select("ficha_id, conversacion_id, tipo, detalle, creado").gte("creado", desdeFecha.toISOString());
       if (tipos?.length) q = q.in("tipo", tipos);
       return ok(await q.order("creado", { ascending: false }).limit(200)) as Evento[];
@@ -376,6 +438,8 @@ function almacenEnMemoria(): Almacen {
   const msgs: (MensajeAGuardar & { creado: number })[] = [];
   const evs: Evento[] = [];
   const accesos: { fichaId: string; ipHash: string; creado: number }[] = [];
+  const armados = new Map<string, { mensajes: MensajeArmado[]; abiertoHasta: string }>();
+  const retenciones = new Map<string, number>();
   const inicioMes = () => {
     const d = new Date();
     return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1);
@@ -530,10 +594,49 @@ function almacenEnMemoria(): Almacen {
     async contarAccesosWeb(fichaId, ipHash, desdeFecha) {
       return accesos.filter((a) => a.fichaId === fichaId && (!ipHash || a.ipHash === ipHash) && a.creado >= desdeFecha.getTime()).length;
     },
-    async eventos(desdeFecha, tipos) {
+    async sinResponder(id) {
+      const propios = msgs.filter((m) => m.conversacionId === id);
+      const corte = propios.map((m) => m.rol).lastIndexOf("agente");
+      const humano = propios.map((m) => m.rol).lastIndexOf("humano");
+      return propios.slice(Math.max(corte, humano) + 1).map((m) => ({ waId: m.waId ?? null, texto: m.texto, creado: new Date(m.creado).toISOString() }));
+    },
+    async armado(fichaId, telefono) {
+      return structuredClone(armados.get(`${fichaId}|${telefono}`) ?? null);
+    },
+    async guardarArmado(fichaId, telefono, mensajes, abiertoHasta) {
+      armados.set(`${fichaId}|${telefono}`, { mensajes: structuredClone(mensajes), abiertoHasta: abiertoHasta.toISOString() });
+    },
+    async retener(id, hasta) {
+      const antes = retenciones.get(id);
+      if (antes === undefined || antes < hasta.getTime() - 24 * 3600_000) retenciones.set(id, hasta.getTime());
+    },
+    async podar(ahoraFecha) {
+      let n = 0;
+      for (const [id, hasta] of retenciones) {
+        if (hasta >= ahoraFecha.getTime()) continue;
+        const c = convs.get(id);
+        for (const m of msgs) if (m.conversacionId === id) m.texto = TEXTO_PODADO;
+        if (c) {
+          const a = armados.get(`${c.ficha_id}|${c.telefono}`);
+          if (a) a.mensajes = [];
+          Object.assign(c, { telefono: `borrado-${id}`, derivada_resumen: null });
+        }
+        retenciones.delete(id);
+        n++;
+      }
+      return n;
+    },    async eventos(desdeFecha, tipos) {
       return evs.filter((e) => e.creado >= desdeFecha.toISOString() && (!tipos?.length || tipos.includes(e.tipo)));
     },
   };
+}
+
+/**
+ * Borra el texto y el teléfono de las charlas cuyo plazo de guardado venció (retencion_hasta).
+ * La llama el cron de avisos de distribuidoras (paso 22). Devuelve cuántas charlas podó.
+ */
+export function podarConversaciones(ahora = new Date()): Promise<number> {
+  return obtenerAlmacen().podar(ahora);
 }
 
 let almacen: Almacen | null = null;

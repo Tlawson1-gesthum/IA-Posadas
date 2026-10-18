@@ -42,8 +42,10 @@ export async function responder(
   mensaje: string,
   telefono: string,
   credencial?: string,
+  /** El mensaje de WhatsApp que se atiende (id, texto original, confianza del audio): lo usan las herramientas de pedidos. */
+  meta?: ContextoHerramienta["mensaje"],
 ): Promise<Respuesta> {
-  const ctx: ContextoHerramienta = { ficha, telefono, credencial };
+  const ctx: ContextoHerramienta = { ficha, telefono, credencial, mensaje: meta };
   const herramientas = ficha.herramientas.map((nombre) => {
     const h = REGISTRO[nombre];
     if (!h) throw new Error(`Herramienta desconocida en la ficha ${ficha.id}: ${nombre}`);

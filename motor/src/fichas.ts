@@ -24,13 +24,21 @@ export async function cargarFicha(id: string, borrador = false): Promise<Ficha> 
 
 /**
  * La ficha que atiende un número de WhatsApp: la que tiene ese whatsapp_phone_number_id.
- * Mientras se prueba con un solo cliente, FICHA_POR_DEFECTO atiende cualquier número sin ficha.
+ * Mientras se prueba con un solo cliente, FICHA_POR_DEFECTO atiende cualquier número sin ficha; con dos o más fichas
+ * con número ya no (seguridad: el mensaje de un número desconocido no puede caer en la ficha de otro cliente).
  */
 export async function fichaPorNumero(phoneNumberId: string): Promise<Ficha | null> {
-  const f = await obtenerAlmacen().fichaPorNumero(phoneNumberId);
+  const almacen = obtenerAlmacen();
+  const f = await almacen.fichaPorNumero(phoneNumberId);
   if (f) return fichaDesdeFila(f);
   const porDefecto = process.env.FICHA_POR_DEFECTO;
-  return porDefecto ? cargarFicha(porDefecto) : null;
+  if (!porDefecto) return null;
+  const conNumero = (await almacen.listarFichas()).filter((x) => x.whatsapp_phone_number_id).length;
+  if (conNumero > 1) {
+    console.warn(`FICHA_POR_DEFECTO ignorada: hay ${conNumero} fichas con número. Mensaje a ${phoneNumberId} sin ficha.`);
+    return null;
+  }
+  return cargarFicha(porDefecto);
 }
 
 export function plantillasDisponibles(): string[] {
