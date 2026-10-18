@@ -24,6 +24,8 @@
     "alta_cliente_pendiente",
     "registrar_promesa",
     "consultar_cuenta",
+    "confirmar_comprobante",
+    "generar_link_pago",
     "derivar_a_persona"
   ],
   "integracion": {

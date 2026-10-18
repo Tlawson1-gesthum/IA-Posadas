@@ -112,3 +112,75 @@ export async function leerListaEnFoto(imagen: ArrayBuffer, mime: string, catalog
   try { crudo = JSON.parse(texto); } catch { return { legible: false, problema: "No se entendió la lectura de la foto.", renglones: [] }; }
   return normalizarLista(crudo, catalogo);
 }
+
+// ---- Comprobantes de transferencia (paso 24) ----
+// Solo LEE monto, fecha y cuenta de destino. Lo que el sistema haga con eso (proponer a qué deuda corresponde) lo decide el sistema de la
+// distribuidora; y un comprobante nunca se imputa sin que una persona lo controle con el banco.
+export interface ComprobanteLeido {
+  es_comprobante: boolean;
+  legible: boolean;
+  monto_centavos: number | null;
+  /** AAAA-MM-DD */
+  fecha: string | null;
+  destino_alias_o_cbu: string;
+  cuit_destino: string;
+  problema: string | null;
+}
+
+const ESQUEMA_COMPROBANTE = {
+  type: "object",
+  additionalProperties: false,
+  required: ["es_comprobante", "legible", "monto", "fecha", "destino_alias_o_cbu", "cuit_destino", "problema"],
+  properties: {
+    es_comprobante: { type: "boolean" },
+    legible: { type: "boolean" },
+    monto: { type: ["number", "null"], description: "Importe transferido en pesos, con decimales si los tiene" },
+    fecha: { type: ["string", "null"], description: "AAAA-MM-DD" },
+    destino_alias_o_cbu: { type: "string" },
+    cuit_destino: { type: "string" },
+    problema: { type: ["string", "null"] },
+  },
+};
+
+const SISTEMA_COMPROBANTE = `Leés fotos o capturas de comprobantes de transferencia bancaria o de billeteras virtuales (Argentina) que un comercio le manda a su distribuidora.
+Devolvé el importe transferido (en pesos: "$ 45.000,00" es 45000), la fecha de la transferencia (AAAA-MM-DD), el alias o CBU/CVU de destino tal cual figura y el CUIT de destino si figura (si no, texto vacío).
+Si la imagen no es un comprobante de pago (una lista de pedido, una factura, una foto cualquiera), es_comprobante = false.
+Si no se lee el importe, legible = false y problema = qué pasa en una oración. Nunca inventes datos.`;
+
+export function normalizarComprobante(c: any): ComprobanteLeido {
+  const monto = Number(c?.monto);
+  const centavos = Number.isFinite(monto) && monto > 0 && monto < 1e10 ? Math.round(monto * 100) : null;
+  const fecha = /^\d{4}-\d{2}-\d{2}$/.test(String(c?.fecha || "")) ? String(c.fecha) : null;
+  const es = c?.es_comprobante === true;
+  return {
+    es_comprobante: es,
+    legible: es && c?.legible === true && centavos !== null,
+    monto_centavos: centavos,
+    fecha,
+    destino_alias_o_cbu: String(c?.destino_alias_o_cbu || "").trim().slice(0, 60),
+    cuit_destino: String(c?.cuit_destino || "").replace(/[^\d-]/g, "").slice(0, 15),
+    problema: typeof c?.problema === "string" ? c.problema.slice(0, 200) : null,
+  };
+}
+
+export async function leerComprobante(imagen: ArrayBuffer, mime: string, opciones: { modelo: string }): Promise<ComprobanteLeido> {
+  if (process.env.VISION_SIMULAR === "1") return normalizarComprobante({ es_comprobante: true, legible: true, monto: 45000, fecha: new Date().toISOString().slice(0, 10), destino_alias_o_cbu: "distri.demo.prueba", cuit_destino: "", problema: null });
+  const tipo = (mime || "image/jpeg").split(";")[0].trim().toLowerCase();
+  if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(tipo)) return normalizarComprobante({ es_comprobante: false, problema: "Ese tipo de archivo no se puede leer." });
+  const client = new Anthropic({ maxRetries: 2, timeout: 60e3 });
+  const r = await client.beta.messages.create({
+    model: opciones.modelo,
+    max_tokens: 1000,
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default",
+    output_config: { effort: "low", format: { type: "json_schema", schema: ESQUEMA_COMPROBANTE } },
+    system: SISTEMA_COMPROBANTE,
+    messages: [{ role: "user", content: [
+      { type: "image", source: { type: "base64", media_type: tipo as "image/jpeg", data: Buffer.from(imagen).toString("base64") } },
+      { type: "text", text: "Leé este comprobante." },
+    ] }],
+  } as any) as any;
+  if (r.stop_reason === "refusal") return normalizarComprobante({ es_comprobante: false, problema: "No se pudo leer esta foto." });
+  const texto = (r.content ?? []).filter((b: any) => b.type === "text").map((b: any) => b.text).join("");
+  try { return normalizarComprobante(JSON.parse(texto)); } catch { return normalizarComprobante({ es_comprobante: false, problema: "No se entendió la lectura." }); }
+}

@@ -281,3 +281,62 @@ export const registrarPromesa: Herramienta = {
     return JSON.stringify({ ok: true, fecha: cuerpo.fecha_texto, monto: cuerpo.monto_centavos ? pesos(cuerpo.monto_centavos) : null, que_decir: "Confirmale la fecha (y el monto si lo dijo) y agradecele." });
   },
 };
+
+/** Solo links de Mercado Pago, o del propio sistema de la distribuidora (modo de prueba). Nada que pueda mandar a otro lado (T16). */
+export function linkSeguro(url: unknown, ficha: { integracion?: { base_url?: string } }): string | null {
+  try {
+    const u = new URL(String(url));
+    if (u.protocol !== "https:" && !/^(127\.0\.0\.1|localhost)$/.test(u.hostname)) return null;
+    if (/(^|\.)mercadopago\.com(\.ar)?$/.test(u.hostname)) return u.toString();
+    const propio = ficha.integracion?.base_url ? new URL(ficha.integracion.base_url).host : null;
+    return propio && u.host === propio ? u.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+export const generarLinkPago: Herramienta = {
+  definicion: {
+    name: "generar_link_pago",
+    description: "Link de Mercado Pago para que el cliente que escribe pague: por un pedido (código), por un monto que no pase lo que debe, o sin nada, por todo su saldo. Solo para SU cuenta. Copiá el link tal cual.",
+    input_schema: {
+      type: "object",
+      properties: {
+        codigo: { type: "string", description: "Código del pedido, si quiere pagar uno en particular." },
+        monto: { type: "number", description: "Pesos, si quiere pagar una parte." },
+      },
+      required: [],
+      additionalProperties: false,
+    },
+  },
+  async ejecutar(entrada, ctx) {
+    const monto = Number(entrada.monto);
+    const { status, cuerpo } = await api(ctx, "link-pago", { telefono: ctx.telefono, codigo: String(entrada.codigo ?? ""), ...(Number.isFinite(monto) && monto > 0 ? { monto } : {}) });
+    if (status !== 200 || !cuerpo) return problema(status, cuerpo);
+    if (!cuerpo.ok) return JSON.stringify({ ok: false, motivo: cuerpo.motivo, ...(cuerpo.deriva ? { que_decir: "No tengo una cuenta asociada a este número: derivá a una persona (motivo plata)." } : {}) });
+    const url = linkSeguro(cuerpo.url, ctx.ficha);
+    if (!url) return JSON.stringify({ ok: false, motivo: "El link no es de Mercado Pago: derivá a una persona." });
+    return JSON.stringify({ ok: true, link: url, monto: pesos(cuerpo.monto_centavos), por: cuerpo.por, que_decir: "Pasale el link y decile que cuando paga se acredita solo." });
+  },
+};
+
+export const confirmarComprobante: Herramienta = {
+  definicion: {
+    name: "confirmar_comprobante",
+    description: "El cliente respondió si el comprobante que mandó es por lo que dice el sistema (\"Coincide con…\"). Con sí, queda para que una persona lo controle con el banco y lo imputa; con no, lo revisa una persona. Nunca da por pagado nada.",
+    input_schema: {
+      type: "object",
+      properties: {
+        comprobante_id: { type: "integer", description: "El número de comprobante que dice el texto entre corchetes." },
+        el_cliente_confirma: { type: "boolean" },
+      },
+      required: ["comprobante_id", "el_cliente_confirma"],
+      additionalProperties: false,
+    },
+  },
+  async ejecutar(entrada, ctx) {
+    const { status, cuerpo } = await api(ctx, "comprobante", { accion: "confirmar", telefono: ctx.telefono, id: Number(entrada.comprobante_id), confirma: entrada.el_cliente_confirma === true });
+    if (status !== 200 || !cuerpo) return problema(status, cuerpo);
+    return JSON.stringify({ ok: true, estado: cuerpo.estado, que_decir: cuerpo.que_decir ?? "Lo revisa una persona del equipo." });
+  },
+};

@@ -11,6 +11,7 @@ import { REGISTRO } from "../src/herramientas/index.js";
 import type { ContextoHerramienta, Turno } from "../src/tipos.js";
 import { transcribir } from "../src/transcribir.js";
 import { leerListaEnFoto, type ProductoResumido } from "../src/vision.js";
+import { procesarComprobante } from "../src/comprobantes.js";
 
 interface Caso {
   nombre: string;
@@ -29,6 +30,8 @@ interface Caso {
   /** Primer mensaje: una foto (pruebas/imagenes/…) o un audio (pruebas/audio/…), leídos como lo hará el motor. */
   imagen?: string;
   audio?: string;
+  /** Primer mensaje: la foto de un comprobante de transferencia (pruebas/imagenes/…), leída y mandada al sistema como lo hará el motor. */
+  comprobante?: string;
   /** Caso de seguridad: tiene que pasar siempre (100 %). */
   seguridad?: boolean;
 }
@@ -90,6 +93,7 @@ for (const [i, caso] of casos.entries()) {
     mensajes.unshift(a.texto);
   }
   if (caso.imagen) mensajes.unshift(await leerFoto(caso.imagen, { ficha, telefono }));
+  if (caso.comprobante) mensajes.unshift(await procesarComprobante(ficha, telefono, datos(ruta("imagenes", caso.comprobante)), caso.comprobante.endsWith(".png") ? "image/png" : "image/jpeg"));
   const historial: Turno[] = [];
   const usadas = new Set<string>();
   let derivada = false;

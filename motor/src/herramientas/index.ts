@@ -2,7 +2,7 @@
 import type { Herramienta } from "../tipos.js";
 import { cotizarPedido, crearPedido } from "./pedidos-semorfa.js";
 import { confirmarPedidoEfectivo, consultarPedido, misPedidos, verCartaYEstado, verTurno } from "./semorfa.js";
-import { altaClientePendiente, confirmarPedido, consultarCuenta, consultarPedidoB2b, cotizarPedidoB2b, crearPedidoBorrador, registrarPromesa, verCatalogo } from "./distribuidora.js";
+import { altaClientePendiente, confirmarComprobante, confirmarPedido, consultarCuenta, consultarPedidoB2b, cotizarPedidoB2b, crearPedidoBorrador, generarLinkPago, registrarPromesa, verCatalogo } from "./distribuidora.js";
 
 /** Pasa la charla a una persona. El motor la marca y el agente queda en silencio. */
 const derivarAPersona: Herramienta = {
@@ -47,5 +47,7 @@ export const REGISTRO: Record<string, Herramienta> = {
   [altaClientePendiente.definicion.name]: altaClientePendiente,
   [consultarCuenta.definicion.name]: consultarCuenta,
   [registrarPromesa.definicion.name]: registrarPromesa,
+  [generarLinkPago.definicion.name]: generarLinkPago,
+  [confirmarComprobante.definicion.name]: confirmarComprobante,
   [derivarAPersona.definicion.name]: derivarAPersona,
 };
