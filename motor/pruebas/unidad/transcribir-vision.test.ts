@@ -50,6 +50,21 @@ test("transcribir: más de 2 minutos no se transcribe (por tamaño, sin llamar; 
   } finally { globalThis.fetch = fetchViejo; }
 });
 
+test("transcribir: un audio en silencio no devuelve palabras inventadas (caso real del 17/10)", async () => {
+  process.env.TRANSCRIPCION_CLAVE = "clave-de-prueba";
+  const fetchViejo = globalThis.fetch;
+  const responde = (segments: unknown[]) => { globalThis.fetch = (async () => new Response(JSON.stringify({ text: segments.map((s: any) => s.text).join(""), duration: 5.7, segments }), { status: 200 })) as typeof fetch; };
+  try {
+    responde([{ text: " el arroz de pollo", avg_logprob: -1.42, no_speech_prob: 0.538 }]);
+    const r = await transcribir(new Uint8Array(1000).buffer, "audio/ogg");
+    assert.deepEqual([r.texto, r.silencio, r.confianza], ["", true, null]);
+    responde([{ text: " dos cajas de agua", avg_logprob: -0.15, no_speech_prob: 0.006 }, { text: " gracias", avg_logprob: -1.3, no_speech_prob: 0.7 }]);
+    const r2 = await transcribir(new Uint8Array(1000).buffer, "audio/ogg");
+    assert.equal(r2.texto, "dos cajas de agua");
+    assert.equal(r2.silencio, undefined);
+  } finally { globalThis.fetch = fetchViejo; }
+});
+
 test("transcribir: sin clave avisa; si el servicio falla, error con el estado", async () => {
   delete process.env.TRANSCRIPCION_CLAVE;
   await assert.rejects(transcribir(new Uint8Array(10).buffer, "audio/ogg"), /TRANSCRIPCION_CLAVE/);

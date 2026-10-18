@@ -9,4 +9,4 @@ if (!archivo) { console.log("Uso: npx tsx scripts/transcribir-prueba.ts <audio.o
 const datos = readFileSync(archivo);
 const mime = archivo.endsWith(".mp3") ? "audio/mpeg" : archivo.endsWith(".m4a") ? "audio/mp4" : "audio/ogg";
 const r = await transcribir(datos.buffer.slice(datos.byteOffset, datos.byteOffset + datos.byteLength), mime, { prompt });
-console.log(r.largo ? "Pasa de 2 minutos: no se transcribe (el agente pide que lo escriban)." : `Texto: ${r.texto || "(vacío)"}\nConfianza: ${r.confianza ?? "sin dato"} · Duración: ${r.segundos ?? "?"} s`);
+console.log(r.largo ? "Pasa de 2 minutos: no se transcribe (el agente pide que lo escriban)." : r.silencio ? "Silencio: no se escuchó a nadie hablar (el agente pide que lo repitan)." : `Texto: ${r.texto || "(vacío)"}\nConfianza: ${r.confianza ?? "sin dato"} · Duración: ${r.segundos ?? "?"} s`);

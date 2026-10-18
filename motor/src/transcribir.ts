@@ -15,7 +15,13 @@ export interface Transcripcion {
   segundos: number | null;
   /** true = pasa de 2 minutos: no se transcribió (texto vacío). */
   largo?: boolean;
+  /** true = no se escuchó a nadie hablar (texto vacío): el agente pide que lo repitan. */
+  silencio?: boolean;
 }
+
+// Con un audio sin voz, Whisper a veces inventa palabras (probado el 17/10: 5 s de silencio → "el arroz de pollo").
+// Un segmento es silencio si el modelo duda de que haya voz y además está poco seguro de lo que escribió.
+export const esSilencio = (s: any) => Number(s?.no_speech_prob) > 0.5 && Number(s?.avg_logprob) < -1;
 
 const EXTENSION: Record<string, string> = { "audio/ogg": "ogg", "audio/opus": "ogg", "audio/mpeg": "mp3", "audio/mp4": "m4a", "audio/aac": "m4a", "audio/amr": "amr", "audio/wav": "wav", "audio/webm": "webm" };
 
@@ -52,5 +58,11 @@ export async function transcribir(audio: ArrayBuffer, mime: string, opciones: { 
   const d: any = await r.json();
   const segundos = Number.isFinite(Number(d?.duration)) ? Number(d.duration) : null;
   if (segundos !== null && segundos > MAX_SEGUNDOS) return { texto: "", confianza: null, segundos, largo: true };
-  return { texto: String(d?.text ?? "").trim(), confianza: confianzaDe(d?.segments), segundos };
+  const segmentos = Array.isArray(d?.segments) ? d.segments : null;
+  if (segmentos) {
+    const conVoz = segmentos.filter((s: any) => !esSilencio(s));
+    if (!conVoz.length) return { texto: "", confianza: null, segundos, silencio: true };
+    if (conVoz.length < segmentos.length) return { texto: conVoz.map((s: any) => String(s.text ?? "")).join("").trim(), confianza: confianzaDe(conVoz), segundos };
+  }
+  return { texto: String(d?.text ?? "").trim(), confianza: confianzaDe(segmentos), segundos };
 }
