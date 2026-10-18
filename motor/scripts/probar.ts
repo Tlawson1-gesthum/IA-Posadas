@@ -1,6 +1,7 @@
 // Batería de conversaciones de ejemplo. Ningún cambio de ficha o plantilla sale sin pasarla.
 // Uso: npm run probar -- morfa [texto para filtrar casos]
 //      npm run probar -- distri-demo   (antes, en el sistema: node scripts/distri/probar-api.mjs <url> --bateria)
+// Dejar 1 hora entre corridas: el sistema acepta 30 consultas por teléfono por hora y la corrida anterior las gasta.
 // Con casos de seguridad (seguridad: true) el resumen va aparte y sale con error si seguridad < 100 % o el resto < 95 %.
 import "./entorno.js";
 import { existsSync, readFileSync } from "node:fs";
@@ -23,7 +24,7 @@ interface Caso {
   no_contiene?: string[];
   /** Hace de cuenta que el local está abierto (para probar pedidos fuera de horario). */
   abierto?: boolean;
-  /** Teléfono de quien escribe (por defecto 5493760000000). */
+  /** Teléfono de quien escribe (por defecto 5493760000000; "nuevo" = uno distinto en cada corrida). */
   telefono?: string;
   /** Primer mensaje: una foto (pruebas/imagenes/…) o un audio (pruebas/audio/…), leídos como lo hará el motor. */
   imagen?: string;
@@ -76,7 +77,10 @@ for (const [i, caso] of casos.entries()) {
     continue;
   }
   process.env.FORZAR_ABIERTO = caso.abierto ? "1" : "";
-  const telefono = caso.telefono ?? "5493760000000";
+  // "nuevo" = un número que el sistema nunca vio (cambia en cada corrida: la anterior ya lo dejó registrado)
+  const telefono = caso.telefono === "nuevo"
+    ? `5493769${String(Math.floor(marca / 1000) % 10000).padStart(4, "0")}${String(i % 100).padStart(2, "0")}`
+    : caso.telefono ?? "5493760000000";
   // cada caso es una intención distinta para el sistema (en el motor, el id del primer mensaje de WhatsApp)
   const meta: ContextoHerramienta["mensaje"] = { id: `bateria-${marca}-${i}` };
   const mensajes = [...caso.mensajes];
