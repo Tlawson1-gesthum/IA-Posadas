@@ -25,6 +25,7 @@ export interface Ficha {
   herramientas: string[];
   /** Configuración de la integración con el sistema del cliente, si tiene. */
   integracion?: {
+    /** "semorfa" (gastronomía) | "distribuidora" (API /api/agente/distri del sistema de la distribuidora). */
     tipo: string;
     base_url: string;
     /** false = los pedidos se simulan (pruebas); true = se cargan de verdad en el sistema del cliente. */
@@ -40,6 +41,16 @@ export interface Ficha {
   chat_web?: ChatWeb;
   /** Valores que reemplazan los {{campos}} de la plantilla. */
   datos: Record<string, string>;
+  /**
+   * Distribuidora: qué puede leer el agente además del texto. Las reglas de plata (mínimo, límite, días, zonas, corte)
+   * NO van acá: viven en el sistema de la distribuidora (d_reglas) y las aplica su API.
+   */
+  reglas?: {
+    /** Transcribir audios (paso 13: src/transcribir.ts). */
+    audio?: boolean;
+    /** Leer fotos de listas de pedido (src/vision.ts). */
+    fotos?: boolean;
+  };
 }
 
 /** Contexto que recibe cada herramienta al ejecutarse. */
@@ -49,6 +60,11 @@ export interface ContextoHerramienta {
   telefono: string;
   /** Ticket que manda la web del cliente para leer datos con los permisos de quien escribe (ej. el panel de semorfa). Nunca se guarda. */
   credencial?: string;
+  /**
+   * El mensaje de WhatsApp que se está atendiendo, si se sabe (lo completa atender.ts). El id hace que el mismo mensaje
+   * no cree dos pedidos; la confianza es la de la transcripción de un audio (0 a 1).
+   */
+  mensaje?: { id?: string; texto?: string; confianza?: number };
 }
 
 export interface Herramienta {
@@ -80,6 +96,10 @@ export interface Limites {
   usd_por_persona_dia: number;
   /** Largo máximo de un mensaje; lo que sobra se corta. */
   caracteres_por_mensaje: number;
+  /** Turnos anteriores que se le pasan al modelo (por defecto 20). */
+  turnos?: number;
+  /** Vueltas de herramientas por mensaje (por defecto 5). */
+  vueltas?: number;
 }
 
 export const LIMITES_POR_DEFECTO: Limites = {

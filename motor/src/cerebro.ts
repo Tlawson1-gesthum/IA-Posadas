@@ -8,16 +8,16 @@ import type { ContextoHerramienta, Ficha, Respuesta, Turno } from "./tipos.js";
 
 const client = new Anthropic();
 
-/** USD por millón de tokens: [entrada, salida, lectura de caché, escritura de caché]. */
+/** USD por millón de tokens: [entrada, salida, lectura de caché, escritura de caché de 5 min]. Verificados el 17/10/2026 con la skill claude-api (tabla al 06/10/2026). */
 const PRECIOS: Record<string, [number, number, number, number]> = {
   "claude-opus-5-5": [4, 20, 0.2, 5],
   "claude-sonnet-5-5": [2, 10, 0.2, 2.5],
   "claude-haiku-4-5": [1, 5, 0.1, 1.25],
 };
 
-/** Cuántos turnos anteriores se le pasan al modelo. */
+/** Cuántos turnos anteriores se le pasan al modelo (la ficha lo puede cambiar con limites.turnos). */
 const MAX_TURNOS = 20;
-/** Vueltas máximas de herramientas por mensaje, para que un error no gire en falso. */
+/** Vueltas máximas de herramientas por mensaje, para que un error no gire en falso (la ficha: limites.vueltas). */
 const MAX_VUELTAS = 5;
 
 const TEXTO_SI_FALLA = "Uh, se me trabó algo. Ya le aviso a alguien del equipo para que te responda.";
@@ -51,7 +51,7 @@ export async function responder(
   });
 
   const mensajes: Anthropic.Beta.BetaMessageParam[] = [
-    ...historial.slice(-MAX_TURNOS).map((t) => ({
+    ...historial.slice(-(ficha.limites?.turnos ?? MAX_TURNOS)).map((t) => ({
       role: t.rol === "cliente" ? ("user" as const) : ("assistant" as const),
       content: t.texto,
     })),
@@ -66,7 +66,7 @@ export async function responder(
   // El prompt se arma una vez por mensaje; si la ficha tiene conocimiento en vivo, se lee antes (con caché).
   const prompt = armarPrompt(ficha, ficha.conocimiento?.url ? await leerConocimiento(ficha.conocimiento.url) : undefined);
 
-  for (let vuelta = 0; vuelta < MAX_VUELTAS; vuelta++) {
+  for (let vuelta = 0; vuelta < (ficha.limites?.vueltas ?? MAX_VUELTAS); vuelta++) {
     const r = await client.beta.messages.create({
       model: ficha.modelo,
       max_tokens: 4000,

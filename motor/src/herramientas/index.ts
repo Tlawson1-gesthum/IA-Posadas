@@ -2,6 +2,7 @@
 import type { Herramienta } from "../tipos.js";
 import { cotizarPedido, crearPedido } from "./pedidos-semorfa.js";
 import { confirmarPedidoEfectivo, consultarPedido, misPedidos, verCartaYEstado, verTurno } from "./semorfa.js";
+import { altaClientePendiente, confirmarPedido, consultarPedidoB2b, cotizarPedidoB2b, crearPedidoBorrador, verCatalogo } from "./distribuidora.js";
 
 /** Pasa la charla a una persona. El motor la marca y el agente queda en silencio. */
 const derivarAPersona: Herramienta = {
@@ -37,5 +38,12 @@ export const REGISTRO: Record<string, Herramienta> = {
   [cotizarPedido.definicion.name]: cotizarPedido,
   [crearPedido.definicion.name]: crearPedido,
   [verTurno.definicion.name]: verTurno,
+  // distribuidora (integracion.tipo "distribuidora")
+  [verCatalogo.definicion.name]: verCatalogo,
+  [cotizarPedidoB2b.definicion.name]: cotizarPedidoB2b,
+  [crearPedidoBorrador.definicion.name]: crearPedidoBorrador,
+  [confirmarPedido.definicion.name]: confirmarPedido,
+  [consultarPedidoB2b.definicion.name]: consultarPedidoB2b,
+  [altaClientePendiente.definicion.name]: altaClientePendiente,
   [derivarAPersona.definicion.name]: derivarAPersona,
 };

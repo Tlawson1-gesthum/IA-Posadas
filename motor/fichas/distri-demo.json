@@ -1,0 +1,49 @@
+{
+  "id": "distri-demo",
+  "nombre": "Distribuidora Demo",
+  "rubro": "distribuidora",
+  "plantilla": "distribuidora",
+  "estado": "activo",
+  "modelo": "claude-opus-5-5",
+  "esfuerzo": "low",
+  "tope_usd_mes": 30,
+  "limites": {
+    "mensajes_por_hora": 30,
+    "mensajes_por_dia": 80,
+    "usd_por_persona_dia": 0.5,
+    "caracteres_por_mensaje": 1000,
+    "turnos": 10,
+    "vueltas": 6
+  },
+  "herramientas": [
+    "ver_catalogo",
+    "cotizar_pedido_b2b",
+    "crear_pedido_borrador",
+    "confirmar_pedido",
+    "consultar_pedido_b2b",
+    "alta_cliente_pendiente",
+    "derivar_a_persona"
+  ],
+  "integracion": {
+    "tipo": "distribuidora",
+    "base_url": "http://127.0.0.1:8795",
+    "crear_pedidos": true,
+    "clave_env": "DISTRI_DEMO_AGENTE_CLAVE"
+  },
+  "reglas": {
+    "audio": true,
+    "fotos": true
+  },
+  "datos": {
+    "nombre_asistente": "el asistente de Distribuidora Demo",
+    "descripcion": "una distribuidora mayorista de bebidas, almacén, golosinas y limpieza de Posadas, Misiones, que reparte a kioscos y almacenes (datos de prueba de Pensa, no es un negocio real)",
+    "horario_atencion": "lunes a viernes de 8 a 18",
+    "reparto": "de lunes a viernes. Los pedidos que entran antes de las 18 salen ese mismo día de reparto; después de las 18, el siguiente.",
+    "medios_pago": "efectivo al repartidor, transferencia o cuenta corriente para clientes con crédito aprobado",
+    "datos_fijos": "- Los precios son los de la lista de cada cliente y no incluyen IVA. El total que mostrás ya lo incluye.\n- La compra mínima la dice la cotización.\n- No se retira en el depósito: todo va por reparto.",
+    "preguntas_frecuentes": "- ¿Qué días reparten? De lunes a viernes.\n- ¿Hasta qué hora pido para hoy? Hasta las 18.\n- ¿Hacen factura A? Sí, a responsables inscriptos.",
+    "casos_derivacion": "- Saldos, deudas, pagos, transferencias o comprobantes.\n- Cancelar o cambiar un pedido ya cargado.\n- Reclamos (faltantes, roturas, vencidos, equivocados).\n- Pedidos de precio especial o descuento.\n- Cliente enojado.",
+    "voz": "- Cercano y respetuoso, de comercio a comercio. Sin lunfardo.\n- Emojis: ninguno.",
+    "cierre": "Cuando la charla termina, despedite en una frase: \"Gracias por tu pedido. Cualquier cosa, acá estamos.\" No lo repitas si ya lo dijiste."
+  }
+}
