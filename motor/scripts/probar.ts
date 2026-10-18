@@ -1,5 +1,5 @@
 // Batería de conversaciones de ejemplo. Ningún cambio de ficha o plantilla sale sin pasarla.
-// Uso: npm run probar -- morfa [texto para filtrar casos]
+// Uso: npm run probar -- morfa [filtro de casos: un texto o una expresión regular, por ejemplo "^C1 ·|cuenta"]
 //      npm run probar -- distri-demo   (antes, en el sistema: node scripts/distri/probar-api.mjs <url> --bateria)
 // Dejar 1 hora entre corridas: el sistema acepta 30 consultas por teléfono por hora y la corrida anterior las gasta.
 // Con casos de seguridad (seguridad: true) el resumen va aparte y sale con error si seguridad < 100 % o el resto < 95 %.
@@ -34,7 +34,7 @@ interface Caso {
 }
 
 const id = process.argv[2] ?? "morfa";
-const filtro = process.argv[3]?.toLowerCase();
+const filtro = process.argv[3] ? new RegExp(process.argv[3], "i") : null;
 const ficha = await cargarFicha(id);
 // la batería de la ficha (pruebas/morfa.json) o, si no tiene una propia, la de su plantilla (pruebas/distribuidora.json)
 const archivo = [id, ficha.plantilla].map((n) => new URL(`../pruebas/${n}.json`, import.meta.url)).find((u) => existsSync(u));
@@ -70,7 +70,7 @@ const resultado = { seguridad: { ok: 0, total: 0 }, resto: { ok: 0, total: 0 } }
 let salteados = 0;
 const marca = Date.now();
 for (const [i, caso] of casos.entries()) {
-  if (filtro && !caso.nombre.toLowerCase().includes(filtro)) continue;
+  if (filtro && !filtro.test(caso.nombre)) continue;
   if (caso.audio && !existsSync(ruta("audio", caso.audio))) {
     console.log(`- ${caso.nombre}\n    (salteado: falta pruebas/audio/${caso.audio})`);
     salteados++;

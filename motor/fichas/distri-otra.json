@@ -22,6 +22,8 @@
     "confirmar_pedido",
     "consultar_pedido_b2b",
     "alta_cliente_pendiente",
+    "registrar_promesa",
+    "consultar_cuenta",
     "derivar_a_persona"
   ],
   "integracion": {

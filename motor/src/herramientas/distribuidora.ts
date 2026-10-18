@@ -231,3 +231,53 @@ export const altaClientePendiente: Herramienta = {
     return JSON.stringify({ ok: true, ya_era_cliente: !!cuerpo.ya_existia, estado: cuerpo.cliente?.estado, que_decir: cuerpo.ya_existia ? "Ya está registrado." : "Quedó registrado: la distribuidora lo aprueba y le asigna los precios." });
   },
 };
+
+export const consultarCuenta: Herramienta = {
+  definicion: {
+    name: "consultar_cuenta",
+    description: "Cuenta corriente del cliente que escribe (busca por SU número; nunca la de otro): saldo, vencido, lo que tiene abierto, próximo vencimiento, lo que dejó a cuenta y si ya prometió pagar. Trae también la fecha de hoy.",
+    input_schema: { type: "object", properties: {}, required: [], additionalProperties: false },
+  },
+  async ejecutar(_entrada, ctx) {
+    const { status, cuerpo } = await api(ctx, `cuenta?telefono=${encodeURIComponent(ctx.telefono)}`);
+    if (status !== 200 || !cuerpo) return problema(status, cuerpo);
+    if (!cuerpo.cliente?.conocido) return JSON.stringify({ hoy: cuerpo.hoy_texto, cliente: { conocido: false }, que_decir: "No tengo una cuenta asociada a este número: pasale la charla a una persona (derivar_a_persona, motivo plata)." });
+    return JSON.stringify({
+      hoy: `${cuerpo.hoy_texto} (${cuerpo.hoy})`,
+      cliente: cuerpo.cliente,
+      saldo: pesos(cuerpo.saldo_centavos),
+      saldo_a_favor: cuerpo.saldo_centavos < 0,
+      vencido: pesos(cuerpo.vencido_centavos),
+      a_cuenta_sin_aplicar: cuerpo.a_cuenta_centavos ? pesos(cuerpo.a_cuenta_centavos) : undefined,
+      proximo_vencimiento: cuerpo.proximo_vencimiento ? `${cuerpo.proximo_vencimiento.dia_texto}: ${pesos(cuerpo.proximo_vencimiento.centavos)}` : null,
+      abierto: (cuerpo.abiertos ?? []).map((a: any) => `${a.tipo} ${a.referencia} · falta ${pesos(a.pendiente_centavos)} · ${a.vencido ? "venció" : "vence"} el ${a.vence_texto}`),
+      promesa_vigente: cuerpo.promesa_vigente ? `${cuerpo.promesa_vigente.fecha_texto}${cuerpo.promesa_vigente.monto_centavos ? ` por ${pesos(cuerpo.promesa_vigente.monto_centavos)}` : ""}` : null,
+    });
+  },
+};
+
+export const registrarPromesa: Herramienta = {
+  definicion: {
+    name: "registrar_promesa",
+    description: "Anota que el cliente que escribe promete pagar en una fecha (\"te pago el viernes\"). Hasta 7 días desde hoy (usá la fecha de hoy que trae consultar_cuenta). Si es más lejos o ya tenía una promesa, no se anota y hay que derivar. Nunca ofrezcas quitas, cuotas ni otro plazo.",
+    input_schema: {
+      type: "object",
+      properties: {
+        fecha: { type: "string", description: "AAAA-MM-DD del día que dijo que paga." },
+        monto: { type: "number", description: "Pesos que dijo que paga, si dijo un monto." },
+      },
+      required: ["fecha"],
+      additionalProperties: false,
+    },
+  },
+  async ejecutar(entrada, ctx) {
+    const fecha = String(entrada.fecha ?? "");
+    if (!DIA.test(fecha)) return JSON.stringify({ ok: false, motivo: "La fecha va como AAAA-MM-DD." });
+    const monto = Number(entrada.monto);
+    const { status, cuerpo } = await api(ctx, "promesa", { telefono: ctx.telefono, fecha, ...(Number.isFinite(monto) && monto > 0 ? { monto } : {}), nota: "Por WhatsApp" });
+    if (status !== 200 || !cuerpo) return problema(status, cuerpo);
+    if (cuerpo.deriva) return JSON.stringify({ ok: false, deriva: true, motivo: cuerpo.motivo, que_decir: "No lo anotes: decile que lo ve una persona del equipo y usá derivar_a_persona (motivo plata)." });
+    if (cuerpo.sin_deuda) return JSON.stringify({ ok: false, motivo: "No tiene saldo para pagar." });
+    return JSON.stringify({ ok: true, fecha: cuerpo.fecha_texto, monto: cuerpo.monto_centavos ? pesos(cuerpo.monto_centavos) : null, que_decir: "Confirmale la fecha (y el monto si lo dijo) y agradecele." });
+  },
+};
