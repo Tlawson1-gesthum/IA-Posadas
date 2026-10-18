@@ -22,6 +22,9 @@ const NO_LEO = "Por ahora solo leo mensajes de texto y ubicaciones. ¿Me lo escr
 const ERROR = "Uh, se me trabó algo. Ya le aviso a alguien del equipo para que te responda.";
 const MUCHOS_MENSAJES = "Recibimos muchos mensajes seguidos. Para seguir, escribinos más tarde.";
 const SIN_SALDO = "Ahora no puedo responderte por acá. Ya le aviso a alguien del equipo.";
+export const AVISO_PAUSA = "Hola, gracias por escribir. Ahora te responde una persona del equipo por acá.";
+/** Motivo de derivación de las charlas que llegaron con el agente en pausa: al sacar la pausa vuelven solas al agente. */
+export const MOTIVO_PAUSA = "pausa";
 
 interface Opciones {
   /** Cómo mandar la respuesta. Por defecto, por WhatsApp. */
@@ -71,6 +74,14 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
 
   // Charla derivada: la atiende una persona, el agente no se mete.
   if (conv.estado === "humano") return;
+
+  // Pausa del dueño (desde el panel de su local): un aviso y la charla pasa al equipo. Al sacar la pausa vuelve al agente.
+  if (ficha.pausa_local) {
+    await almacen.derivar(conv.id, MOTIVO_PAUSA, "El agente está en pausa: responde una persona del equipo.");
+    await mandar(AVISO_PAUSA);
+    await almacen.guardar({ conversacionId: conv.id, fichaId: ficha.id, rol: "agente", texto: AVISO_PAUSA });
+    return;
+  }
 
   const contestar = async (texto: string, extra: { herramientas?: string[]; tokensEntrada?: number; tokensSalida?: number; usd?: number } = {}) => {
     await mandar(texto);

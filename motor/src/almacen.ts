@@ -11,7 +11,7 @@ const HORAS_DE_CHARLA = 12;
 const MAX_TURNOS = 20;
 
 /** La ficha sin los campos que viven en columnas propias. */
-export type ConfigFicha = Omit<Ficha, "id" | "estado" | "whatsapp_phone_number_id">;
+export type ConfigFicha = Omit<Ficha, "id" | "estado" | "whatsapp_phone_number_id" | "pausa_local">;
 
 export interface FilaFicha {
   id: string;
@@ -22,6 +22,13 @@ export interface FilaFicha {
   borrador: ConfigFicha | null;
   version: number;
   actualizada: string;
+  /** Pausa que puso el dueño desde su panel (api/local.ts): el agente avisa que responde una persona. Supabase 009. */
+  pausa_local?: PausaLocal | null;
+}
+
+export interface PausaLocal {
+  desde: string;
+  por: string;
 }
 
 export interface Conversacion {
@@ -170,7 +177,8 @@ function almacenSupabase(url: string, clave: string): Almacen {
     if (r.error) throw new Error(`Supabase: ${r.error.message}`);
     return r.data;
   };
-  const CAMPOS_FICHA = "id, estado, whatsapp_phone_number_id, abono_usd_mes, config, borrador, version, actualizada";
+  // "*" y no la lista de columnas: así pausa_local (Supabase 009) llega si existe y, si todavía no se corrió, no falla nada
+  const CAMPOS_FICHA = "*";
   const fila = (f: any): FilaFicha => ({ ...f, abono_usd_mes: Number(f.abono_usd_mes) });
 
   return {
@@ -409,7 +417,7 @@ export function fichasDeArchivos(): FilaFicha[] {
   return readdirSync(dir)
     .filter((a) => a.endsWith(".json"))
     .map((a) => {
-      const { id, estado, whatsapp_phone_number_id, ...config } = JSON.parse(readFileSync(path.join(dir, a), "utf8")) as Ficha;
+      const { id, estado, whatsapp_phone_number_id, pausa_local: _, ...config } = JSON.parse(readFileSync(path.join(dir, a), "utf8")) as Ficha;
       return {
         id,
         estado,

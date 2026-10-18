@@ -13,7 +13,8 @@
     "webhook-local": "tsx scripts/webhook-local.ts",
     "local": "tsx scripts/servidor-local.ts",
     "unidad": "tsx --test \"pruebas/unidad/*.test.ts\"",
-    "aislamiento": "tsx scripts/aislamiento.ts"
+    "aislamiento": "tsx scripts/aislamiento.ts",
+    "clave-local": "tsx scripts/clave-local.ts"
   },
   "engines": {
     "node": ">=20"

@@ -12,7 +12,7 @@ export const MODELOS = ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-4-
 /** Arma la ficha completa a partir de la fila de la base. Con `borrador`, usa los cambios sin publicar. */
 export function fichaDesdeFila(f: FilaFicha, borrador = false): Ficha {
   const config = borrador && f.borrador ? f.borrador : f.config;
-  return { ...config, id: f.id, estado: f.estado, whatsapp_phone_number_id: f.whatsapp_phone_number_id ?? undefined };
+  return { ...config, id: f.id, estado: f.estado, whatsapp_phone_number_id: f.whatsapp_phone_number_id ?? undefined, pausa_local: f.pausa_local ?? null };
 }
 
 export async function cargarFicha(id: string, borrador = false): Promise<Ficha> {

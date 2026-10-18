@@ -13,6 +13,8 @@ export interface Ficha {
   plantilla: string;
   /** "activo" | "pausado" (falta de pago o pedido del cliente). Pausado = no responde. */
   estado: "activo" | "pausado";
+  /** Pausa del dueño desde el panel de su local: el agente no contesta y avisa que responde una persona (la charla queda derivada). */
+  pausa_local?: { desde: string; por: string } | null;
   modelo: string;
   esfuerzo: "low" | "medium" | "high";
   /** Tope de gasto mensual en API de Claude, en USD. */

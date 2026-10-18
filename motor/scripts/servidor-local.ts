@@ -10,6 +10,7 @@ process.env.PANEL_CLAVE ??= "clave-local-123";
 const rutas: Record<string, { GET?: (r: Request) => Response | Promise<Response>; POST?: (r: Request) => Promise<Response> }> = {
   "/api/chat": await import("../api/chat.js"),
   "/api/panel": await import("../api/panel.js"),
+  "/api/local": await import("../api/local.js"),
   "/api/whatsapp": await import("../api/whatsapp.js"),
 };
 const TIPOS: Record<string, string> = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css" };
