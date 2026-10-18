@@ -12,7 +12,8 @@
     "chat-abierto": "tsx scripts/chat.ts morfa --abierto",
     "webhook-local": "tsx scripts/webhook-local.ts",
     "local": "tsx scripts/servidor-local.ts",
-    "unidad": "tsx --test \"pruebas/unidad/*.test.ts\""
+    "unidad": "tsx --test \"pruebas/unidad/*.test.ts\"",
+    "aislamiento": "tsx scripts/aislamiento.ts"
   },
   "engines": {
     "node": ">=20"
