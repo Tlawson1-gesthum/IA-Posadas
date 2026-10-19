@@ -1,10 +1,11 @@
 // Panel de gobierno de la agencia (página en public/panel.html). Todo entra por POST con {accion, ...}.
 // Solo funciona con sesión (PANEL_CLAVE). Pedir JSON + cookie SameSite=Strict evita que otra web actúe en nombre de uno.
 import { obtenerAlmacen, type ConfigFicha, type FilaFicha } from "../src/almacen.js";
-import { camposDePlantilla, ejemploDePlantilla, fichaDesdeFila, MODELOS, plantillasDisponibles, validarFicha } from "../src/fichas.js";
+import { camposDePlantilla, cargarFicha, ejemploDePlantilla, fichaDesdeFila, MODELOS, plantillasDisponibles, validarFicha } from "../src/fichas.js";
 import { REGISTRO } from "../src/herramientas/index.js";
 import { COOKIE_SALIR, entrar, sesionValida } from "../src/sesion.js";
-import { LIMITES_POR_DEFECTO } from "../src/tipos.js";
+import { enviarMensaje, tokenDe, VENTANA_MS } from "../src/instagram.js";
+import { LIMITES_POR_DEFECTO, type EstadoPublicacion } from "../src/tipos.js";
 import { enviarTexto } from "../src/whatsapp.js";
 
 type Cuerpo = Record<string, any>;
@@ -73,7 +74,7 @@ const ACCIONES: Record<string, (b: Cuerpo) => Promise<Response>> = {
     const [fichas, resumen, problemas, derivadas] = await Promise.all([
       almacen.listarFichas(),
       almacen.resumenDelMes(),
-      almacen.eventos(hace24, ["error", "tope_mes"]),
+      almacen.eventos(hace24, ["error", "tope_mes", "instagram"]),
       almacen.listarConversaciones(null, true, 500),
     ]);
     const clientes = fichas.map((f) => {
@@ -163,7 +164,15 @@ const ACCIONES: Record<string, (b: Cuerpo) => Promise<Response>> = {
     const c = await almacen.detalleConversacion(String(b.id ?? ""));
     if (!c) return falla("No existe esa charla", 404);
     // En los chats de la web no hay nada que enviar: el chat de la persona trae las respuestas nuevas solo.
-    if (!c.telefono.startsWith("web-")) {
+    if (c.telefono.startsWith("ig")) {
+      // Instagram: solo dentro de las 24 h desde el último mensaje de la persona. Pasado eso, se responde desde la app.
+      if (!c.telefono.startsWith("ig:") || !c.numero_negocio?.startsWith("ig:")) return falla("Esta persona solo comentó: respondele desde la app de Instagram.");
+      const ultimo = (await almacen.mensajes(c.id)).filter((m) => m.rol === "cliente").at(-1);
+      if (!ultimo || Date.now() - Date.parse(ultimo.creado) > VENTANA_MS)
+        return falla("Pasaron más de 24 horas desde el último mensaje de la persona: Instagram no deja escribirle desde acá. Respondele desde la app.");
+      const ficha = await cargarFicha(c.ficha_id);
+      await enviarMensaje(c.numero_negocio.slice(3), await tokenDe(ficha), c.telefono.slice(3), texto);
+    } else if (!c.telefono.startsWith("web-")) {
       if (!c.numero_negocio) return falla("No se sabe por qué número entró esta charla.");
       try {
         await enviarTexto(c.numero_negocio, c.telefono, texto);
@@ -176,6 +185,29 @@ const ACCIONES: Record<string, (b: Cuerpo) => Promise<Response>> = {
     }
     if (c.estado !== "humano") await almacen.derivar(c.id, "tomada", "Una persona tomó la charla desde el panel.");
     await almacen.guardar({ conversacionId: c.id, fichaId: c.ficha_id, rol: "humano", texto });
+    return json({ ok: true });
+  },
+
+  /** Cola de publicaciones de Instagram de una ficha (o de todas). */
+  async publicaciones(b) {
+    const estados = Array.isArray(b.estados) ? (b.estados.map(String) as EstadoPublicacion[]) : undefined;
+    return json({ publicaciones: await obtenerAlmacen().publicaciones({ fichaId: b.ficha_id ? String(b.ficha_id) : undefined, estados, limite: 200 }) });
+  },
+
+  /** Aprueba una publicación en borrador: desde ahí la cola la publica sola a su hora. Queda anotado quién la aprobó. */
+  async aprobar_publicacion(b) {
+    const por = String(b.por ?? "").trim().slice(0, 80);
+    if (!por) return falla("Decí quién la aprueba");
+    const p = await obtenerAlmacen().cambiarPublicacion(String(b.id ?? ""), ["borrador"], { estado: "aprobado", aprobada_por: por, aprobada_en: new Date().toISOString() });
+    if (!p) return falla("Solo se aprueba una publicación en borrador");
+    await obtenerAlmacen().evento(p.ficha_id, null, "publicacion", `Aprobada por ${por} para ${p.hora}`);
+    return json({ ok: true, publicacion: p });
+  },
+
+  /** Cancela una publicación que todavía no salió. */
+  async cancelar_publicacion(b) {
+    const p = await obtenerAlmacen().cambiarPublicacion(String(b.id ?? ""), ["borrador", "aprobado", "manual", "vencida", "error"], { estado: "cancelado" });
+    if (!p) return falla("Esa publicación ya salió o se está publicando");
     return json({ ok: true });
   },
 

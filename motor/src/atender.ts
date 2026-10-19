@@ -18,6 +18,8 @@ interface Opciones {
   ficha?: Ficha;
   /** Ticket de la web del cliente para las herramientas (no se guarda). */
   credencial?: string;
+  /** Se llama cuando la charla pasa a una persona (Instagram avisa al equipo). WhatsApp y la web no lo usan. */
+  alDerivar?: (motivo: string, resumen: string, conversacionId: string) => Promise<void>;
 }
 
 export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Promise<void> {
@@ -42,7 +44,9 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   if (!nuevo) return; // Meta reenvió un aviso que ya atendimos.
 
   // Solo para pruebas: un administrador escribe /reiniciar y la charla vuelve al agente, de cero.
-  const admins = (process.env.ADMIN_TELEFONOS ?? "").split(",").map((t) => t.trim()).filter(Boolean);
+  const lista = (v?: string) => (v ?? "").split(",").map((t) => t.trim()).filter(Boolean);
+  // En Instagram, los administradores se cargan por su id de Instagram (ADMIN_INSTAGRAM) y la charla se guarda como "ig:<id>".
+  const admins = [...lista(process.env.ADMIN_TELEFONOS), ...lista(process.env.ADMIN_INSTAGRAM).map((id) => `ig:${id}`)];
   // El chat web de prueba ya pide clave; la burbuja pública (web-publico-) no puede reiniciar.
   const esAdmin = admins.includes(m.de) || (m.de.startsWith("web-") && !m.de.startsWith("web-publico-"));
   if (m.texto.trim().toLowerCase() === "/reiniciar" && esAdmin) {
@@ -97,6 +101,7 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
     const detalle = `Error del agente: ${(e as Error).message}`.slice(0, 300);
     await almacen.derivar(conv.id, "otro", detalle);
     await evento("error", detalle);
+    await opciones.alDerivar?.("otro", detalle, conv.id);
     return contestar(ERROR);
   }
   if (r.texto) {
@@ -110,5 +115,6 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   if (r.derivada) {
     await almacen.derivar(conv.id, r.derivada.motivo, r.derivada.resumen);
     await evento("derivacion", `${r.derivada.motivo}: ${r.derivada.resumen}`);
+    await opciones.alDerivar?.(r.derivada.motivo, r.derivada.resumen, conv.id);
   }
 }

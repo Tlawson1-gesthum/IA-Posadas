@@ -38,6 +38,8 @@ export interface Ficha {
   conocimiento?: { url: string };
   /** Burbuja de chat en la web del cliente. Apagada si falta o activo = false. */
   chat_web?: ChatWeb;
+  /** Cuenta de Instagram del cliente (mensajes, comentarios y cola de publicaciones). Apagado si falta. */
+  instagram?: InstagramFicha;
   /** Valores que reemplazan los {{campos}} de la plantilla. */
   datos: Record<string, string>;
 }
@@ -102,3 +104,85 @@ export interface ChatWeb {
 }
 
 export const CHAT_WEB_POR_DEFECTO = { mensajes_por_ip_hora: 20, mensajes_por_dia: 400 };
+
+export interface InstagramFicha {
+  /** Id de la cuenta profesional (el que muestra Meta al agregarla; llega como entry.id en los avisos). */
+  ig_user_id: string;
+  /** Variable de entorno (en Vercel) con el primer token. Después el motor lo renueva solo y lo guarda en la base. */
+  token_env: string;
+  /** Mensajes directos: el agente responde. false = solo se guardan para que responda una persona. */
+  responder_mensajes: boolean;
+  /**
+   * La API acepta is_ai_generated al publicar. Hasta comprobar en una publicación de prueba que pone la misma etiqueta
+   * "Información de IA" que la app, queda en false: las piezas hechas con IA no se publican solas, se avisa para subirlas a mano.
+   */
+  etiqueta_ia_api: boolean;
+  /** Respuestas automáticas a comentarios (textos fijos aprobados por el dueño, sin IA). */
+  comentarios?: {
+    /** Revisar los comentarios de las publicaciones recientes cada vez que corre la tarea periódica (sin esperar el aviso de Meta). */
+    leer: boolean;
+    reglas: ReglaComentario[];
+  };
+}
+
+/** Token de Instagram vigente de una ficha (el motor lo renueva solo; nunca se muestra). */
+export interface CuentaInstagram {
+  ficha_id: string;
+  ig_user_id: string;
+  token: string;
+  renovado: string;
+  vence: string;
+}
+
+/**
+ * Cola de publicaciones. Solo se publica lo que está "aprobado", a su hora.
+ * borrador → aprobado → procesando (Meta prepara la foto o el video) → publicando → publicado · o error / vencida / manual / cancelado.
+ */
+export type EstadoPublicacion =
+  | "borrador"
+  | "aprobado"
+  | "procesando"
+  | "publicando"
+  | "publicado"
+  | "manual"
+  | "vencida"
+  | "error"
+  | "cancelado";
+export type TipoPublicacion = "imagen" | "reel" | "carrusel" | "historia";
+
+export interface Publicacion {
+  id: string;
+  ficha_id: string;
+  estado: EstadoPublicacion;
+  tipo: TipoPublicacion;
+  /** Direcciones públicas de las fotos (JPEG) y videos, en orden. */
+  medios: { url: string; tipo: "imagen" | "video" }[];
+  texto: string;
+  /** Cuándo se publica (ISO). */
+  hora: string;
+  /** Pieza hecha con IA (el avatar): lleva la etiqueta "Información de IA". */
+  hecha_con_ia: boolean;
+  /** Algo que la API no permite (música de Instagram, colaboradores…): a la hora se avisa y se sube a mano. */
+  manual_motivo: string | null;
+  aprobada_por: string | null;
+  aprobada_en: string | null;
+  contenedor: string | null;
+  media_id: string | null;
+  permalink: string | null;
+  intentos: number;
+  error: string | null;
+  creado: string;
+  actualizado: string;
+}
+
+export type NuevaPublicacion = Pick<Publicacion, "ficha_id" | "tipo" | "medios" | "texto" | "hora" | "hecha_con_ia"> &
+  Partial<Pick<Publicacion, "manual_motivo">>;
+
+export interface ReglaComentario {
+  /** Palabras que disparan la regla, como palabra suelta y sin importar mayúsculas ni tildes (ej. ["VIANDAS"]). */
+  palabras: string[];
+  /** Mensaje privado que se le manda a quien comentó (uno solo: Meta no deja más hasta que conteste). */
+  respuesta: string;
+  /** Además, la charla pasa a una persona y se avisa al equipo (ej. empresas). */
+  derivar?: { motivo: string; resumen: string };
+}

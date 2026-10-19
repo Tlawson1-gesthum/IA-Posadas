@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { RAIZ } from "./raiz.js";
-import type { Ficha, Turno } from "./tipos.js";
+import type { CuentaInstagram, EstadoPublicacion, Ficha, NuevaPublicacion, Publicacion, Turno } from "./tipos.js";
 
 /** Se arranca una charla nueva (sin historial) si pasaron más de estas horas desde el último mensaje. */
 const HORAS_DE_CHARLA = 12;
@@ -140,6 +140,20 @@ export interface Almacen {
   /** Chat público de la web: registra un mensaje de una conexión (IP anonimizada) y cuenta los recientes. */
   registrarAccesoWeb(fichaId: string, ipHash: string): Promise<void>;
   contarAccesosWeb(fichaId: string, ipHash: string | null, desde: Date): Promise<number>;
+
+  // Instagram (supabase/011_instagram.sql)
+  /** La ficha que tiene esa cuenta de Instagram (instagram.ig_user_id). */
+  fichaPorInstagram(igUserId: string): Promise<FilaFicha | null>;
+  cuentaInstagram(fichaId: string): Promise<CuentaInstagram | null>;
+  guardarCuentaInstagram(c: CuentaInstagram): Promise<void>;
+  /** Anota un comentario como atendido. Devuelve false si ya estaba: así nunca se responde dos veces. */
+  marcarComentario(fichaId: string, comentarioId: string, regla: string | null): Promise<boolean>;
+  /** De esos comentarios, cuáles ya se atendieron (para no reintentar cada vez que se revisan). */
+  comentariosVistos(fichaId: string, ids: string[]): Promise<Set<string>>;
+  crearPublicacion(p: NuevaPublicacion): Promise<Publicacion>;
+  publicaciones(filtro: { fichaId?: string; estados?: EstadoPublicacion[]; limite?: number }): Promise<Publicacion[]>;
+  /** Cambia una publicación solo si sigue en uno de los estados `desde`: dos tareas a la vez no publican dos veces. */
+  cambiarPublicacion(id: string, desde: EstadoPublicacion[], cambios: Partial<Publicacion>): Promise<Publicacion | null>;
 }
 
 function desde(): string {
@@ -337,6 +351,43 @@ function almacenSupabase(url: string, clave: string): Almacen {
       if (tipos?.length) q = q.in("tipo", tipos);
       return ok(await q.order("creado", { ascending: false }).limit(200)) as Evento[];
     },
+
+    async fichaPorInstagram(igUserId) {
+      const f = ok(await db.from("fichas").select(CAMPOS_FICHA).eq("config->instagram->>ig_user_id", igUserId).maybeSingle());
+      return f ? fila(f) : null;
+    },
+    async cuentaInstagram(fichaId) {
+      return ok(await db.from("instagram_cuentas").select("ficha_id, ig_user_id, token, renovado, vence").eq("ficha_id", fichaId).maybeSingle()) as CuentaInstagram | null;
+    },
+    async guardarCuentaInstagram(c) {
+      ok(await db.from("instagram_cuentas").upsert(c, { onConflict: "ficha_id" }));
+    },
+    async marcarComentario(fichaId, comentarioId, regla) {
+      const r = await db.from("instagram_comentarios").insert({ ficha_id: fichaId, comentario_id: comentarioId, regla });
+      if (r.error?.code === "23505") return false;
+      ok(r);
+      return true;
+    },
+    async comentariosVistos(fichaId, ids) {
+      if (!ids.length) return new Set();
+      const filas = ok(await db.from("instagram_comentarios").select("comentario_id").eq("ficha_id", fichaId).in("comentario_id", ids)) as { comentario_id: string }[];
+      return new Set(filas.map((f) => f.comentario_id));
+    },
+    async crearPublicacion(p) {
+      return ok(await db.from("publicaciones").insert({ ...p, manual_motivo: p.manual_motivo ?? null }).select("*").single()) as Publicacion;
+    },
+    async publicaciones({ fichaId, estados, limite = 100 }) {
+      let q = db.from("publicaciones").select("*");
+      if (fichaId) q = q.eq("ficha_id", fichaId);
+      if (estados?.length) q = q.in("estado", estados);
+      return ok(await q.order("hora", { ascending: true }).limit(limite)) as Publicacion[];
+    },
+    async cambiarPublicacion(id, desde, cambios) {
+      const filas = ok(
+        await db.from("publicaciones").update({ ...cambios, actualizado: new Date().toISOString() }).eq("id", id).in("estado", desde).select("*"),
+      ) as Publicacion[];
+      return filas[0] ?? null;
+    },
   };
 }
 
@@ -376,6 +427,9 @@ function almacenEnMemoria(): Almacen {
   const msgs: (MensajeAGuardar & { creado: number })[] = [];
   const evs: Evento[] = [];
   const accesos: { fichaId: string; ipHash: string; creado: number }[] = [];
+  const cuentasIg = new Map<string, CuentaInstagram>();
+  const comentarios = new Set<string>();
+  const pubs: Publicacion[] = [];
   const inicioMes = () => {
     const d = new Date();
     return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1);
@@ -532,6 +586,58 @@ function almacenEnMemoria(): Almacen {
     },
     async eventos(desdeFecha, tipos) {
       return evs.filter((e) => e.creado >= desdeFecha.toISOString() && (!tipos?.length || tipos.includes(e.tipo)));
+    },
+
+    async fichaPorInstagram(igUserId) {
+      return structuredClone([...fichas.values()].find((f) => f.config.instagram?.ig_user_id === igUserId) ?? null);
+    },
+    async cuentaInstagram(fichaId) {
+      return structuredClone(cuentasIg.get(fichaId) ?? null);
+    },
+    async guardarCuentaInstagram(c) {
+      cuentasIg.set(c.ficha_id, structuredClone(c));
+    },
+    async marcarComentario(fichaId, comentarioId) {
+      const clave = `${fichaId}:${comentarioId}`;
+      if (comentarios.has(clave)) return false;
+      comentarios.add(clave);
+      return true;
+    },
+    async comentariosVistos(fichaId, ids) {
+      return new Set(ids.filter((id) => comentarios.has(`${fichaId}:${id}`)));
+    },
+    async crearPublicacion(p) {
+      const nueva: Publicacion = {
+        ...structuredClone(p),
+        id: `00000000-0000-4000-9000-${String(pubs.length + 1).padStart(12, "0")}`,
+        estado: "borrador",
+        manual_motivo: p.manual_motivo ?? null,
+        aprobada_por: null,
+        aprobada_en: null,
+        contenedor: null,
+        media_id: null,
+        permalink: null,
+        intentos: 0,
+        error: null,
+        creado: ahora(),
+        actualizado: ahora(),
+      };
+      pubs.push(nueva);
+      return structuredClone(nueva);
+    },
+    async publicaciones({ fichaId, estados, limite = 100 }) {
+      return structuredClone(
+        pubs
+          .filter((p) => (!fichaId || p.ficha_id === fichaId) && (!estados?.length || estados.includes(p.estado)))
+          .sort((a, b) => a.hora.localeCompare(b.hora))
+          .slice(0, limite),
+      );
+    },
+    async cambiarPublicacion(id, desde, cambios) {
+      const p = pubs.find((x) => x.id === id);
+      if (!p || !desde.includes(p.estado)) return null;
+      Object.assign(p, structuredClone(cambios), { actualizado: ahora() });
+      return structuredClone(p);
     },
   };
 }

@@ -11,7 +11,9 @@
     "tipos": "tsc --noEmit",
     "chat-abierto": "tsx scripts/chat.ts morfa --abierto",
     "webhook-local": "tsx scripts/webhook-local.ts",
-    "local": "tsx scripts/servidor-local.ts"
+    "local": "tsx scripts/servidor-local.ts",
+    "cola": "tsx scripts/cola.ts",
+    "instagram-local": "tsx scripts/instagram-local.ts"
   },
   "engines": {
     "node": ">=20"

@@ -14,6 +14,14 @@
     "api/panel.ts": {
       "maxDuration": 30,
       "includeFiles": "{fichas,plantillas}/**"
+    },
+    "api/instagram.ts": {
+      "maxDuration": 60,
+      "includeFiles": "{fichas,plantillas}/**"
+    },
+    "api/tarea.ts": {
+      "maxDuration": 60,
+      "includeFiles": "{fichas,plantillas}/**"
     }
   },
   "headers": [
@@ -29,6 +37,12 @@
           "value": "*"
         }
       ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/tarea",
+      "schedule": "0 11 * * *"
     }
   ]
 }
