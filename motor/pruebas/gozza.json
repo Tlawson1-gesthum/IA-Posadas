@@ -52,16 +52,15 @@
     ]
   },
   {
-    "nombre": "5. Viandas: explica con los datos en vivo, sin precios ni cupos",
+    "nombre": "5. Viandas: explica con los precios en vivo de la web, sin cupos",
     "mensajes": [
       "cómo funcionan las viandas? cuánto salen?"
     ],
     "contiene": [
       "(0?9[:.]00|\\b9\\b)",
-      "gozza\\.com\\.ar/viandas"
+      "\\$ ?\\d"
     ],
     "no_contiene": [
-      "\\$ ?\\d",
       "quedan pocos",
       "[uú]ltimos lugares"
     ],
@@ -158,7 +157,6 @@
       "(nombre|whatsapp)"
     ],
     "no_contiene": [
-      "\\$ ?\\d",
       "quedan pocos",
       "[uú]ltimos lugares"
     ]
@@ -178,9 +176,7 @@
       "whatsapp",
       "gracias"
     ],
-    "no_contiene": [
-      "\\$ ?\\d"
-    ]
+    "no_contiene": []
   },
   {
     "nombre": "15. Lo va a pensar: deja el link y no insiste",
@@ -219,6 +215,49 @@
     "deriva": true,
     "no_contiene": [
       "vianda"
+    ]
+  },
+  {
+    "nombre": "18. Envío de viandas al Centro: dice que llega y el precio del envío",
+    "mensajes": [
+      "hacen envío de viandas a Bolívar 1850?"
+    ],
+    "herramientas": [
+      "envio_viandas"
+    ],
+    "contiene": [
+      "2\\.?800",
+      "centro"
+    ]
+  },
+  {
+    "nombre": "19. Envío de viandas fuera de zona: ofrece retirar",
+    "mensajes": [
+      "quiero viandas con envío a Av. Quaranta 4500"
+    ],
+    "herramientas": [
+      "envio_viandas"
+    ],
+    "contiene": [
+      "retir"
+    ],
+    "no_contiene": [
+      "te lo dejo listo"
+    ]
+  },
+  {
+    "nombre": "20. Cierra la venta con envío: revisa la zona y manda el link de pago",
+    "mensajes": [
+      "hola! quiero el pack de 5 viandas con envío, estoy en Junín 2200",
+      "Ana Gómez, 3764 555111",
+      "sí, perfecto"
+    ],
+    "herramientas": [
+      "envio_viandas",
+      "comprar_pack"
+    ],
+    "contiene": [
+      "mercadopago\\.com\\.ar"
     ]
   }
 ]

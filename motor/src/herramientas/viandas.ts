@@ -1,7 +1,9 @@
 // Viandas de un local Pensa (módulo Viandas): menús, packs y cómo funciona, en vivo desde /api/menu (campo `viandas`).
 // Los precios solo salen si la ficha lo permite (integracion.viandas_precios); si no, el agente manda el link.
 // comprar_pack usa POST /api/viandas, el mismo de la tienda: devuelve el link de Mercado Pago. Con crear_pedidos false, simula.
-import type { Herramienta } from "../tipos.js";
+import type { ContextoHerramienta, Herramienta } from "../tipos.js";
+import { BARRIOS_POSADAS, type Barrio } from "../zonas/posadas.js";
+import { nominatim } from "./zona.js";
 import { obtenerAlmacen } from "../almacen.js";
 import { baseUrl, traerCarta } from "./semorfa.js";
 
@@ -58,9 +60,10 @@ export const comprarPack: Herramienta = {
         whatsapp: { type: "string", description: "WhatsApp con característica, como lo escribió la persona (ej. 3764 123456)." },
         retira: { type: "boolean", description: "true si las retira en el local; false si van con envío." },
         direccion: { type: "string", description: "Calle y número para el envío (vacío si retira)." },
-        referencia: { type: "string", description: "Piso, depto, barrio, entre calles (opcional)." },
+        referencia: { type: "string", description: "Piso, depto, entre calles (opcional)." },
+        barrio: { type: "string", description: "Barrio del envío, el que devolvió envio_viandas (vacío si retira)." },
       },
-      required: ["pack", "nombre", "whatsapp", "retira", "direccion", "referencia"],
+      required: ["pack", "nombre", "whatsapp", "retira", "direccion", "referencia", "barrio"],
       additionalProperties: false,
     },
     strict: true,
@@ -82,11 +85,27 @@ export const comprarPack: Herramienta = {
     ].filter(Boolean);
     if (errores.length) return JSON.stringify({ creado: false, motivo: errores.join(" ") });
 
-    const cuerpo = { pack: pack.i, nombre, telefono: whatsapp, retira, direccion, referencia: retira ? "" : String(entrada.referencia ?? "").trim() };
+    // Con zona de envío en la ficha, el código revisa la dirección: aunque el modelo se confunda, no carga un envío fuera de zona.
+    let referencia = retira ? "" : String(entrada.referencia ?? "").trim();
+    const barrios = retira ? null : barriosConEnvio(ctx);
+    if (barrios) {
+      const lista = barrios.map((b) => b.nombre).join(", ");
+      let barrio = barrioPorNombre(String(entrada.barrio ?? ""), barrios);
+      if (!barrio) return JSON.stringify({ creado: false, motivo: `El envío de viandas es solo para ${lista}. Usá envio_viandas con la dirección, u ofrecé retirarlas en el local.` });
+      const mapa = await revisarEnvio(direccion, barrios, ctx);
+      if (mapa.llega === "no") {
+        return JSON.stringify({ creado: false, motivo: `En el mapa, ${mapa.direccion ?? direccion} queda${mapa.barrio_del_mapa ? ` en ${mapa.barrio_del_mapa}` : ""}, fuera de ${lista}. Ofrecé retirarlas en el local o derivá si la persona insiste.` });
+      }
+      if (mapa.llega === "si") barrio = barrios.find((b) => b.nombre === mapa.barrio) ?? barrio;
+      referencia = [referencia, `Barrio: ${barrio.nombre}`].filter(Boolean).join(" · ");
+    }
+
+    const cuerpo = { pack: pack.i, nombre, telefono: whatsapp, retira, direccion, referencia };
     const precios = ctx.ficha.integracion?.viandas_precios === true;
+    const precioEnvio = ctx.ficha.integracion?.viandas_envio?.precio;
     const despues = retira
       ? "Cuando pague, el local le escribe por WhatsApp para coordinar cuándo las retira."
-      : "Cuando pague, el local le escribe por WhatsApp para coordinar la entrega.";
+      : `Cuando pague, el local le escribe por WhatsApp para coordinar la entrega${precioEnvio ? ` (cada envío sale $${precioEnvio.toLocaleString("es-AR")})` : ""}.`;
 
     // Mientras la ficha no lo habilite, no se toca el sistema real: se simula para probar.
     if (!ctx.ficha.integracion?.crear_pedidos) {
@@ -108,6 +127,116 @@ export const comprarPack: Herramienta = {
     return JSON.stringify({
       creado: true, codigo: resp.codigo, pack: pack.nombre, viandas: pack.cantidad,
       ...(precios ? { total: resp.total } : {}), link_pago: resp.pagar, despues,
+    });
+  },
+};
+
+// ---- envío de viandas: solo a algunos barrios, a precio fijo (integracion.viandas_envio) ----
+
+const normalizar = (t: string) =>
+  t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+
+/** ¿El punto [lng, lat] cae dentro del polígono? (rayo hacia el este) */
+export function dentroDe(punto: [number, number], poligono: [number, number][]): boolean {
+  const [x, y] = punto;
+  let dentro = false;
+  for (let i = 0, j = poligono.length - 1; i < poligono.length; j = i++) {
+    const [xi, yi] = poligono[i];
+    const [xj, yj] = poligono[j];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) dentro = !dentro;
+  }
+  return dentro;
+}
+
+/** Los barrios con envío de viandas de la ficha, o null si la ficha no limita el envío. */
+function barriosConEnvio(ctx: ContextoHerramienta): Barrio[] | null {
+  const nombres = ctx.ficha.integracion?.viandas_envio?.barrios;
+  if (!nombres?.length) return null;
+  const pedidos = new Set(nombres.map(normalizar));
+  return BARRIOS_POSADAS.filter((b) => pedidos.has(normalizar(b.nombre)));
+}
+
+/** El barrio de la lista que nombra el texto ("palomar", "Villa Sarita"), si lo nombra tal cual. */
+export function barrioPorNombre(texto: string, barrios: Barrio[]): Barrio | undefined {
+  const t = normalizar(texto);
+  return barrios.find((b) => b.alias.some((a) => t === a || t === `barrio ${a}`));
+}
+
+export function barrioDelPunto(lng: number, lat: number, barrios: Barrio[]): Barrio | undefined {
+  return barrios.find((b) => dentroDe([lng, lat], b.poligono));
+}
+
+type ResultadoEnvio =
+  | { llega: "si"; barrio: string; precision: "barrio" | "direccion"; direccion?: string }
+  | { llega: "no"; direccion?: string; barrio_del_mapa?: string }
+  | { llega: "no_se"; motivo: string };
+
+/** Busca el lugar en el mapa (cerca de la cocina) y dice si cae en un barrio con envío de viandas. */
+export async function revisarEnvio(texto: string, barrios: Barrio[], ctx: ContextoHerramienta): Promise<ResultadoEnvio> {
+  const porNombre = barrioPorNombre(texto, barrios);
+  if (porNombre) return { llega: "si", barrio: porNombre.nombre, precision: "barrio" };
+  const cocina = (await traerCarta(ctx)).cocina;
+  const margen = 10 / 111;
+  const viewbox = [cocina.lng - margen, cocina.lat + margen, cocina.lng + margen, cocina.lat - margen].map((x: number) => x.toFixed(4)).join(",");
+  let lugares: any[];
+  try {
+    lugares = await nominatim("search", { q: `${texto}, Posadas, Misiones`, viewbox, bounded: "1", limit: "5", addressdetails: "1" });
+  } catch {
+    return { llega: "no_se", motivo: "No se pudo consultar el mapa ahora." };
+  }
+  if (!lugares?.length) return { llega: "no_se", motivo: "No encontré ese lugar en el mapa." };
+  const conAltura = /\d/.test(texto);
+  const exacto = conAltura ? lugares.find((l) => l.address?.house_number) : lugares[0];
+  if (!exacto) return { llega: "no_se", motivo: "No encontré esa altura exacta en el mapa." };
+  const a = exacto.address ?? {};
+  const direccion = a.house_number ? `${a.road ?? ""} ${a.house_number}`.trim() : String(exacto.name || "").trim() || undefined;
+  const barrio = barrioDelPunto(Number(exacto.lon), Number(exacto.lat), barrios);
+  if (barrio) return { llega: "si", barrio: barrio.nombre, precision: conAltura ? "direccion" : "barrio", direccion };
+  return { llega: "no", direccion, barrio_del_mapa: a.neighbourhood || a.suburb || undefined };
+}
+
+export const envioViandas: Herramienta = {
+  definicion: {
+    name: "envio_viandas",
+    description:
+      "Dice si hay envío de viandas a una dirección o barrio de Posadas y cuánto sale cada envío. Pasale la calle con altura (ej. \"Bolívar 1850\") o el barrio, como lo escribió la persona. Usala siempre antes de ofrecer o cargar viandas con envío.",
+    input_schema: {
+      type: "object",
+      properties: { lugar: { type: "string", description: "Calle y altura, o barrio, tal como lo escribió la persona." } },
+      required: ["lugar"],
+      additionalProperties: false,
+    },
+    strict: true,
+  },
+  async ejecutar(entrada, ctx) {
+    const barrios = barriosConEnvio(ctx);
+    const config = ctx.ficha.integracion?.viandas_envio;
+    if (!barrios || !config) return JSON.stringify({ nota: "Este local no tiene cargada la zona de envío de viandas: derivá a una persona." });
+    const texto = String(entrada.lugar ?? "").trim().slice(0, 120);
+    const lista = barrios.map((b) => b.nombre);
+    const precio = config.precio;
+    const r = await revisarEnvio(texto, barrios, ctx);
+    if (r.llega === "si") {
+      return JSON.stringify({
+        ...r,
+        precio_por_envio: precio,
+        nota:
+          r.precision === "direccion"
+            ? `Confirmale que la dirección es ${r.direccion}, en ${r.barrio}. Usá barrio "${r.barrio}" en comprar_pack.`
+            : `Para cargarlo hace falta la calle y la altura. Usá barrio "${r.barrio}" en comprar_pack.`,
+      });
+    }
+    if (r.llega === "no") {
+      return JSON.stringify({
+        ...r,
+        barrios_con_envio: lista,
+        nota: "Esa dirección no está en los barrios con envío de viandas. Ofrecé retirarlas en el local (Av. Centenario 2595). Si la persona insiste en que está en uno de esos barrios, derivá con motivo otro.",
+      });
+    }
+    return JSON.stringify({
+      ...r,
+      barrios_con_envio: lista,
+      nota: "Preguntale en qué barrio queda (o entre qué calles). Si dice uno de los barrios con envío, volvé a usar esta herramienta con el nombre del barrio.",
     });
   },
 };

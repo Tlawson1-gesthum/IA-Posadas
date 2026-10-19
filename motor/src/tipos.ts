@@ -35,6 +35,8 @@ export interface Ficha {
     pagos_agente?: ("efectivo" | "mercadopago")[];
     /** true = el agente puede decir los precios de los packs de viandas que muestra la web. Si falta, manda el link. */
     viandas_precios?: boolean;
+    /** Envío de viandas: solo a estos barrios (los de src/zonas), a precio fijo por envío. Si falta, el agente no ofrece envío de viandas. */
+    viandas_envio?: { precio: number; barrios: string[] };
   };
   /** Texto que el agente lee en vivo y se inserta en {{conocimiento}} de la plantilla (por ejemplo, el manual del sistema del cliente). */
   conocimiento?: { url: string };

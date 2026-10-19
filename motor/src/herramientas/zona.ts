@@ -26,7 +26,7 @@ const NOMINATIM = "https://nominatim.openstreetmap.org";
 const CACHE_MS = 24 * 3600_000;
 const cache = new Map<string, { hasta: number; valor: any }>();
 
-async function nominatim(ruta: string, params: Record<string, string>): Promise<any> {
+export async function nominatim(ruta: string, params: Record<string, string>): Promise<any> {
   const url = `${NOMINATIM}/${ruta}?${new URLSearchParams({ format: "jsonv2", "accept-language": "es", ...params })}`;
   const guardado = cache.get(url);
   if (guardado && guardado.hasta > Date.now()) return guardado.valor;
