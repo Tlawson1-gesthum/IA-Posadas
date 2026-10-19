@@ -6,6 +6,7 @@ import { REGISTRO } from "../src/herramientas/index.js";
 import { COOKIE_SALIR, entrar, sesionValida } from "../src/sesion.js";
 import { LIMITES_POR_DEFECTO } from "../src/tipos.js";
 import { enviarTexto } from "../src/whatsapp.js";
+import { sinTelefonos } from "../src/enmascarar.js";
 
 type Cuerpo = Record<string, any>;
 const json = (datos: unknown, status = 200, extra: HeadersInit = {}) =>
@@ -33,7 +34,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     return await accion(b);
   } catch (e) {
-    console.error(`Panel · ${b.accion}`, e);
+    console.error(`Panel · ${b.accion}`, sinTelefonos((e as Error)?.stack ?? e));
     return falla((e as Error).message, 500);
   }
 }

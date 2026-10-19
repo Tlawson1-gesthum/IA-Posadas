@@ -165,7 +165,9 @@ export interface Almacen {
   /** Hasta cuándo se guarda el texto de la charla. Solo escribe si la fecha nueva corre el plazo más de un día. */
   retener(conversacionId: string, hasta: Date): Promise<void>;
   /** Borra el texto y el teléfono de las charlas con la retención vencida. Devuelve cuántas. */
-  podar(ahora: Date): Promise<number>;}
+  podar(ahora: Date): Promise<number>;
+  /** Lo mismo para una charla, ya (el local pidió borrar los datos de un cliente). */
+  borrarConversacion(conversacionId: string): Promise<void>;}
 
 function desde(): string {
   return new Date(Date.now() - HORAS_DE_CHARLA * 3600_000).toISOString();
@@ -391,17 +393,20 @@ function almacenSupabase(url: string, clave: string): Almacen {
       const vencidas = ok(
         await db.from("conversaciones").select("id, ficha_id, telefono").lt("retencion_hasta", ahora.toISOString()).limit(200),
       ) as { id: string; ficha_id: string; telefono: string }[];
-      for (const c of vencidas) {
-        ok(await db.from("mensajes").update({ texto: TEXTO_PODADO }).eq("conversacion_id", c.id).neq("texto", TEXTO_PODADO));
-        ok(await db.from("pedidos_en_armado").update({ mensajes: [] }).eq("ficha_id", c.ficha_id).eq("telefono", c.telefono));
-        ok(
-          await db
-            .from("conversaciones")
-            .update({ telefono: `borrado-${c.id}`, derivada_resumen: null, retencion_hasta: null })
-            .eq("id", c.id),
-        );
-      }
+      for (const c of vencidas) await this.borrarConversacion(c.id);
       return vencidas.length;
+    },
+    async borrarConversacion(id) {
+      const c = ok(await db.from("conversaciones").select("id, ficha_id, telefono").eq("id", id).maybeSingle()) as { id: string; ficha_id: string; telefono: string } | null;
+      if (!c) return;
+      ok(await db.from("mensajes").update({ texto: TEXTO_PODADO }).eq("conversacion_id", c.id).neq("texto", TEXTO_PODADO));
+      ok(await db.from("pedidos_en_armado").update({ mensajes: [] }).eq("ficha_id", c.ficha_id).eq("telefono", c.telefono));
+      ok(
+        await db
+          .from("conversaciones")
+          .update({ telefono: `borrado-${c.id}`, derivada_resumen: null, retencion_hasta: null })
+          .eq("id", c.id),
+      );
     },    async eventos(desdeFecha, tipos) {
       let q = db.from("eventos").select("ficha_id, conversacion_id, tipo, detalle, creado").gte("creado", desdeFecha.toISOString());
       if (tipos?.length) q = q.in("tipo", tipos);
@@ -622,17 +627,20 @@ function almacenEnMemoria(): Almacen {
       let n = 0;
       for (const [id, hasta] of retenciones) {
         if (hasta >= ahoraFecha.getTime()) continue;
-        const c = convs.get(id);
-        for (const m of msgs) if (m.conversacionId === id) m.texto = TEXTO_PODADO;
-        if (c) {
-          const a = armados.get(`${c.ficha_id}|${c.telefono}`);
-          if (a) a.mensajes = [];
-          Object.assign(c, { telefono: `borrado-${id}`, derivada_resumen: null });
-        }
-        retenciones.delete(id);
+        await this.borrarConversacion(id);
         n++;
       }
       return n;
+    },
+    async borrarConversacion(id) {
+      const c = convs.get(id);
+      for (const m of msgs) if (m.conversacionId === id) m.texto = TEXTO_PODADO;
+      if (c) {
+        const a = armados.get(`${c.ficha_id}|${c.telefono}`);
+        if (a) a.mensajes = [];
+        Object.assign(c, { telefono: `borrado-${id}`, derivada_resumen: null });
+      }
+      retenciones.delete(id);
     },    async eventos(desdeFecha, tipos) {
       return evs.filter((e) => e.creado >= desdeFecha.toISOString() && (!tipos?.length || tipos.includes(e.tipo)));
     },
@@ -641,7 +649,7 @@ function almacenEnMemoria(): Almacen {
 
 /**
  * Borra el texto y el teléfono de las charlas cuyo plazo de guardado venció (retencion_hasta).
- * La llama el cron de avisos de distribuidoras (paso 22). Devuelve cuántas charlas podó.
+ * La llama el cron de avisos (api/cron-avisos.ts, cada hora). Devuelve cuántas charlas podó.
  */
 export function podarConversaciones(ahora = new Date()): Promise<number> {
   return obtenerAlmacen().podar(ahora);

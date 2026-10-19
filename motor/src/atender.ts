@@ -6,6 +6,7 @@ import { fichaPorNumero } from "./fichas.js";
 import { autorizacion, baseUrl } from "./herramientas/semorfa.js";
 import { LIMITES_POR_DEFECTO, type ContextoHerramienta, type Ficha } from "./tipos.js";
 import { enviarTexto, type MensajeEntrante } from "./whatsapp.js";
+import { sinTelefonos } from "./enmascarar.js";
 
 // Distribuidoras (paso 16):
 // - Mensajes seguidos: se espera ESPERA_MS; si en ese tiempo llegó otro mensaje del mismo cliente, este no responde y el último
@@ -173,7 +174,7 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   try {
     r = await (opciones.cerebro ?? responder)(ficha, historial, texto, m.de, opciones.credencial, meta);
   } catch (e) {
-    console.error(`Ficha ${ficha.id}: falló el cerebro`, e);
+    console.error(`Ficha ${ficha.id}: falló el cerebro`, sinTelefonos((e as Error)?.stack ?? e));
     const detalle = `Error del agente: ${(e as Error).message}`.slice(0, 300);
     await almacen.derivar(conv.id, "otro", detalle);
     await evento("error", detalle);

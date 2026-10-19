@@ -4,11 +4,12 @@
 // Sin WHATSAPP_TOKEN o con WHATSAPP_SIMULAR=1 no manda nada: imprime. A mano: npm run cron-avisos -- distri-demo [--hora 12]
 // Vercel manda "Authorization: Bearer CRON_SECRET": sin ese secreto configurado, no corre (nadie de afuera lo puede disparar).
 import { timingSafeEqual } from "node:crypto";
-import { obtenerAlmacen } from "../src/almacen.js";
+import { obtenerAlmacen, podarConversaciones } from "../src/almacen.js";
 import { fichaDesdeFila } from "../src/fichas.js";
 import { autorizacion, baseUrl } from "../src/herramientas/semorfa.js";
 import type { Ficha } from "../src/tipos.js";
 import { enviarPlantilla } from "../src/whatsapp.js";
+import { enmascarar } from "../src/enmascarar.js";
 
 interface Aviso {
   id: number;
@@ -75,7 +76,7 @@ export async function correrAvisos({ soloFicha, hora = horaAR(), log = console.l
       if (faltan.length && !simular) {
         resultado = `No se mandó: falta ${faltan.join(", ")}`;
       } else if (simular) {
-        log(`[simulado] ${ficha.id} → ${a.telefono} · ${p.nombre} (aviso ${a.regla}): ${valores.join(" | ")}`);
+        log(`[simulado] ${ficha.id} → ${enmascarar(a.telefono)} · ${p.nombre} (aviso ${a.regla}): ${valores.join(" | ")}`);
         enviado = true;
         resultado = faltan.length ? `simulado (falta ${faltan.join(", ")})` : "simulado";
         res.simulados++;
@@ -119,5 +120,7 @@ function claveOk(request: Request): boolean {
 export async function GET(request: Request): Promise<Response> {
   if (!claveOk(request)) return Response.json({ error: "No autorizado" }, { status: 401 });
   const resultado = await correrAvisos();
-  return Response.json({ ok: true, hora: horaAR(), resultado }, { headers: { "cache-control": "no-store" } });
+  // y de paso, las charlas con el plazo de guardado vencido (90 días; 02 · retención): se borra el texto y el teléfono
+  const podadas = await podarConversaciones().catch((e) => { console.error("No se pudieron podar las charlas", (e as Error).message); return null; });
+  return Response.json({ ok: true, hora: horaAR(), resultado, podadas }, { headers: { "cache-control": "no-store" } });
 }

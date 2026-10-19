@@ -79,3 +79,31 @@ test("tomar, responder, marcar y devolver una charla", async () => {
   assert.equal((await pedir(A, claveA, { accion: "liberar", id: c.id })).status, 200);
   assert.equal((await obtenerAlmacen().detalleConversacion(c.id))!.estado, "agente");
 });
+
+test("exportar y borrar las charlas de un cliente (derechos de acceso y supresión): solo de su ficha", async () => {
+  const fichaA = await cargarFicha(A), fichaB = await cargarFicha(B);
+  await atender(msj("5493761234777", "quiero 2 cajas de gaseosa"), { ficha: fichaA, cerebro, enviar: async () => {}, esperaMs: 0 });
+  await atender(msj("5493761234777", "hola desde la otra"), { ficha: fichaB, cerebro, enviar: async () => {}, esperaMs: 0 });
+  // el sistema manda el teléfono como lo guarda (10 números)
+  let r = await (await pedir(A, claveA, { accion: "exportar", telefonos: ["3761234777"] })).json();
+  assert.equal(r.conversaciones.length, 1);
+  assert.ok(r.conversaciones[0].mensajes.some((m: any) => m.texto === "quiero 2 cajas de gaseosa"));
+  assert.ok(!JSON.stringify(r).includes("hola desde la otra"), "no trae la charla de la otra distribuidora");
+  r = await (await pedir(A, claveA, { accion: "borrar", telefonos: ["3761234777"] })).json();
+  assert.equal(r.borradas, 1);
+  r = await (await pedir(A, claveA, { accion: "exportar", telefonos: ["3761234777"] })).json();
+  assert.equal(r.conversaciones.length, 0, "después de borrar, ese teléfono ya no tiene charlas");
+  const deB = await (await pedir(B, claveB, { accion: "exportar", telefonos: ["3761234777"] })).json();
+  assert.ok(deB.conversaciones[0].mensajes.some((m: any) => m.texto === "hola desde la otra"), "la otra distribuidora no se tocó");
+});
+
+test("la poda de charlas vencidas corre con el cron (borra texto y teléfono)", async () => {
+  const { podarConversaciones, TEXTO_PODADO } = await import("../../src/almacen.js");
+  const fichaA = await cargarFicha(A);
+  await atender(msj("5493761234888", "dato viejo"), { ficha: fichaA, cerebro, enviar: async () => {}, esperaMs: 0 });
+  const c = await obtenerAlmacen().buscarConversacion(A, "5493761234888");
+  // dentro de 100 días ya venció el plazo de 90
+  assert.ok((await podarConversaciones(new Date(Date.now() + 100 * 86400_000))) >= 1);
+  assert.ok((await obtenerAlmacen().mensajes(c!.id)).every((m) => m.texto === TEXTO_PODADO));
+  assert.equal(await obtenerAlmacen().buscarConversacion(A, "5493761234888"), null);
+});

@@ -6,6 +6,8 @@
 //   resumen                      → estado, pausa del dueño, gasto y tope del mes, charlas
 //   conversaciones {filtro}      → las últimas 100 (filtro: "derivadas" | "mal" = marcadas "lo entendió mal")
 //   conversacion {id}            → la charla completa (solo si es de esta ficha)
+//   exportar {telefonos}         → las charlas de esos teléfonos con sus mensajes (derecho de acceso de un cliente)
+//   borrar {telefonos}           → borra el texto y el teléfono de esas charlas (derecho de supresión; quedan las cifras)
 //   pausar {pausa, por}          → pausa del dueño (no la de Pensa: esa sigue en fichas.estado y el dueño no la puede sacar)
 //   tomar / liberar {id}         → una persona toma la charla / se la devuelve al agente
 //   responder {id, texto, por}   → una persona le escribe al cliente (la charla queda tomada)
@@ -14,6 +16,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { obtenerAlmacen, type FilaFicha } from "../src/almacen.js";
 import { MOTIVO_PAUSA } from "../src/atender.js";
 import { enviarTexto } from "../src/whatsapp.js";
+import { sinTelefonos } from "../src/enmascarar.js";
 
 type Cuerpo = Record<string, any>;
 const json = (datos: unknown, status = 200) => Response.json(datos, { status, headers: { "cache-control": "no-store" } });
@@ -51,7 +54,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     return await accion(ficha, b);
   } catch (e) {
-    console.error(`Local ${fichaId} · ${b.accion}`, e);
+    console.error(`Local ${fichaId} · ${b.accion}`, sinTelefonos((e as Error)?.stack ?? e));
     return falla("No se pudo hacer. Probá de nuevo en un rato.", 500);
   }
 }
@@ -60,6 +63,26 @@ export async function POST(request: Request): Promise<Response> {
 async function charlaDe(ficha: FilaFicha, id: unknown) {
   const c = await obtenerAlmacen().detalleConversacion(String(id ?? ""));
   return c && c.ficha_id === ficha.id ? c : null;
+}
+
+// Los teléfonos como los guarda el sistema (10 números) → como los guarda el motor (el número de WhatsApp: 549…, 54… o tal cual)
+function variantes(b: Cuerpo): string[] {
+  const lista = Array.isArray(b.telefonos) ? b.telefonos.slice(0, 20) : [];
+  const v = new Set<string>();
+  for (const t of lista) {
+    const d = String(t ?? "").replace(/\D/g, "");
+    if (d.length < 8 || d.length > 15) continue;
+    const n = d.replace(/^549/, "").replace(/^54/, "");
+    for (const x of [d, n, "54" + n, "549" + n]) v.add(x);
+  }
+  return [...v];
+}
+
+async function charlasDe(ficha: FilaFicha, b: Cuerpo) {
+  const almacen = obtenerAlmacen();
+  const encontradas = await Promise.all(variantes(b).map((t) => almacen.buscarConversacion(ficha.id, t)));
+  const porId = new Map(encontradas.filter((c): c is NonNullable<typeof c> => !!c && c.ficha_id === ficha.id).map((c) => [c.id, c]));
+  return [...porId.values()];
 }
 
 const quien = (b: Cuerpo) => String(b.por ?? "").trim().slice(0, 60) || "el dueño";
@@ -108,6 +131,23 @@ const ACCIONES: Record<string, (ficha: FilaFicha, b: Cuerpo) => Promise<Response
       mensajes: mensajes.map((m) => ({ rol: m.rol, texto: m.texto, creado: m.creado })),
       marcas: marcas.filter((m) => m.conversacion_id === c.id).map((m) => ({ nota: m.detalle, creado: m.creado })),
     });
+  },
+
+  async exportar(ficha, b) {
+    const almacen = obtenerAlmacen();
+    const charlas = await charlasDe(ficha, b);
+    const conversaciones = await Promise.all(charlas.map(async ({ numero_negocio: _, ...c }) => ({
+      ...c,
+      mensajes: (await almacen.mensajes(c.id)).map((m) => ({ rol: m.rol, texto: m.texto, creado: m.creado })),
+    })));
+    return json({ conversaciones });
+  },
+
+  async borrar(ficha, b) {
+    const almacen = obtenerAlmacen();
+    const charlas = await charlasDe(ficha, b);
+    for (const c of charlas) await almacen.borrarConversacion(c.id);
+    return json({ ok: true, borradas: charlas.length });
   },
 
   async pausar(ficha, b) {

@@ -1,5 +1,6 @@
 // Todo lo que habla con la API de WhatsApp Cloud (Meta): leer los avisos que llegan y mandar mensajes.
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { enmascarar } from "./enmascarar.js";
 
 export interface MensajeEntrante {
   /** Id del número del negocio en Meta: dice a qué cliente (ficha) le escribieron. */
@@ -80,7 +81,7 @@ export function leerAviso(aviso: any): MensajeEntrante[] {
 /** Manda un texto. Si Meta no reconoce el número argentino con 9 (pasa con números de prueba), reintenta sin el 9. */
 export async function enviarTexto(phoneNumberId: string, para: string, texto: string): Promise<void> {
   if (process.env.WHATSAPP_SIMULAR === "1") {
-    console.log(`[WhatsApp simulado → ${para}] ${texto}`);
+    console.log(`[WhatsApp simulado → ${enmascarar(para)}] ${texto}`);
     return;
   }
   await mandarMensaje(phoneNumberId, para, { type: "text", text: { body: texto, preview_url: true } });
@@ -95,7 +96,7 @@ export async function enviarBotones(phoneNumberId: string, para: string, texto: 
   const largo = botones.find(b => !b.titulo.trim() || [...b.titulo].length > 20);
   if (largo) throw new Error(`El botón "${largo.titulo}" tiene que tener entre 1 y 20 letras`);
   if (process.env.WHATSAPP_SIMULAR === "1") {
-    console.log(`[WhatsApp simulado → ${para}] ${texto} [${botones.map(b => b.titulo).join("] [")}]`);
+    console.log(`[WhatsApp simulado → ${enmascarar(para)}] ${texto} [${botones.map(b => b.titulo).join("] [")}]`);
     return;
   }
   await mandarMensaje(phoneNumberId, para, {
@@ -111,7 +112,7 @@ export async function enviarBotones(phoneNumberId: string, para: string, texto: 
 export async function enviarPlantilla(phoneNumberId: string, para: string, nombre: string, idioma: string, variables: string[]): Promise<void> {
   if (!/^[a-z0-9_]{1,512}$/.test(nombre)) throw new Error(`Nombre de plantilla inválido: ${nombre}`);
   if (process.env.WHATSAPP_SIMULAR === "1") {
-    console.log(`[WhatsApp simulado → ${para}] plantilla ${nombre} (${idioma}): ${variables.join(" | ")}`);
+    console.log(`[WhatsApp simulado → ${enmascarar(para)}] plantilla ${nombre} (${idioma}): ${variables.join(" | ")}`);
     return;
   }
   await mandarMensaje(phoneNumberId, para, {
