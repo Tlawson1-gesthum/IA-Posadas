@@ -33,6 +33,8 @@ export interface Ficha {
     clave_env?: string;
     /** Formas de pago con las que el agente puede cargar un pedido. Si falta, todas. Ej. ["mercadopago"]. */
     pagos_agente?: ("efectivo" | "mercadopago")[];
+    /** true = el agente puede decir los precios de los packs de viandas que muestra la web. Si falta, manda el link. */
+    viandas_precios?: boolean;
   };
   /** Texto que el agente lee en vivo y se inserta en {{conocimiento}} de la plantilla (por ejemplo, el manual del sistema del cliente). */
   conocimiento?: { url: string };
