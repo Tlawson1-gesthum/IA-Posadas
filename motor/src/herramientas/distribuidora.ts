@@ -5,10 +5,23 @@ import { createHash } from "node:crypto";
 import type { ContextoHerramienta, Herramienta } from "../tipos.js";
 import { autorizacion, baseUrl } from "./semorfa.js";
 
+// Si el sistema tarda más de 10 s (pico de pedidos) o se corta la conexión, se reintenta una vez con más tiempo. Es seguro:
+// cada pedido va con el id del mensaje y el sistema no lo carga dos veces (mismo mensaje_id → mismo pedido). Sin el reintento,
+// en la prueba de carga (paso 29) el agente decía "no pude" de pedidos que el sistema sí había cargado.
 async function pedirJson(url: string, init: RequestInit = {}): Promise<{ status: number; cuerpo: any }> {
-  const r = await fetch(url, { signal: AbortSignal.timeout(10000), ...init, headers: { accept: "application/json", ...init.headers } });
-  const cuerpo = await r.json().catch(() => null);
-  return { status: r.status, cuerpo };
+  const intentar = async (ms: number) => {
+    const r = await fetch(url, { signal: AbortSignal.timeout(ms), ...init, headers: { accept: "application/json", ...init.headers } });
+    const cuerpo = await r.json().catch(() => null);
+    return { status: r.status, cuerpo };
+  };
+  // solo lo que se puede repetir sin efectos: consultas y lo que lleva mensaje_id (pedido); una promesa o un alta no se reintenta
+  const repetible = !init.method || init.method === "GET" || String(init.body ?? "").includes('"mensaje_id"');
+  try {
+    return await intentar(10000);
+  } catch (e) {
+    if (!repetible) throw e;
+    return intentar(25000);
+  }
 }
 
 const api = (ctx: ContextoHerramienta, ruta: string, cuerpo?: unknown) =>

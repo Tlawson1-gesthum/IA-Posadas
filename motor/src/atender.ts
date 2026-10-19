@@ -7,6 +7,7 @@ import { autorizacion, baseUrl } from "./herramientas/semorfa.js";
 import { LIMITES_POR_DEFECTO, type ContextoHerramienta, type Ficha } from "./tipos.js";
 import { enviarTexto, type MensajeEntrante } from "./whatsapp.js";
 import { sinTelefonos } from "./enmascarar.js";
+import { REGISTRO } from "./herramientas/index.js";
 
 // Distribuidoras (paso 16):
 // - Mensajes seguidos: se espera ESPERA_MS; si en ese tiempo llegó otro mensaje del mismo cliente, este no responde y el último
@@ -56,6 +57,35 @@ interface Opciones {
   cerebro?: typeof responder;
   esperaMs?: number;
 }
+
+// Solo para la prueba de carga (CLAUDE_SIMULAR=1, scripts/carga.ts): no llama a Claude. Tarda lo que tarda Claude más o menos
+// (CLAUDE_SIMULAR_MS, de fábrica 2500 ms) y, en una distribuidora, si el texto dice PEDIDO cotiza y carga un pedido con las
+// herramientas de verdad (contra el sistema de la ficha); si dice CUENTA, consulta la cuenta. Anota en `cargaSimulada` qué hizo.
+export const cargaSimulada: { id: string; telefono: string; herramienta: string; ok: boolean; motivo?: string; ms: number; cuando: number }[] = [];
+const cerebroSimulado: typeof responder = async (ficha, _historial, texto, telefono, _credencial, meta) => {
+  await esperar(Number(process.env.CLAUDE_SIMULAR_MS ?? 2500));
+  const ctx: ContextoHerramienta = { ficha, telefono, mensaje: meta };
+  const usadas: string[] = [];
+  const usar = async (nombre: string, entrada: Record<string, unknown>) => {
+    const t0 = Date.now();
+    let ok = false, motivo: string | undefined;
+    try { const r = JSON.parse(await REGISTRO[nombre].ejecutar(entrada, ctx)); ok = r?.ok !== false; motivo = ok ? undefined : String(r?.motivo ?? r?.error ?? ""); } catch (e) { motivo = (e as Error).message; }
+    cargaSimulada.push({ id: meta?.id ?? "", telefono, herramienta: nombre, ok, motivo, ms: Date.now() - t0, cuando: Date.now() });
+    usadas.push(nombre);
+    return ok;
+  };
+  let respuesta = "Hola, gracias por escribir. ¿Qué necesitás?";
+  if (esDistribuidora(ficha) && /PEDIDO/.test(texto)) {
+    const items = JSON.parse(process.env.CLAUDE_SIMULAR_ITEMS ?? '[{"producto_id":1,"cantidad":3},{"producto_id":16,"cantidad":4}]');
+    await usar("cotizar_pedido_b2b", { items });
+    const ok = await usar("crear_pedido_borrador", { items, cliente_confirmo: true, seguro_de_lo_que_entendiste: true });
+    respuesta = ok ? "Listo, cargué tu pedido. Gracias." : "No pude cargar el pedido: lo revisa una persona. Gracias.";
+  } else if (esDistribuidora(ficha) && /CUENTA/.test(texto)) {
+    await usar("consultar_cuenta", {});
+    respuesta = "Te paso tu saldo. Gracias.";
+  }
+  return { texto: respuesta, herramientasUsadas: usadas, uso: { entrada: 0, salida: 0, cacheLeida: 0, cacheEscrita: 0, usd: 0 } };
+};
 
 export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Promise<void> {
   const mandar = opciones.enviar ?? ((texto: string) => enviarTexto(m.phoneNumberId, m.de, texto));
@@ -172,7 +202,7 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   const historial = historialCompleto.slice(0, -sinResponder);
   let r: Awaited<ReturnType<typeof responder>>;
   try {
-    r = await (opciones.cerebro ?? responder)(ficha, historial, texto, m.de, opciones.credencial, meta);
+    r = await (opciones.cerebro ?? (process.env.CLAUDE_SIMULAR === "1" ? cerebroSimulado : responder))(ficha, historial, texto, m.de, opciones.credencial, meta);
   } catch (e) {
     console.error(`Ficha ${ficha.id}: falló el cerebro`, sinTelefonos((e as Error)?.stack ?? e));
     const detalle = `Error del agente: ${(e as Error).message}`.slice(0, 300);
