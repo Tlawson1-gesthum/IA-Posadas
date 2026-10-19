@@ -36,6 +36,8 @@ globalThis.fetch = (async (entrada: any, init?: any) => {
 const id = process.argv[2] ?? "morfa";
 const filtro = process.argv[3]?.toLowerCase();
 const ficha = await cargarFicha(id);
+// Las pruebas nunca cargan pedidos ni packs de verdad, aunque la ficha los tenga prendidos.
+if (ficha.integracion) ficha.integracion.crear_pedidos = false;
 const casos: Caso[] = JSON.parse(readFileSync(new URL(`../pruebas/${id}.json`, import.meta.url), "utf8"));
 
 let fallas = 0;
