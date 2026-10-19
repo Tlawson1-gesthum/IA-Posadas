@@ -29,13 +29,55 @@
   form button { border: 0; border-radius: 50%; width: 42px; height: 42px; flex: none; cursor: pointer; background: var(--color); color: #fff; font-size: 18px; }
   form button.secundario { background: #fff; color: #444; border: 1px solid #ddd; }
   form button:disabled { opacity: .5; }
+  [hidden] { display: none !important; }
+  .solo-pensa { display: none; }
+
+  /* Estilo Pensa (?tema=pensa): la ayuda del panel de los locales. Ventana blanca, mensajes redondeados y la caja de
+     escribir con borde, como los chats de soporte de los sistemas de gestión. Colores y letra del manual de marca de Pensa. */
+  html.pensa { --color: #6B1A26; --texto: #131112; --suave: #6B6A67; --linea: #CFCDC8; --claro: #F2F1EE; }
+  html.pensa body { font: 15px/1.45 "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #fff; }
+  html.pensa .solo-pensa { display: grid; }
+  html.pensa header { position: relative; background: #fff; color: var(--texto); padding: 12px 10px 12px 16px; border-bottom: 1px solid var(--claro); }
+  html.pensa header .avatar { width: 36px; height: 36px; background: none; flex: none; }
+  html.pensa header .avatar svg { width: 100%; height: 100%; display: block; }
+  html.pensa header b { font-weight: 600; font-size: 16px; }
+  html.pensa header small { color: var(--suave); opacity: 1; font-size: 13px; }
+  html.pensa header button { margin-left: 0; width: 36px; height: 36px; padding: 0; border-radius: 50%; color: var(--suave); display: grid; place-items: center; transition: background .15s; }
+  html.pensa header button:hover { background: var(--claro); }
+  html.pensa header button svg { width: 20px; height: 20px; }
+  html.pensa header #menu { margin-left: auto; }
+  html.pensa #opciones { position: absolute; top: 54px; right: 50px; z-index: 2; background: #fff; border: 1px solid var(--linea); border-radius: 12px; padding: 6px; min-width: 220px; }
+  html.pensa #opciones button { width: 100%; height: auto; border-radius: 8px; padding: 10px 12px; text-align: left; font: inherit; font-size: 14px; color: var(--texto); }
+  html.pensa #charla { padding: 16px; gap: 8px; }
+  html.pensa .msg { box-shadow: none; border-radius: 18px; padding: 9px 13px; max-width: 82%; }
+  html.pensa .agente { background: var(--claro); border-bottom-left-radius: 4px; border-top-left-radius: 18px; }
+  html.pensa .cliente { background: var(--color); color: var(--claro); border-bottom-right-radius: 4px; border-top-right-radius: 18px; }
+  html.pensa .cliente a { color: inherit; }
+  html.pensa .humano { border-left: 0; }
+  html.pensa .humano::before { content: "Equipo Pensa"; }
+  html.pensa .aviso { background: none; font-size: 13px; }
+  html.pensa .escribiendo { font-size: 13px; padding: 4px 2px; }
+  html.pensa form { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "texto texto" "ubic enviar"; gap: 4px;
+    margin: 0 16px calc(16px + env(safe-area-inset-bottom)); padding: 10px 10px 10px 16px; background: #fff;
+    border: 1px solid var(--linea); border-radius: 18px; transition: border-color .15s; }
+  html.pensa form:focus-within { border-color: var(--suave); }
+  html.pensa form input { grid-area: texto; border: 0; border-radius: 0; padding: 4px 0 8px; outline: none; font-size: 15px; color: var(--texto); }
+  html.pensa form input::placeholder { color: var(--suave); }
+  html.pensa #ubic { grid-area: ubic; justify-self: start; width: 34px; height: 34px; background: none; border: 0; }
+  html.pensa #enviar { grid-area: enviar; width: 34px; height: 34px; display: grid; place-items: center; background: #E6E4E0; color: #8E8884; transition: background .15s, color .15s; }
+  html.pensa #enviar.listo { background: var(--color); color: var(--claro); }
+  html.pensa #enviar svg { width: 18px; height: 18px; }
+  html.pensa #enviar:disabled { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { html.pensa * { transition: none !important; } }
 </style>
 </head>
 <body>
 <header>
   <div class="avatar" id="avatar">·</div>
-  <div><b id="titulo">Chat</b><small>Asistente automático · respondemos al toque</small></div>
+  <div><b id="titulo">Chat</b><small id="sub">Asistente automático · respondemos al toque</small></div>
+  <button type="button" id="menu" class="solo-pensa" aria-label="Más opciones" aria-haspopup="true" aria-expanded="false">···</button>
   <button type="button" id="cerrar" aria-label="Cerrar">×</button>
+  <div id="opciones" role="menu" hidden><button type="button" id="nueva" role="menuitem">Empezar una charla nueva</button></div>
 </header>
 <main id="charla" aria-live="polite"></main>
 <form id="form">
@@ -53,6 +95,39 @@
   let sesion = leer(claveSesion) || nueva();
   guardar(claveSesion, sesion);
   const historialKey = "burbuja-historial-" + ficha;
+  // ?tema=pensa: la ayuda del panel de los locales, con la marca de Pensa (el color de la ficha no se usa).
+  const pensa = new URLSearchParams(location.search).get("tema") === "pensa";
+  if (pensa) {
+    document.documentElement.classList.add("pensa");
+    const fuente = document.createElement("link");
+    fuente.rel = "stylesheet";
+    fuente.href = "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600&display=swap";
+    document.head.append(fuente);
+    $("avatar").innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-134.5 -12 260 260" color="#F2F1EE" aria-hidden="true"><circle cx="-4.5" cy="118" r="130" fill="#6B1A26"/><g transform="translate(-4.5 118) scale(.76) translate(4.5 -118)"><g fill="none" stroke="currentColor" stroke-width="11"><path d="M-110 50C-70 50 -50 90 -20 90"/><path d="M-110 90H-20"/><path d="M-110 130C-70 130 -50 90 -20 90"/><path d="M-20 90H2.5"/><circle cx="50.5" cy="90" r="48"/><path d="M2.5 40V196"/></g></g></svg>';
+    $("menu").innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
+    $("cerrar").innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    $("enviar").innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+    $("texto").placeholder = "Escribí un mensaje…";
+    $("sub").textContent = "Ayuda del sistema";
+    // El botón de mandar se enciende cuando hay algo escrito
+    const encender = () => $("enviar").classList.toggle("listo", !!$("texto").value.trim());
+    $("texto").addEventListener("input", encender);
+    $("form").addEventListener("submit", () => setTimeout(encender));
+    // ··· → Empezar una charla nueva (borra lo que se ve en este navegador y arranca otra sesión)
+    const menu = (abrir) => { $("opciones").hidden = !abrir; $("menu").setAttribute("aria-expanded", String(abrir)); };
+    $("menu").onclick = (e) => { e.stopPropagation(); menu($("opciones").hidden); };
+    document.addEventListener("click", (e) => { if (!$("opciones").contains(e.target)) menu(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") menu(false); });
+    $("nueva").onclick = () => {
+      menu(false);
+      try { sessionStorage.removeItem(historialKey); sessionStorage.removeItem("burbuja-desde-" + ficha); } catch {}
+      sesion = nueva(); guardar(claveSesion, sesion); desde = "";
+      $("charla").replaceChildren();
+      if (saludo) burbuja(saludo, "agente");
+      $("texto").focus();
+    };
+  }
+  let saludo = "";
 
   function burbuja(texto, clase, guardarla = true) {
     const d = document.createElement("div");
@@ -133,8 +208,12 @@
   fetch("/api/chat?config=" + ficha).then((r) => r.json()).then((cfg) => {
     if (!cfg.activo) { aviso("El chat no está disponible en este momento."); $("enviar").disabled = true; return; }
     if (!cfg.ubicacion) $("ubic").remove();
-    if (/^#[0-9a-f]{3,8}$/i.test(cfg.color || "")) document.documentElement.style.setProperty("--color", cfg.color);
-    $("titulo").textContent = cfg.agente; $("avatar").textContent = (cfg.agente || "·")[0]; document.title = "Chat con " + cfg.agente;
+    saludo = cfg.saludo || "";
+    if (pensa) { $("titulo").textContent = "Pensa"; document.title = "Ayuda de Pensa"; }
+    else {
+      if (/^#[0-9a-f]{3,8}$/i.test(cfg.color || "")) document.documentElement.style.setProperty("--color", cfg.color);
+      $("titulo").textContent = cfg.agente; $("avatar").textContent = (cfg.agente || "·")[0]; document.title = "Chat con " + cfg.agente;
+    }
     let h = [];
     try { h = JSON.parse(sessionStorage.getItem(historialKey) || "[]"); } catch {}
     if (h.length) h.forEach(([t, c]) => burbuja(t, c, false));
