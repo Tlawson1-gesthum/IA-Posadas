@@ -129,3 +129,29 @@ test("BAJA (paso 22): respuesta fija sin pasar por Claude; otro texto con 'baja'
   await atender(msj("5493761110098", "BAJA"), morfaOp);
   assert.equal(llamadas.length, 2, "en MORFA (no es distribuidora) BAJA lo atiende el agente como siempre");
 });
+
+test("degradación (paso 30): Claude caído en una distribuidora → solo acuse, la charla pasa a una persona con el texto; MORFA sigue igual", async () => {
+  const { SOLO_ACUSE } = await import("../../src/atender.js");
+  const caido = (async () => { throw new Error("Claude no contesta (529 overloaded)"); }) as any;
+  const enviados: string[] = [];
+  await atender(msj("5493761239001", "mandame 2 cajas de gaseosa"), { ficha: distri, cerebro: caido, enviar: async (t) => { enviados.push(t); }, esperaMs: 0 });
+  assert.deepEqual(enviados, [SOLO_ACUSE]);
+  const c = await obtenerAlmacen().buscarConversacion(distri.id, "5493761239001");
+  assert.equal(c?.estado, "humano", "la charla quedó para una persona");
+  assert.match(c?.derivada_resumen ?? "", /mandame 2 cajas de gaseosa/, "la persona ve lo que pidió");
+  const evs = await obtenerAlmacen().eventos(new Date(Date.now() - 60_000), ["solo_acuse"]);
+  assert.ok(evs.some((e) => e.conversacion_id === c?.id), "queda anotado el evento");
+  // gastronomía: el mensaje de siempre
+  const deMorfa: string[] = [];
+  await atender(msj("5493761239002", "hola"), { ficha: morfa, cerebro: caido, enviar: async (t) => { deMorfa.push(t); }, esperaMs: 0 });
+  assert.ok(deMorfa[0] && deMorfa[0] !== SOLO_ACUSE);
+});
+
+test("degradación (paso 30): un audio que no se puede escuchar → pide que lo escriba, sin llamar a Claude", async () => {
+  const { cerebro, llamadas } = cerebroDePrueba();
+  const enviados: string[] = [];
+  await atender({ ...msj("5493761239003", ""), noSoportado: "audio" }, { ficha: distri, cerebro, enviar: async (t) => { enviados.push(t); }, esperaMs: 0 });
+  assert.equal(llamadas.length, 0);
+  assert.equal(enviados.length, 1);
+  assert.match(enviados[0], /escrib/i);
+});

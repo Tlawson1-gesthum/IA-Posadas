@@ -23,6 +23,9 @@ const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const NO_LEO = "Por ahora solo leo mensajes de texto y ubicaciones. ¿Me lo escribís?";
 const ERROR = "Uh, se me trabó algo. Ya le aviso a alguien del equipo para que te responda.";
+// Distribuidora con Claude caído (03 · degradación, paso 30): "solo acuse". El mensaje queda guardado y la charla pasa a una
+// persona del local con el texto del cliente (lo ve en Agente → charlas derivadas); el agente no promete nada que no hizo.
+export const SOLO_ACUSE = "Recibí tu mensaje. Lo registré y te confirmo en unos minutos. Gracias.";
 const MUCHOS_MENSAJES = "Recibimos muchos mensajes seguidos. Para seguir, escribinos más tarde.";
 const SIN_SALDO = "Ahora no puedo responderte por acá. Ya le aviso a alguien del equipo.";
 const ES_BAJA = /^s*baja[s.!]*$/i;
@@ -206,6 +209,12 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   } catch (e) {
     console.error(`Ficha ${ficha.id}: falló el cerebro`, sinTelefonos((e as Error)?.stack ?? e));
     const detalle = `Error del agente: ${(e as Error).message}`.slice(0, 300);
+    if (distri) {
+      // solo acuse: lo que pidió queda escrito para la persona que toma la charla
+      await almacen.derivar(conv.id, "otro", `El agente no pudo responder (Claude no contestó). El cliente escribió: ${texto}`.slice(0, 1000));
+      await evento("solo_acuse", detalle);
+      return contestar(SOLO_ACUSE);
+    }
     await almacen.derivar(conv.id, "otro", detalle);
     await evento("error", detalle);
     return contestar(ERROR);
