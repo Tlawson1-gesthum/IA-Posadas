@@ -81,7 +81,7 @@ values ('gozza', 'activo', 0, $ficha${
   "integracion": {
     "tipo": "semorfa",
     "base_url": "https://gozza.com.ar",
-    "crear_pedidos": false,
+    "crear_pedidos": true,
     "viandas_precios": true,
     "viandas_envio": {
       "precio": 2800,
