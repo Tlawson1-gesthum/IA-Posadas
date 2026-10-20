@@ -25,9 +25,12 @@ export const verViandas: Herramienta = {
     const precios = ctx.ficha.integracion?.viandas_precios === true;
     const packs = v.packs.map((p: any) => ({
       nombre: p.nombre,
+      // Una sola vianda no es un "pack": así se le dice a la persona, aunque en la web tenga otro nombre.
+      como_decirlo: p.cantidad === 1 ? "1 vianda" : `pack de ${p.cantidad} viandas`,
       viandas: p.cantidad,
-      ...(precios ? { precio: p.precio, precio_por_vianda: p.por_vianda, ahorro: p.ahorro || undefined } : {}),
+      ...(precios ? { precio: p.precio, precio_por_vianda: p.por_vianda, ahorro_frente_a_sueltas: p.ahorro || undefined } : {}),
     }));
+    const recomendado = [...v.packs].sort((a: any, b: any) => b.cantidad - a.cantidad)[0];
     const porVianda = v.packs.map((p: any) => p.por_vianda);
     return JSON.stringify({
       a_la_venta: true,
@@ -35,6 +38,8 @@ export const verViandas: Herramienta = {
       menus: v.menus,
       elegir_hasta: v.limite,
       packs,
+      pack_recomendado: `pack de ${recomendado.cantidad} viandas`,
+      ...(precios && recomendado.ahorro ? { ahorro_con_el_recomendado: recomendado.ahorro } : {}),
       cuantas_mas_menos_sale_cada_una: porVianda.every((x: number, i: number) => i === 0 || x <= porVianda[i - 1]) && porVianda.at(-1) < porVianda[0],
       precios: precios
         ? "Podés decir estos precios tal cual (son los de la web en este momento)."
@@ -55,7 +60,7 @@ export const comprarPack: Herramienta = {
     input_schema: {
       type: "object",
       properties: {
-        pack: { type: "string", description: "Nombre del pack tal como lo devuelve ver_viandas (ej. \"Pack de 10 viandas\")." },
+        pack: { type: "string", description: "El pack elegido: el nombre o como_decirlo de ver_viandas (ej. \"pack de 20 viandas\" o \"1 vianda\")." },
         nombre: { type: "string", description: "Nombre y apellido de quien compra." },
         whatsapp: { type: "string", description: "WhatsApp con característica, como lo escribió la persona (ej. 3764 123456)." },
         retira: { type: "boolean", description: "true si las retira en el local; false si van con envío." },
@@ -72,7 +77,10 @@ export const comprarPack: Herramienta = {
     const v = (await traerCarta(ctx)).viandas;
     if (!v?.packs?.length) return JSON.stringify({ creado: false, motivo: "Hoy las viandas no están a la venta por la web." });
     const buscado = String(entrada.pack ?? "").trim().toLowerCase();
-    const pack = v.packs.find((p: any) => p.nombre.toLowerCase() === buscado);
+    // Por el nombre de la web, o por la cantidad ("pack de 20 viandas", "1 vianda", "una vianda suelta").
+    const numero = buscado.match(/\d+/)?.[0];
+    const cantidad = numero ? Number(numero) : /\b(una|suelta)\b/.test(buscado) ? 1 : NaN;
+    const pack = v.packs.find((p: any) => p.nombre.toLowerCase() === buscado) ?? v.packs.find((p: any) => p.cantidad === cantidad);
     if (!pack) return JSON.stringify({ creado: false, motivo: `No existe el pack "${entrada.pack}". Los packs son: ${v.packs.map((p: any) => p.nombre).join(", ")}.` });
     const nombre = String(entrada.nombre ?? "").trim();
     const whatsapp = soloNumeros(entrada.whatsapp);

@@ -62,7 +62,8 @@
     ],
     "no_contiene": [
       "quedan pocos",
-      "[uú]ltimos lugares"
+      "[uú]ltimos lugares",
+      "un d[ií]a"
     ],
     "herramientas": [
       "ver_viandas"
@@ -98,7 +99,7 @@
     ],
     "deriva": true,
     "no_contiene": [
-      "(es|son) apt[oa]s?",
+      "(?<!qu[eé] )(es|son) apt[oa]s?",
       "sin tacc (tenemos|hay)",
       "s[ií], tenemos"
     ]
@@ -145,7 +146,7 @@
     ]
   },
   {
-    "nombre": "13. Viandas para el trabajo: recomienda un pack y propone dejarlo listo",
+    "nombre": "13. Viandas para el trabajo: ofrece el pack de 20 con el ahorro y propone dejarlo listo",
     "mensajes": [
       "Hola! quiero viandas para comer en el trabajo, de lunes a viernes. Las retiro en el local"
     ],
@@ -153,7 +154,9 @@
       "ver_viandas"
     ],
     "contiene": [
-      "pack",
+      "pack de 20",
+      "ahorr",
+      "\\$ ?80\\.000",
       "(nombre|whatsapp)"
     ],
     "no_contiene": [
@@ -258,6 +261,21 @@
     ],
     "contiene": [
       "mercadopago\\.com\\.ar"
+    ]
+  },
+  {
+    "nombre": "21. Charla de varios mensajes: no repite \"gracias por escribirnos\"",
+    "mensajes": [
+      "hola! cómo son las viandas?",
+      "las retiro en el local. qué menús hay?"
+    ],
+    "herramientas": [
+      "ver_viandas"
+    ],
+    "no_contiene": [
+      "gracias por escribirnos",
+      "un d[ií]a",
+      "autom[aá]tic"
     ]
   }
 ]
