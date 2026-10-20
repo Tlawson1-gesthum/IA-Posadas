@@ -13,6 +13,7 @@ delete process.env.SUPABASE_SERVICE_ROLE_KEY;
 process.env.INSTAGRAM_VERIFY_TOKEN = "verifica-prueba";
 process.env.INSTAGRAM_APP_SECRET = "secreto-prueba";
 process.env.INSTAGRAM_TOKEN_GOZZA = "token-simulado";
+process.env.INSTAGRAM_ESPERA_ECO_MS = "150"; // en Vercel espera 8 s a que el agente guarde lo que mandó
 if (!CON_IA) process.env.ANTHROPIC_API_KEY = process.env.MORFI_ANTHROPIC_API_KEY = "simulada";
 
 // ——— API de Instagram y de Claude simuladas ———
@@ -143,10 +144,39 @@ ver(c1 && (await almacen.mensajes(c1.id)).length === 2, "La charla queda guardad
 
 // 4. Repetidos, ecos y cosas que no se contestan
 await mandar(dm("hola, qué horario tienen?", { mid: "mid_hola" }));
-await mandar(dm("lo que mandó la cuenta", { eco: true }));
+await mandar(dm(respuesta, { eco: true }));
 await mandar(dm("", { adjunto: "like_heart" }));
 await new Promise((r) => setTimeout(r, 600));
-ver(mensajesA(CLIENTE).length === 1, "Aviso repetido, eco de la cuenta y un corazón: no responde");
+ver(mensajesA(CLIENTE).length === 1, "Aviso repetido, eco de la respuesta del agente y un corazón: no responde");
+ver((await conv(`ig:${CLIENTE}`))?.estado === "agente", "El eco de lo que mandó el agente no le saca la charla");
+
+// 4b. Una persona del equipo contesta a mano desde la app de Instagram
+const EQUIPO = "9000000000000010";
+await mandar(dm("hola! tienen viandas keto?", { de: EQUIPO }));
+ver(await esperar(() => mensajesA(EQUIPO).length === 1), "El agente contesta el primer mensaje");
+await mandar(dm(mensajesA(EQUIPO)[0]?.cuerpo?.message?.text ?? "", { eco: true, de: EQUIPO }));
+await new Promise((r) => setTimeout(r, 400));
+ver((await conv(`ig:${EQUIPO}`))?.estado === "agente", "Su propio eco no cuenta como una persona");
+await mandar(dm("Hola! Soy Gonza de GOZZA, te cuento yo: sí, hay keto todos los días", { eco: true, de: EQUIPO, mid: "mid_gonza" }));
+ver(await esperar(async () => (await conv(`ig:${EQUIPO}`))?.estado === "humano"), "Una persona contesta desde la app: la charla pasa a esa persona");
+await mandar(dm("Hola! Soy Gonza de GOZZA, te cuento yo: sí, hay keto todos los días", { eco: true, de: EQUIPO, mid: "mid_gonza" }));
+await mandar(dm("genial, gracias!", { de: EQUIPO }));
+await new Promise((r) => setTimeout(r, 600));
+ver(mensajesA(EQUIPO).length === 1, "Después, el agente no contesta en esa charla");
+const cEquipo = await conv(`ig:${EQUIPO}`);
+const hist = cEquipo ? await almacen.mensajes(cEquipo.id) : [];
+ver(hist.filter((m) => m.rol === "humano").length === 1 && hist.some((m) => m.rol === "humano" && m.texto.startsWith("Hola! Soy Gonza")), "Lo que escribió la persona queda en la charla, una sola vez", JSON.stringify(hist.map((m) => m.rol)));
+await mandar(dm("", { eco: true, de: "9000000000000011", adjunto: "image" }));
+ver(await esperar(async () => (await conv("ig:9000000000000011"))?.estado === "humano"), "Una foto mandada desde la app también es de una persona");
+await mandar(dm(ficha.instagram!.comentarios!.reglas[0].respuesta, { eco: true, de: "9000000000000012" }));
+await new Promise((r) => setTimeout(r, 400));
+ver((await conv("ig:9000000000000012"))?.estado !== "humano", "El eco de la respuesta fija a un comentario no cuenta como una persona");
+const { esNuestro } = await import("../src/atenderInstagram.js");
+const recien = new Date().toISOString();
+ver(esNuestro({ cuenta: CUENTA, para: "x", mid: "m", texto: "[Charla reiniciada: el agente vuelve a responder, sin memoria de lo anterior]" }, []), "El aviso de /reiniciar no cuenta como una persona");
+ver(esNuestro({ cuenta: CUENTA, para: "x", mid: "m", texto: "Segunda parte, con el link para pedir" }, [{ rol: "agente", texto: "**Primera** parte\nSegunda parte, con el link para pedir", creado: recien }]), "Una parte de un mensaje largo del agente tampoco");
+ver(!esNuestro({ cuenta: CUENTA, para: "x", mid: "m", texto: "Gracias!" }, [{ rol: "agente", texto: "¡Gracias por escribirnos!", creado: recien }]), "Un \"Gracias!\" escrito a mano no se confunde con el agente");
+ver(!esNuestro({ cuenta: CUENTA, para: "x", mid: "m", texto: "ok" }, [{ rol: "agente", texto: "ok, gracias", creado: new Date(Date.now() - 3600_000).toISOString() }]), "Un texto igual a uno del agente de hace una hora sí es de una persona");
 
 // 5. Ventana de 24 horas
 await mandar(dm("hola, sigue en pie?", { de: "9000000000000009", hace: 25 * 3600_000 }));

@@ -4,7 +4,7 @@
 //   POST → llega un aviso firmado con el secreto de la app de Instagram (INSTAGRAM_APP_SECRET): 200 enseguida y se atiende en segundo plano.
 import { waitUntil } from "@vercel/functions";
 import { obtenerAlmacen } from "../src/almacen.js";
-import { atenderMensajeInstagram } from "../src/atenderInstagram.js";
+import { atenderEcoInstagram, atenderMensajeInstagram } from "../src/atenderInstagram.js";
 import { atenderComentario } from "../src/comentarios.js";
 import { fichaDesdeFila } from "../src/fichas.js";
 import { leerAvisoInstagram, type ComentarioInstagram } from "../src/instagram.js";
@@ -38,11 +38,11 @@ export async function POST(request: Request): Promise<Response> {
   } catch {
     return new Response("JSON inválido", { status: 400 });
   }
-  const { mensajes, comentarios } = leerAvisoInstagram(aviso);
+  const { mensajes, comentarios, ecos } = leerAvisoInstagram(aviso);
   const campos = ((aviso as any)?.entry ?? []).flatMap((e: any) => [...(e.messaging ? ["messaging"] : []), ...(e.changes ?? []).map((c: any) => c.field)]);
-  console.log(`Instagram: aviso recibido (${campos.join(", ") || "sin campos"}) · ${mensajes.length} mensaje(s), ${comentarios.length} comentario(s)`);
+  console.log(`Instagram: aviso recibido (${campos.join(", ") || "sin campos"}) · ${mensajes.length} mensaje(s), ${comentarios.length} comentario(s), ${ecos.length} eco(s)`);
   waitUntil(
-    Promise.allSettled([...mensajes.map((m) => atenderMensajeInstagram(m)), ...comentarios.map(comentario)]).then((rs) =>
+    Promise.allSettled([...mensajes.map((m) => atenderMensajeInstagram(m)), ...comentarios.map(comentario), ...ecos.map((e) => atenderEcoInstagram(e))]).then((rs) =>
       rs.forEach((r) => r.status === "rejected" && console.error("Error atendiendo aviso de Instagram", r.reason)),
     ),
   );

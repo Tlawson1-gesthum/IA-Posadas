@@ -35,16 +35,33 @@ export interface ComentarioInstagram {
 }
 
 /** Saca los mensajes directos y los comentarios de un aviso de Meta. Ignora los ecos (lo que manda la propia cuenta), leídos y reacciones. */
-export function leerAvisoInstagram(aviso: any): { mensajes: MensajeInstagram[]; comentarios: ComentarioInstagram[] } {
+/** Lo que mandó la propia cuenta (eco de Meta): puede ser el agente o una persona del equipo desde la app de Instagram. */
+export interface EcoInstagram {
+  cuenta: string;
+  /** A quién se lo mandó (IGSID del cliente). */
+  para: string;
+  mid: string;
+  texto: string;
+  /** Si no es texto: foto, audio, etc. El agente solo manda texto, así que eso lo mandó una persona. */
+  adjunto?: string;
+}
+
+export function leerAvisoInstagram(aviso: any): { mensajes: MensajeInstagram[]; comentarios: ComentarioInstagram[]; ecos: EcoInstagram[] } {
   const mensajes: MensajeInstagram[] = [];
   const comentarios: ComentarioInstagram[] = [];
-  if (aviso?.object !== "instagram") return { mensajes, comentarios };
+  const ecos: EcoInstagram[] = [];
+  if (aviso?.object !== "instagram") return { mensajes, comentarios, ecos };
   for (const entry of aviso.entry ?? []) {
     const cuenta = String(entry.id ?? "");
     // Los mensajes llegan en entry.messaging; la prueba del panel de Meta los manda como un cambio del campo "messages".
     const recibidos = [...(entry.messaging ?? []), ...(entry.changes ?? []).filter((c: any) => c.field === "messages").map((c: any) => c.value)];
     for (const m of recibidos) {
       const msg = m.message;
+      if (msg?.is_echo && !msg.is_deleted && m.recipient?.id && String(m.recipient.id) !== cuenta) {
+        const texto = typeof msg.text === "string" ? msg.text : "";
+        ecos.push({ cuenta, para: String(m.recipient.id), mid: String(msg.mid ?? ""), texto, adjunto: texto.trim() ? undefined : msg.attachments?.[0]?.type ?? "otro" });
+        continue;
+      }
       if (!msg || msg.is_echo || msg.is_deleted || !m.sender?.id || m.sender.id === cuenta) continue;
       const base = { cuenta, de: String(m.sender.id), mid: String(msg.mid ?? ""), hora: Number(m.timestamp) || Date.now() };
       if (typeof msg.text === "string" && msg.text.trim()) mensajes.push({ ...base, texto: msg.text });
@@ -65,7 +82,7 @@ export function leerAvisoInstagram(aviso: any): { mensajes: MensajeInstagram[]; 
       });
     }
   }
-  return { mensajes, comentarios };
+  return { mensajes, comentarios, ecos };
 }
 
 /** Llama a la API de Instagram. Los errores de Meta se devuelven con su código para poder explicarlos. */

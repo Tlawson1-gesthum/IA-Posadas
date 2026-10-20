@@ -42,3 +42,5 @@ El motor ya está publicado (main = 94c2947, 19/10/2026). Falta lo del dueño:
 5. Primera prueba real con la app en **Development**: desde una cuenta de Instagram con rol en la app (no @gozzasabores), mandar un mensaje directo y comentar VIANDAS en una publicación. Después: publicación de prueba con la cola y pasar la app a **Live**.
 
 Los avisos (reclamos, empresas, comentarios para revisar) quedan en las alertas del panel del motor; por mail, cuando estén `RESEND_API_KEY`, `AVISOS_DESDE` y `AVISOS_MAIL_GOZZA`. Una charla derivada se contesta desde la app de Instagram: el agente queda callado en esa charla hasta que se la libere desde el panel.
+
+Si alguien del equipo contesta a mano desde la app de Instagram, el agente también se calla en esa charla (`atenderEcoInstagram`: Meta manda un eco de todo lo que sale de la cuenta; si no coincide con lo que mandó el motor en los últimos 15 minutos, lo escribió una persona). Para que el agente vuelva a atender a ese cliente, se libera la charla desde el panel del motor.
