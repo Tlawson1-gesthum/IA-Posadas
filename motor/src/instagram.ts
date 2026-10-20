@@ -141,6 +141,15 @@ export async function enviarMensaje(cuenta: string, token: string, destinatario:
   }
 }
 
+/** Manda una foto por mensaje directo (JPG o PNG, hasta 8 MB, en una dirección pública). Devuelve el id del mensaje. */
+export async function enviarImagen(cuenta: string, token: string, destinatario: string, url: string): Promise<string> {
+  const r = await graph(token, `${cuenta}/messages`, {
+    metodo: "POST",
+    cuerpo: { recipient: { id: destinatario }, message: { attachment: { type: "image", payload: { url } } } },
+  });
+  return String(r?.message_id ?? "");
+}
+
 /** Respuesta privada a un comentario: un solo mensaje, hasta 7 días después del comentario (regla de Meta). */
 export async function respuestaPrivada(cuenta: string, token: string, comentarioId: string, texto: string): Promise<void> {
   await graph(token, `${cuenta}/messages`, { metodo: "POST", cuerpo: { recipient: { comment_id: comentarioId }, message: { text: paraInstagram(texto) } } });

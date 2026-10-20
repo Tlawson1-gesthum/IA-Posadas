@@ -2,7 +2,7 @@
 import type { Herramienta } from "../tipos.js";
 import { cotizarPedido, crearPedido } from "./pedidos-semorfa.js";
 import { confirmarPedidoEfectivo, consultarPedido, misPedidos, verCartaYEstado, verTurno } from "./semorfa.js";
-import { comprarPack, envioViandas, verViandas } from "./viandas.js";
+import { comprarPack, envioViandas, mostrarMenuEjemplo, verViandas } from "./viandas.js";
 import { consultarZona } from "./zona.js";
 
 /** Pasa la charla a una persona. El motor la marca y el agente queda en silencio. */
@@ -43,5 +43,6 @@ export const REGISTRO: Record<string, Herramienta> = {
   [verViandas.definicion.name]: verViandas,
   [comprarPack.definicion.name]: comprarPack,
   [envioViandas.definicion.name]: envioViandas,
+  [mostrarMenuEjemplo.definicion.name]: mostrarMenuEjemplo,
   [derivarAPersona.definicion.name]: derivarAPersona,
 };

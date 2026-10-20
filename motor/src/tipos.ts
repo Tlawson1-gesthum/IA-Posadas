@@ -121,6 +121,8 @@ export interface InstagramFicha {
    * "Información de IA" que la app, queda en false: las piezas hechas con IA no se publican solas, se avisa para subirlas a mano.
    */
   etiqueta_ia_api: boolean;
+  /** Foto real de un menú del día (pieza de la marca) y su texto, para mostrar como ejemplo en los mensajes directos. */
+  menu_ejemplo?: { imagen: string; texto: string };
   /** Respuestas automáticas a comentarios (textos fijos aprobados por el dueño, sin IA). */
   comentarios?: {
     /** Revisar los comentarios de las publicaciones recientes cada vez que corre la tarea periódica (sin esperar el aviso de Meta). */

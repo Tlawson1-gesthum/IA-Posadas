@@ -4,6 +4,7 @@
 import type { ContextoHerramienta, Herramienta } from "../tipos.js";
 import { BARRIOS_POSADAS, type Barrio } from "../zonas/posadas.js";
 import { nominatim } from "./zona.js";
+import { enviarImagen, tokenDe } from "../instagram.js";
 import { obtenerAlmacen } from "../almacen.js";
 import { baseUrl, traerCarta } from "./semorfa.js";
 
@@ -246,5 +247,33 @@ export const envioViandas: Herramienta = {
       barrios_con_envio: lista,
       nota: "Preguntale en qué barrio queda (o entre qué calles). Si dice uno de los barrios con envío, volvé a usar esta herramienta con el nombre del barrio.",
     });
+  },
+};
+
+/** Tipo de evento con el que se anota cada foto que manda el motor (así su eco no se confunde con una persona del equipo). */
+export const FOTO_ENVIADA = "foto_enviada";
+
+export const mostrarMenuEjemplo: Herramienta = {
+  definicion: {
+    name: "mostrar_menu_ejemplo",
+    description:
+      "Le manda a la persona, por mensaje directo, la foto real de un menú del día (un ejemplo de lo que trae cada uno de los 5 menús) y te devuelve su texto. Usala una sola vez por charla, cuando pregunten qué platos hay o qué trae cada menú.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  async ejecutar(_entrada, ctx) {
+    const ejemplo = ctx.ficha.instagram?.menu_ejemplo;
+    if (!ejemplo) return JSON.stringify({ enviada: false, nota: "No hay un menú de ejemplo cargado: contá los 5 menús con sus descripciones." });
+    const nota = "Es un ejemplo de un día: los platos cambian todos los días. No copies el texto entero si ya le llegó la foto.";
+    // Solo en charlas de Instagram (ig:<id>). En WhatsApp, la web o las pruebas, devuelve el texto y no manda nada.
+    if (!ctx.telefono.startsWith("ig:") || !ctx.ficha.instagram) return JSON.stringify({ enviada: false, simulada: true, texto_del_ejemplo: ejemplo.texto, nota });
+    const ig = ctx.ficha.instagram;
+    try {
+      const mid = await enviarImagen(ig.ig_user_id, await tokenDe(ctx.ficha), ctx.telefono.slice(3), ejemplo.imagen);
+      await obtenerAlmacen().evento(ctx.ficha.id, null, FOTO_ENVIADA, mid).catch(() => {});
+      return JSON.stringify({ enviada: true, texto_del_ejemplo: ejemplo.texto, nota: `Ya le llegó la foto. ${nota}` });
+    } catch (e) {
+      console.error("No salió la foto del menú de ejemplo", (e as Error).message);
+      return JSON.stringify({ enviada: false, texto_del_ejemplo: ejemplo.texto, nota: "La foto no salió: contale el ejemplo con el texto, corto." });
+    }
   },
 };

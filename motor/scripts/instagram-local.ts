@@ -184,6 +184,8 @@ await new Promise((r) => setTimeout(r, 400));
 ver((await conv("ig:9000000000000012"))?.estado !== "humano", "El eco de la respuesta fija a un comentario no cuenta como una persona");
 const { esNuestro } = await import("../src/atenderInstagram.js");
 const recien = new Date().toISOString();
+ver(esNuestro({ cuenta: CUENTA, para: "x", mid: "m_foto", texto: "", adjunto: "image" }, [], Date.now(), ["m_foto"]), "La foto del menú de ejemplo que mandó el motor no cuenta como una persona");
+ver(!esNuestro({ cuenta: CUENTA, para: "x", mid: "m_otra", texto: "", adjunto: "image" }, [], Date.now(), ["m_foto"]), "Otra foto sí es de una persona");
 ver(esNuestro({ cuenta: CUENTA, para: "x", mid: "m", texto: "[Charla reiniciada: el agente vuelve a responder, sin memoria de lo anterior]" }, []), "El aviso de /reiniciar no cuenta como una persona");
 ver(esNuestro({ cuenta: CUENTA, para: "x", mid: "m", texto: "Segunda parte, con el link para pedir" }, [{ rol: "agente", texto: "**Primera** parte\nSegunda parte, con el link para pedir", creado: recien }]), "Una parte de un mensaje largo del agente tampoco");
 ver(!esNuestro({ cuenta: CUENTA, para: "x", mid: "m", texto: "Gracias!" }, [{ rol: "agente", texto: "¡Gracias por escribirnos!", creado: recien }]), "Un \"Gracias!\" escrito a mano no se confunde con el agente");

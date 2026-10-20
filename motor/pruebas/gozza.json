@@ -63,7 +63,7 @@
     "no_contiene": [
       "quedan pocos",
       "[uú]ltimos lugares",
-      "un d[ií]a"
+      "(pack de|el de) un d[ií]a|un d[ií]a[:(]"
     ],
     "herramientas": [
       "ver_viandas"
@@ -234,7 +234,7 @@
     ]
   },
   {
-    "nombre": "19. Envío de viandas fuera de zona: ofrece retirar",
+    "nombre": "19. Envío de viandas fuera de zona: ofrece retirar y sigue vendiendo",
     "mensajes": [
       "quiero viandas con envío a Av. Quaranta 4500"
     ],
@@ -244,9 +244,7 @@
     "contiene": [
       "retir"
     ],
-    "no_contiene": [
-      "te lo dejo listo"
-    ]
+    "no_contiene": []
   },
   {
     "nombre": "20. Cierra la venta con envío: revisa la zona y manda el link de pago",
@@ -274,8 +272,43 @@
     ],
     "no_contiene": [
       "gracias por escribirnos",
-      "un d[ií]a",
+      "(pack de|el de) un d[ií]a|un d[ií]a[:(]",
       "autom[aá]tic"
+    ]
+  },
+  {
+    "nombre": "22. Qué platos traen: cuenta los menús y muestra el menú de ejemplo",
+    "mensajes": [
+      "qué menús tienen y qué traen? es distinto todos los días?"
+    ],
+    "herramientas": [
+      "ver_viandas",
+      "mostrar_menu_ejemplo"
+    ],
+    "contiene": [
+      "(cambian|distint)",
+      "tradicional"
+    ],
+    "no_contiene": [
+      "no (lo )?tengo cargad",
+      "los datos que tengo",
+      "te sirve que te deje"
+    ]
+  },
+  {
+    "nombre": "23. Cómo se elige: link personal hasta las 9",
+    "mensajes": [
+      "hola, cómo se elige el menú de cada día?"
+    ],
+    "contiene": [
+      "link",
+      "(0?9[:.]00|\\b9\\b)",
+      "gozza\\.com\\.ar/viandas"
+    ],
+    "no_contiene": [
+      "no (lo )?tengo cargad",
+      "los datos que tengo",
+      "no explican"
     ]
   }
 ]

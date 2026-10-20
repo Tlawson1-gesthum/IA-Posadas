@@ -4,6 +4,7 @@ import { obtenerAlmacen } from "./almacen.js";
 import { atender } from "./atender.js";
 import { avisarEquipo } from "./avisos.js";
 import { fichaDesdeFila } from "./fichas.js";
+import { FOTO_ENVIADA } from "./herramientas/viandas.js";
 import { enviarMensaje, paraInstagram, tokenDe, VENTANA_MS, type EcoInstagram, type MensajeInstagram } from "./instagram.js";
 
 /** Cosas que llegan como mensaje pero no son para contestar (un corazón, compartir una publicación). */
@@ -47,8 +48,9 @@ const VENTANA_PROPIOS_MS = 15 * 60_000;
 const comparable = (t: string) => paraInstagram(t).replace(/\s+/g, " ").trim().toLowerCase();
 
 /** ¿El eco es algo que mandó el motor (agente, respuesta a un comentario o una persona desde el panel)? */
-export function esNuestro(eco: EcoInstagram, recientes: { rol: string; texto: string; creado: string }[], ahora = Date.now()): boolean {
-  if (eco.adjunto) return false; // el motor solo manda texto
+export function esNuestro(eco: EcoInstagram, recientes: { rol: string; texto: string; creado: string }[], ahora = Date.now(), fotos: string[] = []): boolean {
+  // Fotos: el motor solo manda las que anota (FOTO_ENVIADA, con el id del mensaje). Cualquier otra la mandó una persona.
+  if (eco.adjunto) return !!eco.mid && fotos.includes(eco.mid);
   const texto = comparable(eco.texto);
   if (!texto) return true;
   if (texto.startsWith("[charla reiniciada")) return true;
@@ -73,7 +75,10 @@ export async function atenderEcoInstagram(eco: EcoInstagram, espera = ESPERA_ECO
   const conv = await almacen.conversacion(ficha.id, `ig:${eco.para}`, `ig:${eco.cuenta}`);
   // Las respuestas fijas a comentarios también son del motor (sin el autor del comentario, no quedan en esta charla).
   const fijas = (ficha.instagram?.comentarios?.reglas ?? []).map((r) => ({ rol: "agente", texto: r.respuesta, creado: new Date().toISOString() }));
-  if (esNuestro(eco, [...(await almacen.mensajes(conv.id)), ...fijas])) return;
+  const fotos = eco.adjunto
+    ? (await almacen.eventos(new Date(Date.now() - VENTANA_PROPIOS_MS), [FOTO_ENVIADA])).filter((e) => e.ficha_id === ficha.id).map((e) => e.detalle ?? "")
+    : [];
+  if (esNuestro(eco, [...(await almacen.mensajes(conv.id)), ...fijas], Date.now(), fotos)) return;
   const nuevo = await almacen.guardar({ conversacionId: conv.id, fichaId: ficha.id, rol: "humano", texto: eco.texto || `[${eco.adjunto}]`, waId: `ig:${eco.mid}` });
   if (!nuevo || conv.estado === "humano") return;
   await almacen.derivar(conv.id, "tomada", "Una persona del equipo contestó desde la app de Instagram.");
