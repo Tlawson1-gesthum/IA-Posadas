@@ -2,6 +2,7 @@
 // acceso avanzado, con cada comentario.
 //   GET  → Meta verifica la dirección al configurarla (INSTAGRAM_VERIFY_TOKEN).
 //   POST → llega un aviso firmado con el secreto de la app de Instagram (INSTAGRAM_APP_SECRET): 200 enseguida y se atiende en segundo plano.
+import { createHmac } from "node:crypto";
 import { waitUntil } from "@vercel/functions";
 import { obtenerAlmacen } from "../src/almacen.js";
 import { atenderEcoInstagram, atenderMensajeInstagram } from "../src/atenderInstagram.js";
@@ -47,6 +48,12 @@ export async function POST(request: Request): Promise<Response> {
   const cuerpo = await request.text();
   const firma = firmaDeInstagram(cuerpo, request.headers.get("x-hub-signature-256"));
   if (!firma) {
+    // Para entender el rechazo sin mostrar claves: el comienzo de la firma que llegó y de la que esperaba cada clave.
+    const llegó = request.headers.get("x-hub-signature-256");
+    const esperadas = (["INSTAGRAM_APP_SECRET", "INSTAGRAM_META_APP_SECRET", "META_APP_SECRET"] as const)
+      .filter((n) => process.env[n])
+      .map((n) => `${n}=${createHmac("sha256", process.env[n]!).update(cuerpo, "utf8").digest("hex").slice(0, 8)}`);
+    console.warn(`Instagram: firma recibida ${llegó ? llegó.slice(0, 15) : "ninguna"}${request.headers.get("x-hub-signature") ? " (también trae x-hub-signature)" : ""} · esperadas ${esperadas.join(" ")} · ${cuerpo.length} caracteres`);
     // Sin datos del mensaje: solo para saber si Meta llega y si el secreto coincide.
     console.warn(`Instagram: aviso rechazado por la firma (${process.env.INSTAGRAM_APP_SECRET ? "no coincide con INSTAGRAM_APP_SECRET" : "falta INSTAGRAM_APP_SECRET"}${process.env.INSTAGRAM_META_APP_SECRET ? " ni con INSTAGRAM_META_APP_SECRET" : ", falta INSTAGRAM_META_APP_SECRET"})`);
     return new Response("Firma inválida", { status: 401 });
