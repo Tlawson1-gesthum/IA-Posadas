@@ -28,6 +28,8 @@ export async function POST(request: Request): Promise<Response> {
   const cuerpo = await request.text();
   const secreto = process.env.INSTAGRAM_APP_SECRET;
   if (!secreto || !firmaValida(cuerpo, request.headers.get("x-hub-signature-256"), secreto)) {
+    // Sin datos del mensaje: solo para saber si Meta llega y si INSTAGRAM_APP_SECRET coincide.
+    console.warn(`Instagram: aviso rechazado por la firma (${secreto ? "no coincide con INSTAGRAM_APP_SECRET" : "falta INSTAGRAM_APP_SECRET"})`);
     return new Response("Firma inválida", { status: 401 });
   }
   let aviso: unknown;
@@ -37,6 +39,8 @@ export async function POST(request: Request): Promise<Response> {
     return new Response("JSON inválido", { status: 400 });
   }
   const { mensajes, comentarios } = leerAvisoInstagram(aviso);
+  const campos = ((aviso as any)?.entry ?? []).flatMap((e: any) => [...(e.messaging ? ["messaging"] : []), ...(e.changes ?? []).map((c: any) => c.field)]);
+  console.log(`Instagram: aviso recibido (${campos.join(", ") || "sin campos"}) · ${mensajes.length} mensaje(s), ${comentarios.length} comentario(s)`);
   waitUntil(
     Promise.allSettled([...mensajes.map((m) => atenderMensajeInstagram(m)), ...comentarios.map(comentario)]).then((rs) =>
       rs.forEach((r) => r.status === "rejected" && console.error("Error atendiendo aviso de Instagram", r.reason)),
