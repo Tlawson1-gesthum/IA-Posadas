@@ -15,7 +15,12 @@ const escapado = (t: string) => t.replace(/[\u0080-\uffff]/g, (c) => "\\u" + c.c
 
 /** Cuál de las formas de firmar coincide (o null). Se prueba el secreto de Instagram y, si está cargado, el de la app de Meta. */
 export function firmaDeInstagram(cuerpo: string, firma: string | null): string | null {
-  const secretos: [string, string | undefined][] = [["instagram", process.env.INSTAGRAM_APP_SECRET], ["meta", process.env.META_APP_SECRET]];
+  // INSTAGRAM_META_APP_SECRET: la clave secreta principal de la app de Meta (Configuración → Básica), que no es la de Instagram.
+  const secretos: [string, string | undefined][] = [
+    ["instagram", process.env.INSTAGRAM_APP_SECRET],
+    ["app de Meta", process.env.INSTAGRAM_META_APP_SECRET],
+    ["meta", process.env.META_APP_SECRET],
+  ];
   const formas: [string, string][] = [["tal cual", cuerpo], ["escapado", escapado(cuerpo)], ["escapado con barras", escapado(cuerpo).replace(/\//g, "\\/")]];
   for (const [nombre, secreto] of secretos) {
     if (!secreto) continue;
@@ -43,7 +48,7 @@ export async function POST(request: Request): Promise<Response> {
   const firma = firmaDeInstagram(cuerpo, request.headers.get("x-hub-signature-256"));
   if (!firma) {
     // Sin datos del mensaje: solo para saber si Meta llega y si el secreto coincide.
-    console.warn(`Instagram: aviso rechazado por la firma (${process.env.INSTAGRAM_APP_SECRET ? "no coincide con INSTAGRAM_APP_SECRET" : "falta INSTAGRAM_APP_SECRET"}${process.env.META_APP_SECRET ? " ni con META_APP_SECRET" : ""})`);
+    console.warn(`Instagram: aviso rechazado por la firma (${process.env.INSTAGRAM_APP_SECRET ? "no coincide con INSTAGRAM_APP_SECRET" : "falta INSTAGRAM_APP_SECRET"}${process.env.INSTAGRAM_META_APP_SECRET ? " ni con INSTAGRAM_META_APP_SECRET" : ", falta INSTAGRAM_META_APP_SECRET"})`);
     return new Response("Firma inválida", { status: 401 });
   }
   let aviso: unknown;
