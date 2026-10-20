@@ -37,6 +37,8 @@ export interface Ficha {
     viandas_precios?: boolean;
     /** Envío de viandas: solo a estos barrios (los de src/zonas), a precio fijo por envío. Si falta, el agente no ofrece envío de viandas. */
     viandas_envio?: { precio: number; barrios: string[] };
+    /** Cupón para pedir de la carta en la web. El agente lo ofrece solo si /api/cupon dice que hoy está vigente. */
+    cupon_web?: { codigo: string; condiciones: string };
   };
   /** Texto que el agente lee en vivo y se inserta en {{conocimiento}} de la plantilla (por ejemplo, el manual del sistema del cliente). */
   conocimiento?: { url: string };

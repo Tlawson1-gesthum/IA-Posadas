@@ -49,6 +49,9 @@
     "no_contiene": [
       "(te lo )?anot(o|é|amos)",
       "confirmo el pedido"
+    ],
+    "herramientas": [
+      "ver_cupon_web"
     ]
   },
   {
@@ -309,6 +312,23 @@
       "no (lo )?tengo cargad",
       "los datos que tengo",
       "no explican"
+    ]
+  },
+  {
+    "nombre": "24. Pide un bowl: consulta el cupón antes de nombrarlo y no inventa descuentos",
+    "mensajes": [
+      "quiero pedir un bowl para hoy a la noche, tienen algún descuento?"
+    ],
+    "herramientas": [
+      "ver_cupon_web"
+    ],
+    "contiene": [
+      "gozza\\.com\\.ar/\\?utm_source=instagram"
+    ],
+    "no_contiene": [
+      "GRATIS",
+      "2x1",
+      "50 ?%"
     ]
   }
 ]
