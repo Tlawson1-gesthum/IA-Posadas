@@ -132,6 +132,17 @@ ver((await mandar(dm("hola"), null)) === 401, "Aviso sin firma: rechazado");
 ver((await mandar(dm("hola"), firmar("otra cosa"))) === 401, "Aviso con firma falsa: rechazado");
 ver((await mandar(dm("hola"), firmar(JSON.stringify(dm("hola")), "secreto-de-otra-app"))) === 401, "Firmado con el secreto de otra app: rechazado");
 
+// Meta firma con las tildes escritas como \u00f3: el mismo aviso con "cómo" tiene que pasar firmado de las dos formas.
+{
+  const conTilde = JSON.stringify(dm("hola, cómo funcionan las viandas?", { de: "9000000000000020", mid: "mid_tilde" }));
+  const escapadoTilde = conTilde.replace(/[\u0080-\uffff]/g, (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
+  ver(escapadoTilde.includes("c\\u00f3mo"), "La prueba arma el aviso escapado como Meta");
+  const st = async (firma: string) => (await POST(new Request(URL_BASE, { method: "POST", body: conTilde, headers: { "x-hub-signature-256": firma } }))).status;
+  ver((await st(firmar(escapadoTilde))) === 200, "Mensaje con tilde firmado como Meta (escapado): aceptado");
+  ver((await st(firmar(conTilde))) === 200, "Mensaje con tilde firmado tal cual: aceptado");
+  ver(await esperar(() => mensajesA("9000000000000020").length === 1), "Y el agente lo contesta");
+}
+
 // 3. Mensaje directo normal
 ver((await mandar(dm("hola, qué horario tienen?", { mid: "mid_hola" }))) === 200, "Mensaje firmado: Meta recibe 200 enseguida");
 ver(await esperar(() => mensajesA(CLIENTE).length === 1), "El agente responde por mensaje directo a quien escribió");

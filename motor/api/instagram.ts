@@ -10,6 +10,20 @@ import { fichaDesdeFila } from "../src/fichas.js";
 import { leerAvisoInstagram, type ComentarioInstagram } from "../src/instagram.js";
 import { firmaValida } from "../src/whatsapp.js";
 
+/** Meta firma el aviso con las letras que no son ASCII escritas como \u00f3 (la tilde de "cómo"), como las escribe JSON. */
+const escapado = (t: string) => t.replace(/[\u0080-\uffff]/g, (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
+
+/** Cuál de las formas de firmar coincide (o null). Se prueba el secreto de Instagram y, si está cargado, el de la app de Meta. */
+export function firmaDeInstagram(cuerpo: string, firma: string | null): string | null {
+  const secretos: [string, string | undefined][] = [["instagram", process.env.INSTAGRAM_APP_SECRET], ["meta", process.env.META_APP_SECRET]];
+  const formas: [string, string][] = [["tal cual", cuerpo], ["escapado", escapado(cuerpo)], ["escapado con barras", escapado(cuerpo).replace(/\//g, "\\/")]];
+  for (const [nombre, secreto] of secretos) {
+    if (!secreto) continue;
+    for (const [forma, texto] of formas) if (firmaValida(texto, firma, secreto)) return `${nombre}, ${forma}`;
+  }
+  return null;
+}
+
 export function GET(request: Request): Response {
   const q = new URL(request.url).searchParams;
   const tokenOk = !!process.env.INSTAGRAM_VERIFY_TOKEN && q.get("hub.verify_token") === process.env.INSTAGRAM_VERIFY_TOKEN;
@@ -26,10 +40,10 @@ async function comentario(c: ComentarioInstagram): Promise<void> {
 
 export async function POST(request: Request): Promise<Response> {
   const cuerpo = await request.text();
-  const secreto = process.env.INSTAGRAM_APP_SECRET;
-  if (!secreto || !firmaValida(cuerpo, request.headers.get("x-hub-signature-256"), secreto)) {
-    // Sin datos del mensaje: solo para saber si Meta llega y si INSTAGRAM_APP_SECRET coincide.
-    console.warn(`Instagram: aviso rechazado por la firma (${secreto ? "no coincide con INSTAGRAM_APP_SECRET" : "falta INSTAGRAM_APP_SECRET"})`);
+  const firma = firmaDeInstagram(cuerpo, request.headers.get("x-hub-signature-256"));
+  if (!firma) {
+    // Sin datos del mensaje: solo para saber si Meta llega y si el secreto coincide.
+    console.warn(`Instagram: aviso rechazado por la firma (${process.env.INSTAGRAM_APP_SECRET ? "no coincide con INSTAGRAM_APP_SECRET" : "falta INSTAGRAM_APP_SECRET"}${process.env.META_APP_SECRET ? " ni con META_APP_SECRET" : ""})`);
     return new Response("Firma inválida", { status: 401 });
   }
   let aviso: unknown;
@@ -40,7 +54,7 @@ export async function POST(request: Request): Promise<Response> {
   }
   const { mensajes, comentarios, ecos } = leerAvisoInstagram(aviso);
   const campos = ((aviso as any)?.entry ?? []).flatMap((e: any) => [...(e.messaging ? ["messaging"] : []), ...(e.changes ?? []).map((c: any) => c.field)]);
-  console.log(`Instagram: aviso recibido (${campos.join(", ") || "sin campos"}) · ${mensajes.length} mensaje(s), ${comentarios.length} comentario(s), ${ecos.length} eco(s)`);
+  console.log(`Instagram: aviso recibido, firma ${firma} (${campos.join(", ") || "sin campos"}) · ${mensajes.length} mensaje(s), ${comentarios.length} comentario(s), ${ecos.length} eco(s)`);
   waitUntil(
     Promise.allSettled([...mensajes.map((m) => atenderMensajeInstagram(m)), ...comentarios.map(comentario), ...ecos.map((e) => atenderEcoInstagram(e))]).then((rs) =>
       rs.forEach((r) => r.status === "rejected" && console.error("Error atendiendo aviso de Instagram", r.reason)),
