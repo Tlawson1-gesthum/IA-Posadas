@@ -41,7 +41,9 @@ export function leerAvisoInstagram(aviso: any): { mensajes: MensajeInstagram[]; 
   if (aviso?.object !== "instagram") return { mensajes, comentarios };
   for (const entry of aviso.entry ?? []) {
     const cuenta = String(entry.id ?? "");
-    for (const m of entry.messaging ?? []) {
+    // Los mensajes llegan en entry.messaging; la prueba del panel de Meta los manda como un cambio del campo "messages".
+    const recibidos = [...(entry.messaging ?? []), ...(entry.changes ?? []).filter((c: any) => c.field === "messages").map((c: any) => c.value)];
+    for (const m of recibidos) {
       const msg = m.message;
       if (!msg || msg.is_echo || msg.is_deleted || !m.sender?.id || m.sender.id === cuenta) continue;
       const base = { cuenta, de: String(m.sender.id), mid: String(msg.mid ?? ""), hora: Number(m.timestamp) || Date.now() };
