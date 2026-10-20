@@ -146,6 +146,16 @@ const ACCIONES: Record<string, (b: Cuerpo) => Promise<Response>> = {
     return json({ conversacion: c, mensajes: await almacen.mensajes(c.id) });
   },
 
+  /** Empieza la charla de cero: el agente vuelve a atender y se olvida de lo anterior (los mensajes quedan guardados). */
+  async reiniciar(b) {
+    const almacen = obtenerAlmacen();
+    const c = await almacen.detalleConversacion(String(b.id ?? ""));
+    if (!c) return falla("No existe esa charla", 404);
+    await almacen.reiniciar(c.id);
+    await almacen.evento(c.ficha_id, c.id, "reiniciada", "Desde el panel");
+    return json({ ok: true });
+  },
+
   /** Devuelve la charla al agente (después de que la atendió una persona). */
   async liberar(b) {
     const almacen = obtenerAlmacen();

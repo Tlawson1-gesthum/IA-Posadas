@@ -521,7 +521,10 @@ async function abrirCharla(id) {
   $("#detalle").innerHTML = `
     <div class="fila" style="justify-content:space-between">
       <b>${esc(nombreCharla(c.telefono))}</b>
-      ${c.estado === "humano" ? `<button class="primario" id="b-liberar">Devolver al agente</button>` : `<span class="suave chico">La atiende el agente</span>`}
+      <span class="fila">
+        <button id="b-reiniciar" title="El agente vuelve a atender esta charla como si fuera nueva. Los mensajes de antes quedan acá.">Empezar de cero</button>
+        ${c.estado === "humano" ? `<button class="primario" id="b-liberar">Devolver al agente</button>` : `<span class="suave chico">La atiende el agente</span>`}
+      </span>
     </div>
     ${c.estado === "humano" ? `<div class="aviso"><b>Derivada</b> ${hace(Math.round((Date.now() - Date.parse(c.derivada_en)) / 60000))}: ${esc(c.derivada_motivo)} — ${esc(c.derivada_resumen)}<br>
       <span class="chico">El agente no responde hasta que la devuelvas.</span></div>` : ""}
@@ -529,11 +532,15 @@ async function abrirCharla(id) {
       <div class="msg ${m.rol}">${esc(m.texto)}<small>${m.rol === "humano" ? "Persona del equipo · " : ""}${fecha(m.creado)}${m.herramientas?.length ? " · " + esc(m.herramientas.join(", ")) : ""}${m.usd ? " · " + usd(m.usd) : ""}</small></div>`).join("")}</div>
     ${c.telefono.startsWith("web-") && !c.telefono.startsWith("web-publico-") ? `<p class="suave chico">Charla del chat de prueba: no se le puede escribir desde acá.</p>` : `
     <form id="f-resp" style="margin-top:10px">
-      <label for="resp">Responder como persona del equipo (${esWeb ? "le aparece en el chat de la web si lo tiene abierto" : "le llega por WhatsApp"}; la charla queda en tus manos)</label>
+      <label for="resp">Responder como persona del equipo (${esWeb ? "le aparece en el chat de la web si lo tiene abierto" : c.telefono.startsWith("ig:") ? "le llega por Instagram" : "le llega por WhatsApp"}; la charla queda en tus manos)</label>
       <textarea id="resp" rows="3" required></textarea>
       <p class="fila"><button class="primario" type="submit">Enviar</button></p>
     </form>`}`;
   const msjs = $("#msjs"); msjs.scrollTop = msjs.scrollHeight;
+  $("#b-reiniciar")?.addEventListener("click", async () => {
+    if (!confirm("¿Empezar esta charla de cero? El agente la atiende como si fuera nueva y se olvida de lo anterior.")) return;
+    try { await api("reiniciar", { id }); aviso("Listo: el próximo mensaje lo atiende el agente como una charla nueva"); abrirCharla(id); } catch (e) { aviso(e.message); }
+  });
   $("#b-liberar")?.addEventListener("click", async () => {
     try { await api("liberar", { id }); aviso("La charla volvió al agente"); abrirCharla(id); } catch (e) { aviso(e.message); }
   });
