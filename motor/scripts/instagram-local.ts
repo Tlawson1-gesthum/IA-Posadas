@@ -24,8 +24,11 @@ let fallaPermanente = false;
 let nContenedor = 0;
 const fetchReal = globalThis.fetch;
 
+/** Lo último que le llegó a Claude como mensaje de la persona (para ver el contexto que recibe el agente). */
+const aClaude: string[] = [];
 function respuestaClaude(cuerpo: any): Response {
   const ultimo = cuerpo.messages.at(-1);
+  if (typeof ultimo.content === "string") aClaude.push(ultimo.content);
   const texto = typeof ultimo.content === "string" ? ultimo.content : "";
   const yaDerivo = Array.isArray(ultimo.content) && ultimo.content.some((b: any) => b.type === "tool_result");
   const base = { id: "msg_sim", type: "message", role: "assistant", model: cuerpo.model, usage: { input_tokens: 100, output_tokens: 30 } };
@@ -287,6 +290,88 @@ await correrCola();
 fallaPermanente = false;
 const pubMala = await estadoDe(mala.id);
 ver(pubMala.estado === "error" && /no es válida/.test(pubMala.error ?? "") && (await avisos()).some((d) => d.startsWith("Una publicación no salió")), "Si Meta la rechaza: queda en error con el motivo y avisa", JSON.stringify(pubMala));
+
+// 9b. Mensajes que no son texto: cada tipo con su criterio (src/sinTexto.ts)
+{
+  const { SIN_TEXTO } = await import("../src/sinTexto.js");
+  for (const [tipo, t] of Object.entries(SIN_TEXTO)) {
+    ver(/gracias/i.test(t) && !/\b(leo|bot|ia|robot|autom[aá]tic|program)/i.test(t), `Respuesta fija "${tipo}": agradece y no habla de bots ni IA`, t);
+  }
+  let n = 0;
+  // Un directo tal cual lo manda Meta, con el "message" que se le pase.
+  const crudo = (message: object, de: string) => ({
+    object: "instagram",
+    entry: [{ id: CUENTA, time: Date.now(), messaging: [{ sender: { id: de }, recipient: { id: CUENTA }, timestamp: Date.now(), message: { mid: `mid_nt_${++n}`, ...message } }] }],
+  });
+  const textoA = (de: string) => mensajesA(de).map((l) => l.cuerpo?.message?.text ?? "");
+  const guardado = async (de: string) => {
+    const c = await conv(`ig:${de}`);
+    return c ? (await almacen.mensajes(c.id)).filter((x) => x.rol === "cliente").map((x) => x.texto) : [];
+  };
+  const quieto = () => new Promise((r) => setTimeout(r, 500));
+
+  // El caso real: comparte un reel que nombra a la cuenta, sin escribir nada.
+  const A = "9000000000000101";
+  await mandar(crudo({ attachments: [{ type: "ig_reel", payload: { url: "https://cdn/reel.mp4", title: "Fan de @gozzasabores y fan tuyo @tommlawson", reel_video_id: "1" } }] }, A));
+  ver(await esperar(() => mensajesA(A).length === 1), "Comparte un reel que nos nombra: agradece");
+  ver(textoA(A)[0] === SIN_TEXTO.agradecer, "Con el agradecimiento corto (sin IA)", textoA(A)[0]);
+  ver((await guardado(A))[0] === '[Compartió un reel que dice: "Fan de @gozzasabores y fan tuyo @tommlawson"]', "En el panel queda qué compartió", (await guardado(A))[0]);
+
+  const B = "9000000000000102";
+  await mandar(crudo({ attachments: [{ type: "ig_reel", payload: { url: "https://cdn/meme.mp4", title: "cuando es lunes jaja" } }] }, B));
+  await mandar(crudo({ attachments: [{ type: "share", payload: { url: "https://cdn/post.jpg" } }] }, B));
+  await quieto();
+  ver(mensajesA(B).length === 0 && (await guardado(B)).length === 2, "Comparte publicaciones que no nos nombran, sin texto: no contesta (queda guardado)");
+
+  const C = "9000000000000103";
+  const antesC = aClaude.length;
+  await mandar(crudo({ text: "tienen algo así??", attachments: [{ type: "ig_post", payload: { url: "https://cdn/bowl.jpg", title: "Bowl de pollo y palta" } }] }, C));
+  ver(await esperar(() => mensajesA(C).length === 1), "Comparte una publicación con texto: contesta el agente");
+  ver(aClaude.slice(antesC).some((t) => t === '[Compartió una publicación que dice: "Bowl de pollo y palta"] tienen algo así??'), "Y el agente recibe el texto con lo que compartió", aClaude.at(-1));
+
+  const D = "9000000000000104";
+  const antesD = aClaude.length;
+  await mandar(crudo({ text: "qué rico!! 😍", reply_to: { story: { id: "st_1", url: "https://cdn/story.jpg" } } }, D));
+  ver(await esperar(() => mensajesA(D).length === 1), "Responde a una historia: contesta el agente");
+  ver(aClaude.slice(antesD).includes("[Respondió a una historia de la cuenta] qué rico!! 😍"), "Sabiendo que respondió a una historia", aClaude.at(-1));
+
+  const E = "9000000000000105";
+  const mencion = crudo({ attachments: [{ type: "story_mention", payload: { url: "https://cdn/historia.jpg" } }] }, E);
+  await mandar(mencion);
+  ver(await esperar(() => mensajesA(E).length === 1), "Nos mencionan en una historia: agradece");
+  await mandar(mencion); // Meta reenvía el mismo aviso
+  await quieto();
+  const avisosMencion = (await avisos()).filter((d) => d.startsWith("Te mencionaron en una historia")).length;
+  ver(textoA(E)[0] === SIN_TEXTO.agradecer && mensajesA(E).length === 1 && avisosMencion === 1, "Una sola vez, y avisa al equipo una sola vez", `avisos: ${avisosMencion}`);
+
+  const F = "9000000000000106";
+  await mandar(crudo({ attachments: [{ type: "like_heart" }] }, F));
+  await mandar(crudo({ attachments: [{ type: "image", payload: { url: "https://cdn/sticker.webp", sticker_id: 369239263222822 } }] }, F));
+  await mandar(crudo({ is_unsupported: true }, F));
+  await mandar(crudo({ attachments: [{ type: "un_tipo_nuevo_de_meta", payload: { url: "https://cdn/x" } }] }, F));
+  await quieto();
+  ver(mensajesA(F).length === 0 && (await guardado(F)).length === 4, "Corazón, sticker, algo no soportado o un tipo nuevo: no contesta (queda guardado)", JSON.stringify(await guardado(F)));
+
+  const G = "9000000000000107";
+  await mandar(crudo({ attachments: [{ type: "audio", payload: { url: "https://cdn/audio.mp4" } }] }, G));
+  ver(await esperar(() => mensajesA(G).length === 1) && textoA(G)[0] === SIN_TEXTO.audio, "Un audio: le pide con amabilidad que lo escriba", textoA(G)[0]);
+  await mandar(crudo({ attachments: [{ type: "audio", payload: { url: "https://cdn/audio2.mp4" } }] }, G));
+  await quieto();
+  ver(mensajesA(G).length === 1, "Un segundo audio seguido: no repite el pedido");
+  await mandar(crudo({ text: "perdón, quería saber el precio de las viandas" }, G));
+  ver(await esperar(() => mensajesA(G).length === 2), "Cuando lo escribe, contesta el agente");
+
+  const H = "9000000000000108";
+  await mandar(crudo({ attachments: [{ type: "image", payload: { url: "https://cdn/foto.jpg" } }] }, H));
+  ver(await esperar(() => mensajesA(H).length === 1) && textoA(H)[0] === SIN_TEXTO.adjunto, "Una foto: le pide que escriba la consulta", textoA(H)[0]);
+  await mandar(crudo({ attachments: [{ type: "video", payload: { url: "https://cdn/video.mp4" } }] }, H));
+  await quieto();
+  ver(mensajesA(H).length === 1, "Y un video enseguida no repite el pedido");
+
+  const { esParaAgradecer } = await import("../src/atenderInstagram.js");
+  ver(esParaAgradecer({ noSoportado: "ig_reel", descripcion: "Los mejores bowls de Gozzá" }, "GOZZA"), "Nombrar al local sin @ y con tilde también cuenta");
+  ver(!esParaAgradecer({ noSoportado: "ig_reel", descripcion: "go zza" }, "GOZZA"), "Letras sueltas en palabras distintas no cuentan");
+}
 
 // 10. Token
 ver((await renovarToken(ficha)) === "renovado" && (await tokenDe(ficha)) === "token-renovado", "El token se renueva y se usa el nuevo");

@@ -15,8 +15,12 @@ export interface MensajeInstagram {
   de: string;
   mid: string;
   texto: string;
-  /** El mensaje es de un tipo que el agente no lee (foto, audio, video, historia…). */
+  /** El mensaje es de un tipo que el agente no lee (foto, audio, video, historia…): el tipo del adjunto, o "sticker". */
   noSoportado?: string;
+  /** Cómo queda en la charla un mensaje sin texto, con su contexto (ej. "[Compartió un reel que dice: …]"). */
+  nota?: string;
+  /** El texto de la publicación compartida (Meta lo manda como title), si viene. */
+  descripcion?: string;
   /** Cuándo lo mandó (ms). */
   hora: number;
 }
@@ -64,8 +68,7 @@ export function leerAvisoInstagram(aviso: any): { mensajes: MensajeInstagram[]; 
       }
       if (!msg || msg.is_echo || msg.is_deleted || !m.sender?.id || m.sender.id === cuenta) continue;
       const base = { cuenta, de: String(m.sender.id), mid: String(msg.mid ?? ""), hora: Number(m.timestamp) || Date.now() };
-      if (typeof msg.text === "string" && msg.text.trim()) mensajes.push({ ...base, texto: msg.text });
-      else mensajes.push({ ...base, texto: "", noSoportado: msg.attachments?.[0]?.type ?? "otro" });
+      mensajes.push({ ...base, ...leerMensajeDirecto(msg) });
     }
     for (const c of entry.changes ?? []) {
       if (c.field !== "comments" || !c.value?.id) continue;
@@ -83,6 +86,43 @@ export function leerAvisoInstagram(aviso: any): { mensajes: MensajeInstagram[]; 
     }
   }
   return { mensajes, comentarios, ecos };
+}
+
+/** Lo que se comparte por mensaje directo: publicaciones, reels e historias (de la cuenta o de otros). */
+const COMPARTIDOS: Record<string, string> = {
+  share: "una publicación",
+  ig_post: "una publicación",
+  media: "una publicación",
+  ig_reel: "un reel",
+  reel: "un reel",
+  story: "una historia",
+  ig_story: "una historia",
+};
+const corto = (t: string, tope = 300) => t.replace(/\s+/g, " ").trim().slice(0, tope);
+
+/**
+ * Arma el mensaje de un directo según lo que trae. Con texto, el agente lo recibe con el contexto entre corchetes
+ * (respondió a una historia, compartió un reel…). Sin texto, queda el tipo para la respuesta fija (src/sinTexto.ts)
+ * y una nota legible para la charla del panel.
+ */
+export function leerMensajeDirecto(msg: any): Pick<MensajeInstagram, "texto" | "noSoportado" | "nota" | "descripcion"> {
+  const texto = typeof msg.text === "string" ? msg.text.trim() : "";
+  const adjunto = msg.attachments?.[0];
+  const tipo: string | undefined = adjunto?.type ? String(adjunto.type) : undefined;
+  const descripcion = corto(String(adjunto?.payload?.title ?? ""));
+  let contexto = "";
+  if (msg.reply_to?.story) contexto = "Respondió a una historia de la cuenta";
+  else if (tipo && COMPARTIDOS[tipo]) contexto = `Compartió ${COMPARTIDOS[tipo]}${descripcion ? ` que dice: "${descripcion}"` : ""}`;
+  else if (tipo === "story_mention") contexto = "Mencionó a la cuenta en una historia";
+  if (texto) return { texto: contexto ? `[${contexto}] ${texto}` : texto };
+  // Instagram manda los stickers como imagen con sticker_id (el corazón llega como like_heart).
+  const sticker = tipo === "image" && adjunto?.payload?.sticker_id != null;
+  return {
+    texto: "",
+    noSoportado: sticker ? "sticker" : tipo ?? "otro",
+    nota: contexto ? `[${contexto}]` : undefined,
+    descripcion: descripcion || undefined,
+  };
 }
 
 /** Llama a la API de Instagram. Los errores de Meta se devuelven con su código para poder explicarlos. */

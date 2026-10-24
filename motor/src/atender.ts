@@ -3,10 +3,10 @@
 import { obtenerAlmacen } from "./almacen.js";
 import { responder } from "./cerebro.js";
 import { fichaPorNumero } from "./fichas.js";
+import { REPETIR_SIN_TEXTO_MS, respuestaSinTexto } from "./sinTexto.js";
 import { LIMITES_POR_DEFECTO, type Ficha } from "./tipos.js";
 import { enviarTexto, type MensajeEntrante } from "./whatsapp.js";
 
-const NO_LEO = "Por ahora solo leo mensajes de texto y ubicaciones. ¿Me lo escribís?";
 const ERROR = "Uh, se me trabó algo. Ya le aviso a alguien del equipo para que te responda.";
 const MUCHOS_MENSAJES = "Recibimos muchos mensajes seguidos. Para seguir, escribinos más tarde.";
 const SIN_SALDO = "Ahora no puedo responderte por acá. Ya le aviso a alguien del equipo.";
@@ -20,6 +20,8 @@ interface Opciones {
   credencial?: string;
   /** Se llama cuando la charla pasa a una persona (Instagram avisa al equipo). WhatsApp y la web no lo usan. */
   alDerivar?: (motivo: string, resumen: string, conversacionId: string) => Promise<void>;
+  /** Se llama una vez guardado un mensaje nuevo (no con los avisos repetidos de Meta). */
+  alGuardar?: (conversacionId: string) => Promise<void>;
 }
 
 export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Promise<void> {
@@ -39,9 +41,10 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   const almacen = obtenerAlmacen();
   const conv = await almacen.conversacion(ficha.id, m.de, m.phoneNumberId);
   const evento = (tipo: string, detalle: string) => almacen.evento(ficha.id, conv.id, tipo, detalle);
-  const textoGuardado = m.noSoportado ? `[${m.noSoportado}]` : m.texto;
+  const textoGuardado = m.noSoportado ? (m.nota ?? `[${m.noSoportado}]`) : m.texto;
   const nuevo = await almacen.guardar({ conversacionId: conv.id, fichaId: ficha.id, rol: "cliente", texto: textoGuardado, waId: m.waId });
   if (!nuevo) return; // Meta reenvió un aviso que ya atendimos.
+  await opciones.alGuardar?.(conv.id);
 
   // Solo para pruebas: un administrador escribe /reiniciar y la charla vuelve al agente, de cero.
   const lista = (v?: string) => (v ?? "").split(",").map((t) => t.trim()).filter(Boolean);
@@ -63,7 +66,16 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
     await almacen.guardar({ conversacionId: conv.id, fichaId: ficha.id, rol: "agente", texto, ...extra });
   };
 
-  if (m.noSoportado) return contestar(NO_LEO);
+  // Algo que no es texto: una respuesta fija según el tipo (pedir que lo escriba, agradecer) o nada. Sin IA y sin gasto.
+  if (m.noSoportado) {
+    const fija = respuestaSinTexto(m.noSoportado);
+    if (!fija) return;
+    // Si manda varias fotos o audios seguidos, se le pide una sola vez.
+    const desde = Date.now() - REPETIR_SIN_TEXTO_MS;
+    const yaDicho = (await almacen.mensajes(conv.id)).some((t) => t.rol === "agente" && t.texto === fija && Date.parse(t.creado) > desde);
+    if (!yaDicho) await contestar(fija);
+    return;
+  }
   if (!m.texto.trim()) return;
 
   // Límites por persona: cuando se pasa, se avisa una sola vez y después el agente no responde (ni gasta).

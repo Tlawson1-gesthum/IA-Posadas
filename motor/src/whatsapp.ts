@@ -10,8 +10,10 @@ export interface MensajeEntrante {
   waId: string;
   /** Texto para el agente. Las ubicaciones llegan como "[Ubicación compartida: lat, lng]". */
   texto: string;
-  /** El mensaje es de un tipo que el agente no lee (audio, foto, sticker...). */
+  /** El mensaje es de un tipo que el agente no lee (audio, foto, sticker...). Qué se contesta: src/sinTexto.ts. */
   noSoportado?: string;
+  /** Cómo queda en la charla un mensaje sin texto (ej. "[Compartió un reel que dice: …]"). Sin esto, "[tipo]". */
+  nota?: string;
 }
 
 /** Verifica que el aviso venga de Meta: firma HMAC-SHA256 del cuerpo con el secreto de la app. */
