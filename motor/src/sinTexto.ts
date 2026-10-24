@@ -7,7 +7,7 @@
 export const SIN_TEXTO = {
   audio: "¡Hola! Por acá no podemos escuchar audios. ¿Nos lo escribís en un mensaje? ¡Gracias!",
   adjunto: "¡Hola! Por acá no podemos abrir fotos, videos ni archivos. Si nos querés consultar algo, ¿nos lo escribís en un mensaje? ¡Gracias!",
-  agradecer: "¡Qué lindo, muchas gracias! Nos alegra un montón que nos tengas presentes.",
+  agradecer: "¡Qué lindo que te guste lo que hacemos! Muchas gracias 💚",
 } as const;
 
 /** Tipo que llega en noSoportado (WhatsApp: m.type; Instagram: el tipo del adjunto o "agradecer") → respuesta fija o null (no contestar). */

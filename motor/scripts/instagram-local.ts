@@ -38,7 +38,7 @@ function respuestaClaude(cuerpo: any): Response {
     content = [{ type: "tool_use", id: "tu_1", name: "derivar_a_persona", input: { motivo: "reclamo", resumen: "Le llegó frío el pedido." } }];
     stop = "tool_use";
   } else if (yaDerivo) content = [{ type: "text", text: "Uh, qué macana. Ya le paso tu mensaje a alguien del equipo que te responde por acá. Gracias por la paciencia." }];
-  else content = [{ type: "text", text: "¡Hola! Esta es una respuesta automática de GOZZA 🌱 Pedí en **https://gozza.com.ar/?utm_source=instagram**\n¡Gracias por escribirnos!" }];
+  else content = [{ type: "text", text: "¡Hola! Gracias por escribirle a GOZZA 🌱 Pedí en **https://gozza.com.ar/?utm_source=instagram**\n¡Gracias por escribirnos!" }];
   return Response.json({ ...base, content, stop_reason: stop, stop_sequence: null });
 }
 
@@ -151,7 +151,7 @@ ver((await mandar(dm("hola, qué horario tienen?", { mid: "mid_hola" }))) === 20
 ver(await esperar(() => mensajesA(CLIENTE).length === 1), "El agente responde por mensaje directo a quien escribió");
 const respuesta = mensajesA(CLIENTE)[0]?.cuerpo?.message?.text ?? "";
 ver(!respuesta.includes("*"), "La respuesta sale sin asteriscos (Instagram no muestra negritas)", respuesta);
-if (!CON_IA) ver(/autom[aá]tica/i.test(respuesta) && /gracias/i.test(respuesta), "Dice que es automática y agradece", respuesta);
+ver(!/autom[aá]tic|asistente|\bbot\b/i.test(respuesta) && /gracias/i.test(respuesta), "No dice que es automática y agradece", respuesta);
 ver(llamadas.every((l) => l.params.access_token === "token-simulado" || l.ruta === "refresh_access_token"), "Usa el token de la ficha");
 const c1 = await conv(`ig:${CLIENTE}`);
 ver(c1 && (await almacen.mensajes(c1.id)).length === 2, "La charla queda guardada (mensaje + respuesta)");
