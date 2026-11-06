@@ -1,0 +1,72 @@
+[
+  {
+    "nombre": "1. Duda simple: responde y cierra sin pregunta",
+    "mensajes": [
+      "[Contexto: rol: encargado · pestaña: Pedidos] como pauso la tienda?"
+    ],
+    "no_contiene": [
+      "[?]\\s*$",
+      "algo m[aá]s",
+      "quer[eé]s que",
+      "si quer[eé]s"
+    ]
+  },
+  {
+    "nombre": "2. Pasos: los da y cierra sin pregunta",
+    "mensajes": [
+      "[Contexto: rol: dueño · pestaña: Menú] como cambio el precio de un producto?"
+    ],
+    "no_contiene": [
+      "[?]\\s*$",
+      "algo m[aá]s",
+      "quer[eé]s que",
+      "si quer[eé]s"
+    ]
+  },
+  {
+    "nombre": "3. Duda de cómo funciona: cierra sin ofrecer más",
+    "mensajes": [
+      "[Contexto: rol: encargado · pestaña: Compras] por que no baja el costo de un insumo si compre mas barato?"
+    ],
+    "no_contiene": [
+      "[?]\\s*$",
+      "algo m[aá]s",
+      "quer[eé]s que",
+      "si quer[eé]s"
+    ]
+  },
+  {
+    "nombre": "4. Gracias: se despide cordial, sin pregunta ni ofrecer ayuda",
+    "mensajes": [
+      "[Contexto: rol: encargado · pestaña: Pedidos] como pauso la tienda?",
+      "[Contexto: rol: encargado · pestaña: Pedidos] genial, gracias!"
+    ],
+    "no_contiene": [
+      "[?]",
+      "algo m[aá]s",
+      "quer[eé]s que",
+      "si quer[eé]s"
+    ]
+  },
+  {
+    "nombre": "5. Falta un dato: ahí sí pregunta, una sola vez",
+    "mensajes": [
+      "como lo cambio?"
+    ],
+    "contiene": [
+      "[?]\\s*$"
+    ]
+  },
+  {
+    "nombre": "6. Pide algo que el sistema no hace: deriva y no cierra con pregunta",
+    "mensajes": [
+      "[Contexto: rol: dueño · pestaña: Menú] quiero que la tienda mande un mail de cumpleaños a cada cliente, se puede agregar?"
+    ],
+    "deriva": true,
+    "no_contiene": [
+      "[?]\\s*$",
+      "algo m[aá]s",
+      "quer[eé]s que"
+    ]
+  }
+]
