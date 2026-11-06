@@ -1,4 +1,5 @@
 -- Ayuda Pensa en MORFA con el mismo nombre, color y saludo que Gozza y Tutti (marca Pensa).
+-- OJO: ya no correr este script. Vuelve al bordó, que Pensa dejó de usar: en su lugar va el 016.
 -- Se corre una vez en Supabase → SQL Editor → New query → pegar → Run.
 -- Publica una versión nueva de la ficha "morfa-soporte"; la anterior queda en el historial para volver atrás.
 do $do$
