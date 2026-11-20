@@ -9,11 +9,11 @@ import type { ContextoHerramienta, Ficha, Respuesta, Turno } from "./tipos.js";
 // La clave de Morfi tiene prioridad; ANTHROPIC_API_KEY queda de respaldo.
 const client = new Anthropic({ apiKey: process.env.MORFI_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY });
 
-/** USD por millón de tokens: [entrada, salida, lectura de caché, escritura de caché]. */
-const PRECIOS: Record<string, [number, number, number, number]> = {
-  "claude-opus-5-5": [4, 20, 0.2, 5],
-  "claude-sonnet-5-5": [2, 10, 0.2, 2.5],
-  "claude-haiku-4-5": [1, 5, 0.1, 1.25],
+/** USD por millón de tokens: [entrada, salida, lectura de caché, escritura de caché 5 min, escritura de caché 1 h]. */
+const PRECIOS: Record<string, [number, number, number, number, number]> = {
+  "claude-opus-5-5": [4, 20, 0.2, 5, 8],
+  "claude-sonnet-5-5": [2, 10, 0.1, 2.5, 4],
+  "claude-haiku-4-5": [1, 5, 0.1, 1.25, 2],
 };
 
 /** Cuántos turnos anteriores se le pasan al modelo. */
@@ -60,12 +60,16 @@ export async function responder(
   ];
 
   const uso = { entrada: 0, salida: 0, cacheLeida: 0, cacheEscrita: 0, usd: 0 };
+  let escrita1h = 0;
   const herramientasUsadas: string[] = [];
   let derivada: Respuesta["derivada"];
   const precio = PRECIOS[ficha.modelo] ?? PRECIOS["claude-opus-5-5"];
 
   // El prompt se arma una vez por mensaje; si la ficha tiene conocimiento en vivo, se lee antes (con caché).
   const prompt = armarPrompt(ficha, ficha.conocimiento?.url ? await leerConocimiento(ficha.conocimiento.url) : undefined);
+  // Con un manual en vivo el prompt es largo (el de Gozza, unos 50.000 tokens) e igual para todo el equipo del local:
+  // se guarda una hora, así cada pregunta de esa hora lo lee barato en vez de volver a escribirlo.
+  const cacheSistema = ficha.conocimiento?.url ? ({ type: "ephemeral", ttl: "1h" } as const) : ({ type: "ephemeral" } as const);
 
   for (let vuelta = 0; vuelta < MAX_VUELTAS; vuelta++) {
     const r = await client.beta.messages.create({
@@ -75,7 +79,7 @@ export async function responder(
       fallbacks: "default",
       output_config: { effort: ficha.esfuerzo },
       cache_control: { type: "ephemeral" },
-      system: [{ type: "text", text: prompt, cache_control: { type: "ephemeral" } }],
+      system: [{ type: "text", text: prompt, cache_control: cacheSistema }],
       tools: herramientas.map((h) => h.definicion as Anthropic.Beta.BetaTool),
       messages: mensajes,
     });
@@ -85,8 +89,13 @@ export async function responder(
     uso.salida += r.usage.output_tokens;
     uso.cacheLeida += r.usage.cache_read_input_tokens ?? 0;
     uso.cacheEscrita += r.usage.cache_creation_input_tokens ?? 0;
+    escrita1h += r.usage.cache_creation?.ephemeral_1h_input_tokens ?? 0;
     uso.usd =
-      (uso.entrada * precio[0] + uso.salida * precio[1] + uso.cacheLeida * precio[2] + uso.cacheEscrita * precio[3]) /
+      (uso.entrada * precio[0] +
+        uso.salida * precio[1] +
+        uso.cacheLeida * precio[2] +
+        (uso.cacheEscrita - escrita1h) * precio[3] +
+        escrita1h * precio[4]) /
       1_000_000;
 
     if (r.stop_reason === "refusal") {

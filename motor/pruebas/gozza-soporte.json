@@ -1,0 +1,101 @@
+[
+  {
+    "nombre": "1. Horario de algunos días: dice dónde y cómo",
+    "mensajes": [
+      "[Contexto: rol: Encargado · pestaña: Pesaje · caja: abierta] Necesito modificar los horarios de apertura de algunos dias, donde puedo encontrar para modificar?"
+    ],
+    "contiene": [
+      "D[ií]as y horario",
+      "due[ñn]o"
+    ],
+    "no_contiene": [
+      "manual",
+      "no (lo )?tengo claro",
+      "no figura",
+      "[?]\\s*$"
+    ]
+  },
+  {
+    "nombre": "2. Feriado: cerrar un día puntual",
+    "mensajes": [
+      "[Contexto: rol: Encargado · pestaña: Pedidos · caja: abierta] tengo una consulta, el lunes no abrimos por el feriado, esta pagina sigue recibiendo pedidos igual? o hay una forma de que aparezca como cerrado ese dia?"
+    ],
+    "contiene": [
+      "d[ií]as especiales|No abre"
+    ],
+    "no_contiene": [
+      "manual",
+      "no (lo )?tengo claro",
+      "no figura",
+      "[?]\\s*$"
+    ]
+  },
+  {
+    "nombre": "3. Caja cerrada no frena pedidos",
+    "mensajes": [
+      "[Contexto: rol: Encargado · pestaña: Viandas · caja: abierta] mientras la caja este cerrada no permite que ingresen pedidos?"
+    ],
+    "contiene": [
+      "No, ",
+      "Pausar|Cerrar por hoy"
+    ],
+    "no_contiene": [
+      "manual",
+      "no (lo )?tengo claro",
+      "no figura"
+    ]
+  },
+  {
+    "nombre": "4. Cambiar el método de pago (módulo prendido en Gozza)",
+    "mensajes": [
+      "[Contexto: rol: Encargado · pestaña: Pedidos · caja: abierta] como modifico el método de pago de un pedido?"
+    ],
+    "contiene": [
+      "Cambiar la forma de pago"
+    ],
+    "no_contiene": [
+      "manual",
+      "no (lo )?tengo claro",
+      "no figura",
+      "[?]\\s*$"
+    ]
+  },
+  {
+    "nombre": "5. Tema del final del manual: informe semanal",
+    "mensajes": [
+      "[Contexto: rol: Dueño · pestaña: Resultados · caja: abierta] cuando llega el informe semanal por mail?"
+    ],
+    "contiene": [
+      "lunes"
+    ],
+    "no_contiene": [
+      "manual",
+      "no (lo )?tengo claro",
+      "no figura"
+    ]
+  },
+  {
+    "nombre": "6. No se presenta dos veces en la misma charla",
+    "mensajes": [
+      "[Contexto: rol: Dueño · pestaña: Pedidos · caja: abierta] como pauso la tienda?",
+      "[Contexto: rol: Dueño · pestaña: Viandas · caja: abierta] y como cobro un pack de 20?"
+    ],
+    "no_contiene": [
+      "asistente autom[aá]tico",
+      "Ayuda Pensa",
+      "[?]\\s*$"
+    ]
+  },
+  {
+    "nombre": "7. Repite con \"?\": no repite lo mismo",
+    "mensajes": [
+      "[Contexto: rol: Encargado · pestaña: Viandas · caja: abierta] como puedo descargar el comprobante de pago de un pack de vianda abonado? lo quiero en pdf",
+      "[Contexto: rol: Encargado · pestaña: Viandas · caja: abierta] no visualizo el link que me mencionas"
+    ],
+    "no_contiene": [
+      "manual",
+      "no (lo )?tengo claro",
+      "no figura"
+    ]
+  }
+]

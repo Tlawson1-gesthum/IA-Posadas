@@ -49,12 +49,12 @@
     ]
   },
   {
-    "nombre": "5. Falta un dato: ahí sí pregunta, una sola vez",
+    "nombre": "5. Falta un dato: pide solo eso",
     "mensajes": [
       "como lo cambio?"
     ],
     "contiene": [
-      "[?]\\s*$"
+      "[?]|Decime|Contame"
     ]
   },
   {

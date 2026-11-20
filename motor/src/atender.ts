@@ -10,6 +10,8 @@ import { enviarTexto, type MensajeEntrante } from "./whatsapp.js";
 const ERROR = "Uh, se me trabó algo. Ya le aviso a alguien del equipo para que te responda.";
 const MUCHOS_MENSAJES = "Recibimos muchos mensajes seguidos. Para seguir, escribinos más tarde.";
 const SIN_SALDO = "Ahora no puedo responderte por acá. Ya le aviso a alguien del equipo.";
+/** Si alguien del equipo escribió hace menos de esto en una charla derivada de soporte, el agente no se mete. */
+const EQUIPO_ACTIVO_MS = 30 * 60_000;
 
 interface Opciones {
   /** Cómo mandar la respuesta. Por defecto, por WhatsApp. */
@@ -59,7 +61,17 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   }
 
   // Charla derivada: la atiende una persona, el agente no se mete.
-  if (conv.estado === "humano") return;
+  // En la ayuda del sistema (plantilla soporte) la persona sigue trabajando y pregunta otras cosas: el agente vuelve a
+  // responder si nadie del equipo escribió en la última media hora. La consulta pasada sigue anotada para el equipo.
+  // (Antes quedaba callado para siempre: en Gozza, del 06/11 al 20/11 nadie le contestó cinco preguntas.)
+  let pasadaAlEquipo: string | undefined;
+  if (conv.estado === "humano") {
+    if (ficha.plantilla !== "soporte") return;
+    const [detalle, guardados] = await Promise.all([almacen.detalleConversacion(conv.id), almacen.mensajes(conv.id)]);
+    const delEquipo = guardados.filter((t) => t.rol === "humano").at(-1);
+    if (delEquipo && Date.now() - Date.parse(delEquipo.creado) < EQUIPO_ACTIVO_MS) return;
+    pasadaAlEquipo = detalle?.derivada_resumen || "una consulta anterior";
+  }
 
   const contestar = async (texto: string, extra: { herramientas?: string[]; tokensEntrada?: number; tokensSalida?: number; usd?: number } = {}) => {
     await mandar(texto);
@@ -107,7 +119,10 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
   const historial = historialCompleto.slice(0, -1);
   let r: Awaited<ReturnType<typeof responder>>;
   try {
-    r = await responder(ficha, historial, m.texto, m.de, opciones.credencial);
+    const texto = pasadaAlEquipo
+      ? `[Aviso del sistema: esta charla ya se le pasó al equipo de Pensa por esto: "${pasadaAlEquipo.slice(0, 300)}". Si vuelve sobre eso, decile que el equipo ya lo tiene y le responde por este chat. Si pregunta otra cosa, respondé normal.] ${m.texto}`
+      : m.texto;
+    r = await responder(ficha, historial, texto, m.de, opciones.credencial);
   } catch (e) {
     console.error(`Ficha ${ficha.id}: falló el cerebro`, e);
     const detalle = `Error del agente: ${(e as Error).message}`.slice(0, 300);
@@ -125,6 +140,8 @@ export async function atender(m: MensajeEntrante, opciones: Opciones = {}): Prom
     });
   }
   if (r.derivada) {
+    // Si ya estaba derivada, el resumen nuevo no borra lo que el equipo todavía no respondió.
+    if (pasadaAlEquipo) r.derivada.resumen = `${r.derivada.resumen} (Antes: ${pasadaAlEquipo})`.slice(0, 2000);
     await almacen.derivar(conv.id, r.derivada.motivo, r.derivada.resumen);
     await evento("derivacion", `${r.derivada.motivo}: ${r.derivada.resumen}`);
     await opciones.alDerivar?.(r.derivada.motivo, r.derivada.resumen, conv.id);

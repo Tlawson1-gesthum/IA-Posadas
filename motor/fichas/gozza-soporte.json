@@ -1,0 +1,44 @@
+{
+  "id": "gozza-soporte",
+  "nombre": "Gozza",
+  "rubro": "soporte",
+  "plantilla": "soporte",
+  "estado": "activo",
+  "modelo": "claude-sonnet-5-5",
+  "esfuerzo": "low",
+  "tope_usd_mes": 15,
+  "limites": {
+    "mensajes_por_hora": 40,
+    "mensajes_por_dia": 150,
+    "usd_por_persona_dia": 0.5,
+    "caracteres_por_mensaje": 1500
+  },
+  "herramientas": [
+    "ver_turno",
+    "consultar_pedido",
+    "derivar_a_persona"
+  ],
+  "conocimiento": {
+    "url": "https://gozza.com.ar/api/ayuda"
+  },
+  "chat_web": {
+    "activo": true,
+    "color": "#4A5D52",
+    "saludo": "Hola, soy el asistente de Pensa. ¿En qué parte del sistema te ayudo?",
+    "mensajes_por_ip_hora": 30,
+    "mensajes_por_dia": 300
+  },
+  "datos": {
+    "nombre_agente": "Ayuda Pensa",
+    "descripcion": "Es el panel web con el que el equipo de Gozza (comidas y viandas de Posadas) maneja pedidos, viandas, cocina, caja, compras, menú y números. Se usa en gozza.com.ar/#/panel.",
+    "quienes_escriben": "Personas del equipo de Gozza que usan el panel: cocina, encargados y el dueño. No son clientes: si alguien quiere hacer un pedido o comprar viandas, decile que lo haga en gozza.com.ar.",
+    "casos_derivacion": "- Algo no funciona, da error o se ve raro, y ya probó lo básico del manual.\n- Pide algo que el sistema no hace (una función nueva o un cambio).\n- Plata que el manual no explica: cobros de Mercado Pago, comisiones, diferencias de caja.\n- Problemas con su PIN, su usuario o sus permisos que no puede resolver el dueño.",
+    "voz": "- Clara, paciente y amable. Voseo. Sin tecnicismos.\n- Breve: la persona está trabajando, muchas veces en plena cocina."
+  },
+  "integracion": {
+    "tipo": "semorfa",
+    "base_url": "https://gozza.com.ar",
+    "clave_env": "GOZZA_AGENTE_CLAVE",
+    "crear_pedidos": false
+  }
+}
