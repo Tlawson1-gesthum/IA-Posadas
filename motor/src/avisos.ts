@@ -1,14 +1,17 @@
-// Avisos al equipo del cliente (por ahora, de Instagram): una charla que pasó a una persona, una pieza para subir a mano,
-// una publicación que falló. Siempre quedan como evento "instagram" en las alertas del panel del motor.
+// Avisos al equipo: una charla de Instagram o de la Ayuda Pensa que pasó a una persona, una pieza para subir a mano,
+// una publicación que falló. Siempre quedan como evento (`tipo`) en las alertas del panel del motor.
 // Además, si están cargadas, salen por mail (RESEND_API_KEY + AVISOS_DESDE + AVISOS_MAIL_<FICHA>) o a un webhook (AVISOS_WEBHOOK).
+// Las fichas de soporte (Ayuda Pensa) sin mail propio usan AVISOS_MAIL_SOPORTE: las atiende Pensa, no el local.
 import { obtenerAlmacen } from "./almacen.js";
 
-export async function avisarEquipo(fichaId: string, conversacionId: string | null, titulo: string, detalle: string): Promise<void> {
+export async function avisarEquipo(fichaId: string, conversacionId: string | null, titulo: string, detalle: string, tipo = "instagram"): Promise<void> {
   const texto = `${titulo}: ${detalle}`.slice(0, 1000);
-  await obtenerAlmacen().evento(fichaId, conversacionId, "instagram", texto);
+  await obtenerAlmacen().evento(fichaId, conversacionId, tipo, texto);
 
   const envios: Promise<unknown>[] = [];
-  const mail = process.env[`AVISOS_MAIL_${fichaId.toUpperCase().replace(/[^A-Z0-9]/g, "_")}`];
+  const mail =
+    process.env[`AVISOS_MAIL_${fichaId.toUpperCase().replace(/[^A-Z0-9]/g, "_")}`] ||
+    (fichaId.endsWith("-soporte") ? process.env.AVISOS_MAIL_SOPORTE : undefined);
   if (process.env.RESEND_API_KEY && process.env.AVISOS_DESDE && mail) {
     envios.push(
       fetch("https://api.resend.com/emails", {

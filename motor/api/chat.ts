@@ -5,6 +5,7 @@
 import { createHash } from "node:crypto";
 import { obtenerAlmacen } from "../src/almacen.js";
 import { atender } from "../src/atender.js";
+import { avisarEquipo } from "../src/avisos.js";
 import { cargarFicha } from "../src/fichas.js";
 import { sesionValida } from "../src/sesion.js";
 import { CHAT_WEB_POR_DEFECTO, type Ficha } from "../src/tipos.js";
@@ -116,6 +117,18 @@ export async function POST(request: Request): Promise<Response> {
       enviar: async (t) => {
         respuestas.push(t);
       },
+      // Ayuda Pensa: una consulta que pasa al equipo llega por mail (antes solo quedaba en el panel y nadie la veía).
+      alDerivar:
+        b.publico && ficha.plantilla === "soporte"
+          ? (motivo, resumen, conversacionId) =>
+              avisarEquipo(
+                ficha.id,
+                conversacionId,
+                `Ayuda Pensa: ${ficha.nombre} necesita una persona`,
+                `${resumen} (motivo: ${motivo}). Respondé desde la Central de agentes: https://ia-posadas.vercel.app/panel.html`,
+                "soporte",
+              )
+          : undefined,
     },
   );
   return Response.json({ respuestas, ficha: { id: ficha.id, nombre: ficha.nombre, agente: ficha.datos?.nombre_agente } });
