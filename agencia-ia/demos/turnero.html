@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Turnero Tu Clínica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Landing de consultorio con turnero. Una sola plantilla, el rubro sale de un bloque de configuración. Look claro de salud; el acento lo pone cada cliente. */
+:root{color-scheme:light;
+  --bg:#f6f8fb;--card:#ffffff;--ink:#0f1b2d;--muted:#5b6b82;--line:#e2e8f0;--soft:#eef3f8;
+  --acc:#0e7490;--acc-soft:#e0f2f7;--acc-ink:#ffffff;--ok:#047857;--ok-soft:#e7f6ef;
+  --bar:#07122a;--bar-ink:#dbe6ff;--bar-muted:#8ea3c8;--bar-acc:#22d3ee;
+  --disp:"Fraunces",Georgia,serif;--sans:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;line-height:1.15;text-wrap:balance}
+h1,h2{font-family:var(--disp);letter-spacing:-.01em}
+h1{font-size:clamp(30px,4.6vw,48px)}
+h2{font-size:clamp(22px,3vw,30px)}
+h3{font-size:16px}
+p{margin:0}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:clamp(16px,4vw,36px)}
+
+/* barra de la agencia */
+.demo-bar{background:var(--bar);color:var(--bar-ink);font-size:13px}
+.demo-bar .wrap{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-block:10px}
+.demo-bar b{font-family:var(--mono);font-weight:500;color:var(--bar-acc);letter-spacing:.06em;font-size:11.5px;text-transform:uppercase}
+.seg{display:inline-flex;gap:4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:3px;flex-wrap:wrap}
+.seg button{border:0;background:none;color:var(--bar-muted);border-radius:99px;padding:5px 12px;cursor:pointer;font-weight:600;font-size:12.5px}
+.seg button.on{background:var(--bar-acc);color:#031022}
+
+header.site{display:flex;justify-content:space-between;align-items:center;padding-block:18px;gap:12px;flex-wrap:wrap}
+.logo{display:flex;gap:10px;align-items:center;font-weight:700}
+.logo i{width:34px;height:34px;border-radius:10px;background:var(--acc);color:var(--acc-ink);display:grid;place-items:center;font:600 14px var(--disp);font-style:normal}
+header.site nav{display:flex;gap:16px;font-size:14px;color:var(--muted)}
+.hero{display:grid;grid-template-columns:1fr 1.05fr;gap:34px;align-items:start;padding-block:20px 44px}
+.hero .lead{color:var(--muted);font-size:17px;margin-top:14px;max-width:520px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}
+.facts div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--muted);min-width:0}
+.facts b{display:block;color:var(--ink);font-size:13.5px}
+.tag{display:inline-block;background:var(--acc-soft);color:var(--acc);border-radius:99px;padding:3px 10px;font-size:12.5px;font-weight:600}
+
+/* turnero */
+.booker{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 20px 50px -30px rgba(15,27,45,.35)}
+.booker h2{font-size:22px}
+.stepper{display:flex;gap:6px;margin:12px 0 16px;flex-wrap:wrap}
+.stepper span{font:500 11.5px var(--mono);color:var(--muted);background:var(--soft);border-radius:99px;padding:3px 10px}
+.stepper span.on{background:var(--acc);color:var(--acc-ink)}
+.stepper span.done{background:var(--acc-soft);color:var(--acc)}
+.svc{display:grid;gap:8px}
+.opt{display:flex;justify-content:space-between;gap:10px;align-items:center;text-align:left;width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;cursor:pointer}
+.opt:hover{border-color:var(--acc)}
+.opt.on{border-color:var(--acc);background:var(--acc-soft)}
+.opt small{display:block;color:var(--muted);font-size:12.5px}
+.opt .dur{font:500 12px var(--mono);color:var(--muted);white-space:nowrap}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.day{flex:none;width:68px;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:8px 0;text-align:center;cursor:pointer}
+.day b{display:block;font-size:20px;font-family:var(--disp)}
+.day span{font-size:11.5px;color:var(--muted);text-transform:capitalize}
+.day.on{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+.day.on span{color:var(--acc-ink)}
+.times{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px;margin-top:14px}
+.time{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:8px 0;cursor:pointer;font:500 14px var(--mono)}
+.time:hover:not(:disabled){border-color:var(--acc)}
+.time.on{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.time:disabled{background:var(--soft);color:#a3b0c2;text-decoration:line-through;cursor:not-allowed}
+.form{display:grid;gap:10px}
+.form label{font-size:13px;color:var(--muted);display:grid;gap:5px}
+.form input{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);width:100%}
+.sum{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:13.5px}
+.row{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 14px;cursor:pointer;font-weight:600}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.done{text-align:center;padding:10px 0}
+.done .check{width:56px;height:56px;border-radius:50%;background:var(--ok-soft);color:var(--ok);display:grid;place-items:center;margin:0 auto 12px}
+.done .check svg{width:28px;height:28px}
+.done p{color:var(--muted);margin-top:6px}
+.note{font-size:12px;color:var(--muted);margin-top:12px}
+section{padding-block:34px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:6px;align-content:start;min-width:0}
+.card p{color:var(--muted);font-size:14px}
+
+/* panel del negocio y réplica (fondo oscuro de la agencia) */
+.agency{background:var(--bar);color:var(--bar-ink);padding-block:36px}
+.agency h2{font-family:var(--sans);font-weight:700;letter-spacing:-.02em}
+.agency .kick{font:500 11.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--bar-acc)}
+.agency p{color:var(--bar-muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.pane{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px;min-width:0}
+.pane h3{margin-bottom:10px}
+pre{margin:0;background:#020612;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;font:12.5px/1.55 var(--mono);color:#c7d6f5;overflow:auto;max-height:340px;white-space:pre}
+.ag{display:grid;gap:6px}
+.ag div{display:grid;grid-template-columns:60px 1fr;gap:8px;font-size:13px;padding:7px 10px;border:1px solid rgba(255,255,255,.1);border-radius:9px}
+.ag time{font-family:var(--mono);color:var(--bar-acc)}
+.ag span small{display:block;color:var(--bar-muted)}
+.empty{color:var(--bar-muted);font-size:13px}
+footer{padding-block:20px 36px;color:var(--muted);font-size:13px}
+@media (max-width:880px){.hero,.two{grid-template-columns:1fr}.facts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="demo-bar"><div class="wrap">
+  <span><b>Demo de Agencia IA</b> · Misma plantilla, otro cliente: cambiá el rubro</span>
+  <div class="seg" id="rubros" role="group" aria-label="Rubro de la demo"></div>
+</div></div>
+
+<div class="wrap">
+  <header class="site"><div class="logo"><i id="logoI">TC</i><span id="bizName"></span></div><nav><span>Tratamientos</span><span>Equipo</span><span>Contacto</span></nav></header>
+  <div class="hero">
+    <div>
+      <span class="tag" id="heroTag"></span>
+      <h1 id="heroTitle" style="margin-top:12px"></h1>
+      <p class="lead" id="heroLead"></p>
+      <div class="facts"><div><b>Horario</b><span id="fHours"></span></div><div><b>Dirección</b><span id="fAddr"></span></div><div><b id="fExtraT"></b><span id="fExtra"></span></div></div>
+    </div>
+    <div class="booker" id="booker" aria-live="polite"></div>
+  </div>
+</div>
+
+<section><div class="wrap">
+  <h2 style="margin-bottom:16px" id="svcTitle">Tratamientos</h2>
+  <div class="grid" id="svcGrid"></div>
+</div></section>
+
+<div class="agency"><div class="wrap">
+  <span class="kick">Para la agencia</span>
+  <h2 style="margin-top:6px">Así se replica en otro cliente</h2>
+  <p style="margin-top:6px;max-width:720px">El turnero es siempre el mismo. Para un cliente nuevo cambiamos solo este bloque: nombre, color, servicios, días y horarios. Tocá otro rubro arriba y mirá cómo cambia toda la página.</p>
+  <div class="two">
+    <div class="pane"><h3>Configuración de este cliente</h3><pre id="cfg"></pre></div>
+    <div class="pane" id="bizPane"><h3>Lo que ve el negocio · <span id="agDay"></span></h3><div class="ag" id="agenda"><p class="empty">Reservá un turno arriba y aparece acá.</p></div><p class="note" style="color:var(--bar-muted)" id="bizNote">Los turnos se guardan en esta página: si reservás desde el celular, aparecen acá al instante.</p></div>
+  </div>
+</div></div>
+
+<footer><div class="wrap">Plantilla de ejemplo con un negocio inventado. Hecha por Agencia IA · Posadas.</div></footer>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+/* Un bloque por cliente: esto es lo único que cambia entre un proyecto y otro. */
+const CLIENTES = {
+  odonto: {
+    rubro: "Odontología", nombre: "Tu Clínica Dental", color: "#0e7490", colorSuave: "#e0f2f7",
+    titulo: "Tu primera consulta, sin esperas", bajada: "Elegí el tratamiento, el día y el horario. Te confirmamos al instante y te recordamos el turno el día anterior.",
+    etiqueta: "Turnos online 24 h", direccion: "Posadas, Misiones", extra: ["Obras sociales", "Consultá la tuya al reservar"],
+    dias: [1, 2, 3, 4, 5], desde: "09:00", hasta: "18:00", intervalo: 30,
+    servicios: [
+      { nombre: "Primera consulta", minutos: 30, detalle: "Revisión completa y plan de tratamiento" },
+      { nombre: "Limpieza", minutos: 45, detalle: "Limpieza y control de caries" },
+      { nombre: "Ortodoncia", minutos: 30, detalle: "Evaluación para brackets o alineadores" },
+      { nombre: "Blanqueamiento", minutos: 60, detalle: "Sesión en consultorio" }
+    ]
+  },
+  estetica: {
+    rubro: "Estética", nombre: "Tu Centro de Estética", color: "#9d174d", colorSuave: "#fce7f3",
+    titulo: "Tu momento, cuando te quede cómodo", bajada: "Reservá tu sesión en un minuto. Te mandamos un recordatorio y podés reprogramar desde WhatsApp.",
+    etiqueta: "Reservas online", direccion: "Posadas, Misiones", extra: ["Pagos", "Seña por Mercado Pago"],
+    dias: [1, 2, 3, 4, 5, 6], desde: "10:00", hasta: "20:00", intervalo: 60,
+    servicios: [
+      { nombre: "Limpieza facial", minutos: 60, detalle: "Limpieza profunda e hidratación" },
+      { nombre: "Depilación láser", minutos: 30, detalle: "Por zona, con evaluación previa" },
+      { nombre: "Masaje descontracturante", minutos: 60, detalle: "Espalda y cuello" }
+    ]
+  },
+  kine: {
+    rubro: "Kinesiología", nombre: "Tu Consultorio de Kinesio", color: "#4d7c0f", colorSuave: "#ecfccb",
+    titulo: "Volvé a moverte sin dolor", bajada: "Sacá tu turno de evaluación o seguí tus sesiones. El sistema te avisa antes de cada una.",
+    etiqueta: "Turnos online", direccion: "Posadas, Misiones", extra: ["Sesiones", "Seguimiento de tu plan"],
+    dias: [1, 2, 3, 4, 5], desde: "08:00", hasta: "13:00", intervalo: 45,
+    servicios: [
+      { nombre: "Primera evaluación", minutos: 45, detalle: "Diagnóstico funcional y plan" },
+      { nombre: "Sesión de rehabilitación", minutos: 45, detalle: "Con tu plan en curso" },
+      { nombre: "Drenaje linfático", minutos: 45, detalle: "Manual" }
+    ]
+  }
+};
+
+let key = "odonto", C = CLIENTES.odonto;
+let st = { step: 0, svc: null, day: null, time: null, done: null };
+let taken = new Set(), db = null, me = null, canSeeAgenda = false, reservas = [];
+let server = false, adminToken = null;  // modo Vercel: /api/turnos
+const local = [];  // reservas de esta vista, cuando no hay almacenamiento compartido
+const DAYN = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
+const DAYL = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const ymd = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const toMin = t => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
+const toHM = m => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
+function openDays() { const out = [], d = new Date(); d.setHours(0, 0, 0, 0); for (let k = 0; out.length < 10 && k < 21; k++) { const x = new Date(d.getTime() + k * 864e5); if (C.dias.includes(x.getDay()) && timesFor(x).length) out.push(x); } return out; }
+function timesFor(day) {
+  const out = [], now = new Date(), isToday = ymd(day) === ymd(now);
+  for (let m = toMin(C.desde); m + C.intervalo <= toMin(C.hasta); m += C.intervalo) { if (isToday && m <= now.getHours() * 60 + now.getMinutes() + 30) continue; out.push(toHM(m)); }
+  return out;
+}
+const slotId = (day, t) => key + "_" + ymd(day) + "_" + t.replace(":", "");
+const dayText = d => DAYL[d.getDay()] + " " + d.getDate();
+const hoursText = () => { const d = C.dias; const names = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"]; return names[d[0]] + " a " + names[d[d.length - 1]] + " · " + C.desde.slice(0, 2) + " a " + C.hasta.slice(0, 2) + " h"; };
+
+function applyClient() {
+  C = CLIENTES[key];
+  document.documentElement.style.setProperty("--acc", C.color);
+  document.documentElement.style.setProperty("--acc-soft", C.colorSuave);
+  $("#bizName").textContent = C.nombre; $("#logoI").textContent = C.nombre.split(" ").slice(-2).map(w => w[0]).join("");
+  $("#heroTag").textContent = C.etiqueta; $("#heroTitle").textContent = C.titulo; $("#heroLead").textContent = C.bajada;
+  $("#fHours").textContent = hoursText(); $("#fAddr").textContent = C.direccion; $("#fExtraT").textContent = C.extra[0]; $("#fExtra").textContent = C.extra[1];
+  $("#svcTitle").textContent = key === "estetica" ? "Servicios" : "Tratamientos";
+  $("#svcGrid").innerHTML = C.servicios.map(s => '<div class="card"><h3>' + esc(s.nombre) + '</h3><p>' + esc(s.detalle) + '</p><span class="tag" style="justify-self:start">' + s.minutos + " min</span></div>").join("");
+  $("#cfg").textContent = "const cliente = " + JSON.stringify(C, null, 2).replace(/\[\s*([\d,\s]+?)\s*\]/g, (m, n) => "[" + n.replace(/\s+/g, "") .replace(/,/g, ", ") + "]") + ";";
+  document.querySelectorAll("#rubros button").forEach(b => b.classList.toggle("on", b.dataset.k === key));
+  st = { step: 0, svc: null, day: openDays()[0], time: null, done: null };
+  draw(); drawAgenda();
+}
+$("#rubros").innerHTML = Object.keys(CLIENTES).map(k => '<button type="button" data-k="' + k + '">' + CLIENTES[k].rubro + "</button>").join("");
+$("#rubros").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { key = b.dataset.k; applyClient(); } });
+
+function stepper() { return '<div class="stepper">' + ["Servicio", "Día y hora", "Tus datos"].map((s, i) => '<span class="' + (i === st.step ? "on" : i < st.step ? "done" : "") + '">' + (i + 1) + " · " + s + "</span>").join("") + "</div>"; }
+function draw() {
+  const B = $("#booker");
+  if (st.done) {
+    B.innerHTML = '<div class="done"><div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></div><h2>Turno confirmado</h2><p>' + esc(st.done.servicio) + " · " + esc(st.done.diaTexto) + " · " + esc(st.done.hora) + " h</p><p>A nombre de " + esc(st.done.nombre) + ". Te escribimos por WhatsApp el día anterior para confirmar.</p><div class=\"row\" style=\"justify-content:center\"><button class=\"btn\" id=\"again\" type=\"button\">Reservar otro turno</button></div></div>";
+    return;
+  }
+  let h = "<h2>Reservá tu turno</h2>" + stepper();
+  if (st.step === 0) h += '<div class="svc">' + C.servicios.map((s, i) => '<button type="button" class="opt' + (st.svc === i ? " on" : "") + '" data-svc="' + i + '"><span><b>' + esc(s.nombre) + "</b><small>" + esc(s.detalle) + '</small></span><span class="dur">' + s.minutos + " min</span></button>").join("") + "</div>";
+  if (st.step === 1) {
+    const days = openDays(), ts = timesFor(st.day);
+    h += '<div class="days">' + days.map((d, i) => '<button type="button" class="day' + (ymd(d) === ymd(st.day) ? " on" : "") + '" data-day="' + i + '"><span>' + DAYN[d.getDay()] + "</span><b>" + d.getDate() + "</b></button>").join("") + "</div>";
+    h += ts.length ? '<div class="times">' + ts.map(t => '<button type="button" class="time' + (st.time === t ? " on" : "") + '" data-time="' + t + '"' + (taken.has(slotId(st.day, t)) ? " disabled aria-label=\"" + t + ' ocupado"' : "") + ">" + t + "</button>").join("") + "</div>" : '<p class="note">No quedan horarios para este día. Probá con otro.</p>';
+  }
+  if (st.step === 2) h += '<div class="sum">' + esc(C.servicios[st.svc].nombre) + " · " + esc(dayText(st.day)) + " · " + st.time + ' h</div><div class="form" style="margin-top:12px"><label>Nombre y apellido<input id="fName" type="text" autocomplete="name" required></label><label>WhatsApp<input id="fPhone" type="tel" autocomplete="tel" placeholder="376 4..." required></label></div><p class="note">Usamos tus datos solo para confirmar y recordarte el turno.</p>';
+  const canNext = (st.step === 0 && st.svc != null) || (st.step === 1 && st.time) || st.step === 2;
+  h += '<div class="row">' + (st.step > 0 ? '<button type="button" class="btn" id="back">Volver</button>' : "<span></span>") + '<button type="button" class="btn pri" id="next"' + (canNext ? "" : " disabled") + ">" + (st.step === 2 ? "Confirmar turno" : "Siguiente") + "</button></div>";
+  B.innerHTML = h;
+}
+$("#booker").addEventListener("click", async e => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.svc != null) { st.svc = +t.dataset.svc; draw(); return; }
+  if (t.dataset.day != null) { st.day = openDays()[+t.dataset.day]; st.time = null; draw(); return; }
+  if (t.dataset.time) { st.time = t.dataset.time; draw(); return; }
+  if (t.id === "back") { st.step--; draw(); return; }
+  if (t.id === "again") { st = { step: 0, svc: null, day: openDays()[0], time: null, done: null }; draw(); return; }
+  if (t.id === "next") {
+    if (st.step < 2) { st.step++; draw(); return; }
+    const nombre = $("#fName").value.trim(), tel = $("#fPhone").value.trim();
+    if (!nombre || !tel) { (!nombre ? $("#fName") : $("#fPhone")).focus(); return; }
+    const id = slotId(st.day, st.time);
+    if (taken.has(id)) { st.step = 1; st.time = null; draw(); return; }
+    t.disabled = true; t.textContent = "Reservando…";
+    const r = { rubro: key, slot: id, fecha: ymd(st.day), hora: st.time, diaTexto: dayText(st.day), servicio: C.servicios[st.svc].nombre, nombre: nombre.slice(0, 80), whatsapp: tel.slice(0, 30), creado: new Date().toISOString() };
+    taken.add(id);
+    let saved = false;
+    if (server) {
+      const res = await fetch("/api/turnos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(r) }).catch(() => null);
+      if (res && res.status === 409) { st.step = 1; st.time = null; draw(); return; }
+      saved = Boolean(res && res.ok);
+      if (saved && adminToken) loadReservas();
+    }
+    if (db) {
+      try {
+        await db.doc("turnos/" + id).set({ ocupado: true });
+        const owner = me && canSeeAgenda;
+        const rid = owner ? "t-" + Date.now().toString(36) : me;
+        if (rid) { await db.doc("reservas/" + rid).set(r); saved = true; }
+      } catch (err) { /* sin permiso de escritura: queda en esta vista */ }
+    }
+    if (!saved) { local.push(r); drawAgenda(); }
+    st.done = r; draw();
+  }
+});
+
+function drawAgenda() {
+  const day = st.day || openDays()[0];
+  $("#agDay").textContent = dayText(day);
+  const all = reservas.concat(local).filter(r => r.rubro === key && r.fecha === ymd(day)).sort((a, b) => a.hora.localeCompare(b.hora));
+  const booked = new Set(all.map(r => r.hora));
+  const rows = timesFor(day).map(t => booked.has(t) ? all.filter(r => r.hora === t).map(r => "<div><time>" + t + "</time><span>" + esc(r.nombre) + "<small>" + esc(r.servicio) + " · WhatsApp " + esc(r.whatsapp) + "</small></span></div>").join("") : taken.has(slotId(day, t)) ? "<div><time>" + t + "</time><span>Ocupado<small>Reserva de otra persona</small></span></div>" : "");
+  const html = rows.join("");
+  $("#agenda").innerHTML = html || '<p class="empty">Todavía no hay turnos para este día. Reservá uno arriba y aparece acá.</p>';
+}
+
+applyClient();
+
+async function loadTaken() {
+  try { const j = await (await fetch("/api/turnos")).json(); taken = new Set(j.ocupados || []); if (!st.done) draw(); drawAgenda(); } catch (e) {}
+}
+async function loadReservas() {
+  try { const r = await fetch("/api/turnos?admin=1", { headers: { "x-admin-token": adminToken } }); if (r.ok) { reservas = (await r.json()).reservas || []; drawAgenda(); } } catch (e) {}
+}
+async function startServer() {
+  if (!/^https?:/.test(location.protocol)) return;
+  try { const r = await fetch("/api/turnos"); if (!r.ok) return; server = true; } catch (e) { return; }
+  const q = new URLSearchParams(location.search).get("admin");
+  try { if (q) localStorage.setItem("agencia_admin", q); adminToken = q || localStorage.getItem("agencia_admin"); } catch (e) { adminToken = q; }
+  loadTaken(); setInterval(loadTaken, 15000);
+  if (adminToken) { canSeeAgenda = true; loadReservas(); setInterval(loadReservas, 15000); }
+  else $("#bizNote").textContent = "Los nombres de los pacientes solo los ve el dueño (entrando con ?admin=su-clave); acá ves qué horarios se ocuparon.";
+}
+(async () => {
+  if (!window.claude || !claude.use) return startServer();
+  const [d, u] = await Promise.all([claude.use("db"), claude.use("user")]);
+  if (u) { me = await u.id(); canSeeAgenda = (await u.isOwner()) || (await u.canEdit()); }
+  if (!d) return;
+  db = d;
+  db.collection("turnos").onSnapshot(snap => { taken = new Set(snap.docs.filter(x => x.exists && x.data().ocupado).map(x => x.id)); if (!st.done) draw(); drawAgenda(); }, () => {});
+  if (canSeeAgenda) db.collection("reservas").onSnapshot(snap => { reservas = snap.docs.filter(x => x.exists).map(x => x.data()); drawAgenda(); }, () => {});
+  else $("#bizNote").textContent = "Los nombres de los pacientes solo los ve el dueño de la página; acá ves qué horarios se ocuparon.";
+})();
+</script>
+</body>
+</html>
